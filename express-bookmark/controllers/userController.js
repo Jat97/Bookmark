@@ -1,0 +1,449 @@
+const { useReducer } = require('react');
+const db = require('../database/db');
+const validateToken = require('../database/token');
+const {upload, uploadimage} = require('../database/token');
+const {body, check, validationResult} = require('express-validator');
+const jwt = require('jsonwebtoken');
+
+let date = new Date();
+let year = date.getFullYear();
+let month = date.getMonth();
+let day = date.getDate();
+let minDate = new Date(year - 18, month, day).toISOString();
+
+exports.create_account = [
+    body('first_name', 'Please enter your first name.').isLength({min: 1}),
+    body('last_name', 'Please enter your last name.').isLength({min: 1}),
+    body('email', 'Please enter your email address.').isEmail().withMessage('Enter a valid email address.')
+    .custom(async email => {
+        const user = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
+
+        if(user.rows.length !== 0) {
+            return Promise.reject('This email address is currently in use.');
+        }
+    }),
+    body('password', 'Please enter a password').isLength({min: 8}).custom(password => {
+        if(password.length < 8) {
+            return Promise.reject('Your password is too short.');
+        }
+    }),
+    body('confirm', 'Please confirm your password').isLength({min: 8}).custom((confirm, {req}) => {
+        if(confirm !== req.body.password) {
+            return Promise.reject('Your passwords do not match.');
+        }
+    }),
+
+    (req, res) => {
+        const errors = validationResult(req);
+
+        if(!errors.isEmpty()) {
+            return res.status(401).json({errors: errors});
+        }
+        else {
+            bcrypt.hash(req.body.password, 10, async (err, hashWord) => {
+                if(err) {
+                    res.status(500).json({error: err});
+                }
+                else {
+                    const user = await db.query(`
+                        INSERT INTO users (first_name, last_name, email, password, profile_picture, online, hidden) 
+                        VALUES ($1, $2, $3, $4, $5, $6, $7)`, 
+                        [req.body.first_name, req.body.last_name, req.body.email, hashWord, null, true, false]
+                    );
+
+                    jwt.sign({user, expiresIn: new Date(Date.now() + 1000000)}, process.env.TOKEN_KEY, 
+                        (err, key) => {
+                        if(err) {
+                            return res.status(500).json({error: err});
+                        }
+                        else {
+                            res.cookie('signtoken', key, {
+                                expires: new Date(Date.now() + 1000000),
+                                secure: false,
+                                httpOnly: true,
+                                path: '/api'
+                            }).redirect(303, '/api/home');
+                        }
+                    });
+                }
+            });
+        }
+    }
+];
+
+exports.log_in = async (req, res) => {
+    const user = await db.query(`SELECT * FROM users WHERE email = $1`, [req.body.email]);
+
+    if(user.rows.length === 0) {
+        return res.status(400).json({email_err: 'This email is not currently in use.'});
+    }
+    else {
+        if(req.body.password.length === 0) {
+            return res.json({pass_err: 'Please enter a password.'});
+        }
+        else {
+            bcrypt.compare(req.body.password, user.rows[0].password, (err, result) => {
+                if(err) {
+                    return res.status(500).json({error: err});
+                }
+                else if(result) {
+                    const logged_user = user.rows[0];
+                    
+                    jwt.sign({logged_user, expiresIn: new Date(Date.now() + 1000000)}, process.env.TOKEN_KEY, 
+                    (err, key) => {
+                        if(err) {
+                            return res.status(500).json({error: err});
+                        }
+                        else {
+                            res.cookie('usertoken', key, {
+                                expires: new Date(Date.now() + 1000000),
+                                secure: false,
+                                httpOnly: true,
+                                path: '/api'
+                            }).redirect(303, '/api/home')
+                        }
+                    });
+                }
+                else {
+                    return res.status(400).json({pass_err: 'Your password is incorrect.'})
+                }
+            });
+        }
+    }
+};
+
+exports.get_all_users = async (req, res) => {
+    try {
+        const user_key = await validateToken(req, res);
+
+        if(user_key) {
+            const users = await db.query(
+                `SELECT id as id,
+                first_name as first_name,
+                last_name as last_name,
+                profile_picture as profile_picture,
+                online as online,
+                hidden as hidden 
+                FROM user`
+            );
+
+            const blocked = await db.query(`SELECT * FROM blocked WHERE blocked_by = $1`, [user_key.logged_user.id]);
+
+            users.rows.forEach((user, index) => {
+                blocked.rows.forEach(block => {
+                    if(user.id === block.blocked_user) {
+                        user.splice(index, 1);
+                    }
+                });
+            });
+
+            res.status(200).json({users: users.rows});
+        }
+        else {
+            return res.status(400).send();
+        }
+    }
+    catch (err) {
+        res.json({error: err});
+    }
+};
+
+exports.block_user = async (req, res) => {
+    try {
+        const user_key = validateToken(req, res);
+
+        if(user_key) {
+            const user = await db.query(`SELECT * FROM users WHERE id = $1`, [req.params.userid]);
+
+            const block = await db.query(
+                `INSERT INTO blocked (blocked_user, blocked_by) VALUES ($1, $2) RETURNING id, blocked_user, blocked_by`, 
+                [user.rows[0].id, user_key.logged_user.id]
+            );
+
+            res.status(200).json({blocked: block});
+        }
+        else {
+            res.status(400).send();
+        }
+    }
+    catch (err) {
+        res.status(500).json({error: err});
+    }
+};
+
+exports.unblock_user = async (req, res) => {
+    try {
+        const user_key = await validateToken(req, res);
+
+        if(user_key) {
+            await db.query(`DELETE FROM blocked WHERE blocked_user = $1`, [req.params.userid]);
+
+            res.status(200).send();
+        }
+        else {
+            res.status(400).send();
+        }
+    }
+    catch (err) {
+        res.status(500).json({error: err});
+    }
+};
+
+exports.add_to_friendslist = async (req, res) => {
+    try {
+        const user_key = validateToken(req, res);
+
+        if(user_key) {
+            const friend = await db.query(
+                `INSERT INTO friends (friend_1, friend_2) VALUES ($1, $2) RETURNING *`, 
+                [user_key.logged_user.id, req.params.userid]
+            );
+
+            await db.query(
+                `INSERT INTO friends (friend_1, friend_2) VALUES ($1, $2)`, [req.params.userid, user_key.logged_user.id]
+            );
+            
+            res.status(200).json({friend: friend});
+        }
+        else {
+            res.status(400).send();
+        }
+    }
+    catch (err) {
+        res.status(500).json({error: err});
+    }
+};
+
+exports.remove_from_friendslist = async (req, res) => {
+    try {
+        const user_key = validateToken(req, res);
+
+        if(user_key) {
+            await db.query(
+                `DELETE FROM friends WHERE friend_1 = $1 AND friend_2 = $2`, [user_key.logged_user.id, req.params.userid]
+            );
+
+            res.status(200).send();
+        }
+        else {
+            res.status(400).send();
+        }
+    }
+    catch (err) {
+        res.status(500).json({error: err});
+    }
+};
+
+exports.get_notifications = async (req, res) => {
+    try {
+        const user_key = validateToken(req, res);
+
+        if(user_key) {
+            const notifications = await db.query(
+                `SELECT alerts.id as id,
+                users.first_name as first_name,
+                users.last_name as last_name,
+                users.profile_picture as profile_picture,
+                alerts.text as text,
+                alerts.sent as sent
+                WHERE alerted_user = $1
+                `,
+                [user_key.logged_user.id]
+            );
+
+            const alerts = [];
+
+            if(notifications.rows.length > 0) {
+                notifications.rows.forEach(notification => {
+                    alerts.push({
+                        id: notification.id,
+                        alerting_user: {
+                            first_name: notification.alerting_user.first_name,
+                            last_name: notification.alerting_user.last_name,
+                            profile_picture: notification.alerting_user.profile_picture,
+                        },
+                        text: notification.text,
+                        sent: notification.sent
+                    });
+                });
+            }
+
+            res.status(200).json({alerts: alerts});
+        }
+        else {
+            res.status(400).send();
+        }
+    }
+    catch (err) {
+        res.status(500).json({error: err});
+    }
+};
+
+exports.get_friend_requests = async (req, res) => {
+    try {
+        const user_key = validateToken(req, res);
+
+        if(user_key) {
+            const friend_requests = await db.query(
+                `SELECT first_name as first_name,
+                last_name as last_name,
+                profile_picture as profile_picture
+                FROM friend_requests 
+                WHERE requested_user = $1`,
+                [user_key.logged_user.id]
+            );
+
+            const all_requests = [];
+
+            friend_requests.forEach(request => {
+                all_requests.push({
+                    id: request.id,
+                    requesting_user: {
+                        first_name: request.requesting_user.first_name,
+                        last_name: request.requesting_user.last_name,
+                        profile_picture: request.requesting_user.profile_picture
+                    }
+                });
+            });
+
+            res.status(200).json({requests: all_requests});
+        }
+        else {
+            res.status(400).send();
+        }
+    }
+    catch (err) {
+        res.status(500).json({error: err});
+    }
+};
+
+exports.accept_friend_request = async (req, res) => {
+    try {
+        const user_key = validate(req, res);
+
+        if(user_key) {
+            const logged_friend = await db.query(
+                `INSERT INTO friends (friend_1, friend_2) VALUES ($1, $2) RETURNING *`, 
+                [user_key.logged_user.id, req.params.userid]
+            );
+
+            await db.query(
+                `INSERT INTO friends (friend_1, friend_2) VALUES ($1, $2)`,
+                [req.params.userid, user_key.logged_user.id]
+            );
+
+            await db.query(`
+                DELETE * FROM friend_requests WHERE requested_user = $1 AND requesting_user = $2`, 
+                [req.params.userid, user_key.logged_user.id]
+            );
+
+            res.status(200).json({friend: logged_friend});
+        }
+        else {
+            res.status(400).send();
+        }
+    }
+    catch (err) {
+        res.status(500).json({error: err});
+    }
+};
+
+exports.reject_friend_request = async (req, res) => {
+    try {
+        const user_key = validateToken(req, res);
+
+        if(user_key) {
+            await db.query(
+                `DELETE * FROM friend_requests WHERE requested_user = $1 AND requesting_user = $2`, 
+                [req.params.userid, user_key.logged_user.id]
+            );
+
+            res.status(200).send();
+        }
+        else {
+            res.status(400).send();
+        }
+    }
+    catch (err) {
+        res.status(500).json({error: err});
+    }
+};
+
+exports.get_logged_information = async (req, res) => {
+    try {
+        const user_key = validateToken(req, res);
+
+        if(user_key) {
+            const logged_user = await db.query(
+                `SELECT first_name as first_name,
+                last_name as last_name,
+                profile_picture as profile_picture,
+                email as email,
+                online as online,
+                hidden as hidden
+                FROM users 
+                WHERE id = $1`,
+                [user_key.logged_user.id]
+            );
+        }
+        else {
+            res.status(400).send();
+        }
+    }
+    catch (err) {
+        res.status(500).json({error: err});
+    }
+};
+
+exports.edit_profile_picture = async (req, res) => {
+    try {
+        const user_key = validateToken(req, res);
+
+        if(user_key) {
+            if(req.file) {
+                let result = await uploadImage(req);
+                
+                const new_picture = await db.query(
+                    `ALTER TABLE users SET profile_picture = $1 WHERE id = $2 RETURNING *`,
+                    [result.secure_url, user_key.logged_user.id]
+                );
+
+                res.status(200).json({profile_picture: new_picture});
+            }
+            else {
+                res.status(200).send();
+            }
+        }
+        else {
+            res.status(400).send();
+        }
+    }
+    catch (err) {
+        res.status(500).json({error: err});
+    }
+};
+
+exports.update_hidden_status = async (req, res) => {
+    try {
+        const user_key = validateToken(req, res);
+
+        if(user_key) {
+            await db.query(
+                `ALTER TABLE users SET hidden = $1 WHERE id = $2`,
+                [req.body.hidden === 'true' ? true : false, user_key.logged_user.id]
+            );
+
+            res.status(200).send();
+        }
+        else {
+            res.status(400).send();
+        }
+    }
+    catch (err) {
+        res.status(500).json({error: err});
+    }
+};
+
+exports.log_out = async (req, res) => {
+    
+}
