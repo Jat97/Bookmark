@@ -39,3 +39,31 @@ router.patch('/user/picture', upload.single('profilepic'), userController.edit_p
 router.patch('/user/hidden/update', userController.update_hidden_status);
 
 router.patch('/logout', userController.log_out);
+
+// Group routes
+
+router.get('/groups', groupController.get_all_groups);
+
+router.get('/group/:groupname', groupController.get_group_information);
+
+router.get('/group/create', groupController.create_group);
+
+router.put('/group/update/:groupname', groupController.update_group_information);
+
+router.patch('/group/private/toggle', groupController.handle_group_privacy);
+
+router.post('/group/request/:groupid', groupController.send_group_request);
+
+router.post('/group/request/accept/:groupid', groupController.accept_group_request);
+
+router.delete('/group/request/reject/:groupid', groupController.reject_group_request);
+
+router.delete('/group/:groupid/membership/:userid', groupController.terminate_membership);
+
+router.delete('/group/:groupid', groupController.delete_group);
+
+// Post routes
+
+// Comment routes
+
+// Chat routes

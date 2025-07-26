@@ -1,7 +1,6 @@
-const { useReducer } = require('react');
 const db = require('../database/db');
 const validateToken = require('../database/token');
-const {upload, uploadimage} = require('../database/token');
+const {upload, uploadImage} = require('../database/token');
 const {body, check, validationResult} = require('express-validator');
 const jwt = require('jsonwebtoken');
 
@@ -22,6 +21,11 @@ exports.create_account = [
             return Promise.reject('This email address is currently in use.');
         }
     }),
+    body('dob', 'Please enter your date of birth.').custom(() => {
+        if(minDate < 18) {
+            return Promise.reject('/You must be at least 18 years of age to register.');
+        }
+    }),
     body('password', 'Please enter a password').isLength({min: 8}).custom(password => {
         if(password.length < 8) {
             return Promise.reject('Your password is too short.');
@@ -37,7 +41,7 @@ exports.create_account = [
         const errors = validationResult(req);
 
         if(!errors.isEmpty()) {
-            return res.status(401).json({errors: errors});
+            return res.status(400).json({errors: errors});
         }
         else {
             bcrypt.hash(req.body.password, 10, async (err, hashWord) => {
@@ -119,11 +123,11 @@ exports.get_all_users = async (req, res) => {
         if(user_key) {
             const users = await db.query(
                 `SELECT id as id,
-                first_name as first_name,
-                last_name as last_name,
-                profile_picture as profile_picture,
-                online as online,
-                hidden as hidden 
+                first_name,
+                last_name,
+                profile_picture,
+                online,
+                hidden
                 FROM user`
             );
 
@@ -140,7 +144,7 @@ exports.get_all_users = async (req, res) => {
             res.status(200).json({users: users.rows});
         }
         else {
-            return res.status(400).send();
+            return res.status(401).send();
         }
     }
     catch (err) {
@@ -163,7 +167,7 @@ exports.block_user = async (req, res) => {
             res.status(200).json({blocked: block});
         }
         else {
-            res.status(400).send();
+            res.status(401).send();
         }
     }
     catch (err) {
@@ -181,7 +185,7 @@ exports.unblock_user = async (req, res) => {
             res.status(200).send();
         }
         else {
-            res.status(400).send();
+            res.status(401).send();
         }
     }
     catch (err) {
@@ -206,7 +210,7 @@ exports.add_to_friendslist = async (req, res) => {
             res.status(200).json({friend: friend});
         }
         else {
-            res.status(400).send();
+            res.status(401).send();
         }
     }
     catch (err) {
@@ -226,7 +230,7 @@ exports.remove_from_friendslist = async (req, res) => {
             res.status(200).send();
         }
         else {
-            res.status(400).send();
+            res.status(401).send();
         }
     }
     catch (err) {
@@ -271,7 +275,7 @@ exports.get_notifications = async (req, res) => {
             res.status(200).json({alerts: alerts});
         }
         else {
-            res.status(400).send();
+            res.status(401).send();
         }
     }
     catch (err) {
@@ -285,9 +289,9 @@ exports.get_friend_requests = async (req, res) => {
 
         if(user_key) {
             const friend_requests = await db.query(
-                `SELECT first_name as first_name,
-                last_name as last_name,
-                profile_picture as profile_picture
+                `SELECT users.first_name as first_name,
+                users.last_name as last_name,
+                users.profile_picture as profile_picture
                 FROM friend_requests 
                 WHERE requested_user = $1`,
                 [user_key.logged_user.id]
@@ -309,7 +313,7 @@ exports.get_friend_requests = async (req, res) => {
             res.status(200).json({requests: all_requests});
         }
         else {
-            res.status(400).send();
+            res.status(401).send();
         }
     }
     catch (err) {
@@ -340,7 +344,7 @@ exports.accept_friend_request = async (req, res) => {
             res.status(200).json({friend: logged_friend});
         }
         else {
-            res.status(400).send();
+            res.status(401).send();
         }
     }
     catch (err) {
@@ -361,7 +365,7 @@ exports.reject_friend_request = async (req, res) => {
             res.status(200).send();
         }
         else {
-            res.status(400).send();
+            res.status(401).send();
         }
     }
     catch (err) {
@@ -375,19 +379,21 @@ exports.get_logged_information = async (req, res) => {
 
         if(user_key) {
             const logged_user = await db.query(
-                `SELECT first_name as first_name,
-                last_name as last_name,
-                profile_picture as profile_picture,
-                email as email,
-                online as online,
-                hidden as hidden
+                `SELECT first_name,
+                last_name,
+                profile_picture,
+                email,
+                online,
+                hidden
                 FROM users 
                 WHERE id = $1`,
                 [user_key.logged_user.id]
             );
+
+            res.status(200).json({logged_user: logged_user.rows[0]});
         }
         else {
-            res.status(400).send();
+            res.status(401).send();
         }
     }
     catch (err) {
@@ -415,7 +421,7 @@ exports.edit_profile_picture = async (req, res) => {
             }
         }
         else {
-            res.status(400).send();
+            res.status(401).send();
         }
     }
     catch (err) {
@@ -436,7 +442,7 @@ exports.update_hidden_status = async (req, res) => {
             res.status(200).send();
         }
         else {
-            res.status(400).send();
+            res.status(401).send();
         }
     }
     catch (err) {
@@ -445,5 +451,21 @@ exports.update_hidden_status = async (req, res) => {
 };
 
 exports.log_out = async (req, res) => {
-    
+    try {
+        const user_key = validateToken(req, res);
+
+        if(user_key) {
+            await db.query(`ALTER TABLE users SET online = $1 WHERE id = $2`, [false, user_key.logged_user.id]);
+
+            res.clearCookie(req.cookies.usertoken ? 'usertoken' : 'signtoken', {path: '/api'});
+
+            res.status(200).redirect('/');
+        }
+        else {
+            res.status(401).send();
+        }
+    }
+    catch (err) {
+        res.status(500).json({error: err});
+    }
 }
