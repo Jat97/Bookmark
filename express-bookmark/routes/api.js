@@ -64,6 +64,36 @@ router.delete('/group/:groupid', groupController.delete_group);
 
 // Post routes
 
+router.get('/home', postController.get_home_feed);
+
+router.get('/post/:postid', postController.get_post_information);
+
+router.post('/post', upload.array('postimage', 10), postController.create_post);
+
+router.put('/post/edit/:postid', upload.array('postimage', 10), postController.edit_post);
+
+router.post('/post/like/:postid', postController.like_post);
+
+router.delete('/post/unlike/:postid', postController.unlike_post);
+
+router.delete('/post/:postid', postController.delete_post);
+
 // Comment routes
+
+router.get('/post/:postid/comments', commentController.view_post_comments);
+
+router.get('/comment/:commentid', commentController.view_comment_thread);
+
+router.post('/post/:postid/comment', upload.single(''), commentController.create_comment);
+
+router.put('/comment/edit/:commentid', commentController.edit_comment);
+
+router.delete('/comment/:commentid', commentController.delete_comment);
+
+router.post('/comment/like/:commentid', commentController.like_comment);
+
+router.delete('/comment/unlike/:commentid', commentController.unlike_comment);
+
+router.post('/comment/reply/:commentid', commentController.reply_to_comment);
 
 // Chat routes

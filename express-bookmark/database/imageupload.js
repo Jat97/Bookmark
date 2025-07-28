@@ -20,6 +20,9 @@ const storage = multer.diskStorage({
         else if(file.fieldname === 'groupimage') {
             cb(null, '../express-bookmark/public/groupimages');
         }
+        else if(file.fieldname === 'commentimage') {
+            cb(null, '../express-bookmark/public/commentimages');
+        }
         else {
             cb(null, '../express-bookmark/public/postimages');
         }
