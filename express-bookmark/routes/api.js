@@ -82,9 +82,11 @@ router.delete('/post/:postid', postController.delete_post);
 
 router.get('/post/:postid/comments', commentController.view_post_comments);
 
-router.get('/comment/:commentid', commentController.view_comment_thread);
+// router.get('/comment/:commentid', commentController.view_comment_thread);
 
-router.post('/post/:postid/comment', upload.single(''), commentController.create_comment);
+router.post('/post/comment/:postid', upload.single('commentimage'), commentController.create_parent_comment);
+
+router.post('/comment/reply/:commentid', upload.single('commentimage'), commentController.reply_to_comment);
 
 router.put('/comment/edit/:commentid', commentController.edit_comment);
 
@@ -93,7 +95,5 @@ router.delete('/comment/:commentid', commentController.delete_comment);
 router.post('/comment/like/:commentid', commentController.like_comment);
 
 router.delete('/comment/unlike/:commentid', commentController.unlike_comment);
-
-router.post('/comment/reply/:commentid', commentController.reply_to_comment);
 
 // Chat routes
