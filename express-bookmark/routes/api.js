@@ -97,3 +97,11 @@ router.post('/comment/like/:commentid', commentController.like_comment);
 router.delete('/comment/unlike/:commentid', commentController.unlike_comment);
 
 // Chat routes
+
+router.get('/chats', chatController.get_all_chats);
+
+router.get('/chat/:userid', chatController.get_chat_messages);
+
+router.get('/message/:userid', upload.single('chatimage'), chatController.send_message);
+
+router.delete('/chat/:chatid', chatController.delete_chat);
