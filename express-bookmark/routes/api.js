@@ -16,6 +16,8 @@ router.get('/login', userController.log_in);
 
 router.get('/users', userController.get_all_users);
 
+router.get('/user/profile/:userid', userController.get_user_information);
+
 router.post('/block/:userid', userController.block_user);
 
 router.delete('/unblock/:userid', userController.unblock_user);
@@ -64,7 +66,7 @@ router.delete('/group/:groupid', groupController.delete_group);
 
 // Post routes
 
-router.get('/home', postController.get_home_feed);
+router.get('/posts', postController.get_post_feed);
 
 router.get('/post/:postid', postController.get_post_information);
 

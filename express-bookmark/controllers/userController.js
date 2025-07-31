@@ -152,6 +152,22 @@ exports.get_all_users = async (req, res) => {
     }
 };
 
+exports.get_user_information = async (req, res) => {
+    try {
+        const user_key = validateToken(req, res);
+
+        if(user_key) {
+
+        }
+        else {
+            
+        }
+    }
+    catch (err) {
+        res.status(500).send();
+    }
+}
+
 exports.block_user = async (req, res) => {
     try {
         const user_key = validateToken(req, res);

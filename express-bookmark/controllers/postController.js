@@ -1,7 +1,7 @@
 const db = require('db');
 const {validateToken} = require('token');
 
-exports.get_home_feed = async (req, res) => {
+exports.get_post_feed = async (req, res) => {
     try {
         const user_key = validateToken(req, res);
 
@@ -19,9 +19,15 @@ exports.get_home_feed = async (req, res) => {
                 [user_key.logged_user.id]
             );
 
-            all_posts.forEach((user, index) => {
-                if(blocked_users.rows.some((blocked) => blocked.blocked_user === user.id)) {
-                    all_posts.splice(index, 1);
+            const friends = await db.query(
+                `SELECT * from friends WHERE friend_1 = $1`,
+                [user_key.logged_user.id]
+            );
+
+            all_posts.forEach((post, index) => {
+                if(blocked_users.rows.some(((block) => block.blocked_user === post.original_poster)) 
+                    || friends.rows.some((friend) => friend.friend_2 === post.original_poster) === false) {
+                        all_posts.splice(index, 1);
                 }
             });
 
