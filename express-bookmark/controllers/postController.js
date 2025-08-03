@@ -23,15 +23,24 @@ exports.get_post_feed = async (req, res) => {
                 `SELECT * from friends WHERE friend_1 = $1`,
                 [user_key.logged_user.id]
             );
-
-            all_posts.forEach((post, index) => {
+            
+            const feed_posts = []; 
+            
+            for(let i = 0; i < all_posts.rows.length; i++) {
                 if(blocked_users.rows.some(((block) => block.blocked_user === post.original_poster)) 
                     || friends.rows.some((friend) => friend.friend_2 === post.original_poster) === false) {
-                        all_posts.splice(index, 1);
-                }
-            });
+                        const post_likes = await db.query(`SELECT id as id, 
+                            users.liking_user as liking_user,
+                            post.liked_post as liked_post
+                            FROM likes 
+                            WHERE liked_post = $1`, 
+                            [all_posts.rows[i].id]);
 
-            res.status(200).json({posts: all_posts.rows[0]});
+                        feed_posts.push({post: all_posts.rows[i], likes: post_likes.rows});
+                }
+            }
+
+            res.status(200).json({posts: feed_posts});
         }
         else {
             res.status(401).send();
