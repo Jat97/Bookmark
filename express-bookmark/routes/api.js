@@ -16,19 +16,19 @@ router.get('/login', userController.log_in);
 
 router.get('/users', userController.get_all_users);
 
-router.get('/user/profile/:userid', userController.get_user_information);
+router.get('/blocked', userController.get_block_list);
 
 router.post('/block/:userid', userController.block_user);
 
 router.delete('/unblock/:userid', userController.unblock_user);
 
+router.get('/friends', userController.get_friends_list);
+
 router.post('/friend/:userid', userController.add_to_friendslist);
 
 router.delete('/unfriend/:userid', userController.remove_from_friendslist);
 
-router.get('/notifications', userController.get_notifications);
-
-router.get('/requests', userController.get_friend_requests);
+router.get('/notifications', userController.get_alerts_and_requests);
 
 router.post('/request/accept/:userid', userController.accept_friend_request);
 

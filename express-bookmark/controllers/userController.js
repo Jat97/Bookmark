@@ -1,7 +1,7 @@
 const db = require('../database/db');
 const validateToken = require('../database/token');
-const {upload, uploadImage} = require('../database/token');
-const {body, check, validationResult} = require('express-validator');
+const {uploadImage} = require('../database/token');
+const {body, validationResult} = require('express-validator');
 const jwt = require('jsonwebtoken');
 
 let date = new Date();
@@ -122,13 +122,13 @@ exports.get_all_users = async (req, res) => {
 
         if(user_key) {
             const users = await db.query(
-                `SELECT id as id,
+                `SELECT id,
                 first_name,
                 last_name,
                 profile_picture,
                 online,
                 hidden
-                FROM user`
+                FROM users`
             );
 
             const blocked = await db.query(`SELECT * FROM blocked WHERE blocked_by = $1`, [user_key.logged_user.id]);
@@ -152,21 +152,46 @@ exports.get_all_users = async (req, res) => {
     }
 };
 
-exports.get_user_information = async (req, res) => {
+exports.get_blocked_list = async (req, res) => {
     try {
         const user_key = validateToken(req, res);
 
         if(user_key) {
+            const blocked_users = await db.query(
+                `SELECT users.id AS id,
+                users.first_name AS first_name,
+                users.last_name AS last_name,
+                users.profile_picture AS profile_picture,
+                users.online AS online,
+                users.hidden AS hidden
+                FROM blocked
+                LEFT JOIN users ON users.id = blocked.blocked_user
+                WHERE blocked_by = $1`,
+                [user_key.logged_user.id]
+            );
 
+            const blocked = [];
+
+            blocked_users.rows.forEach(user => {
+                blocked.push({
+                    id: user.id,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    online: user.online,
+                    hidden: user.hidden
+                });
+            });
+
+            res.status(200).json({blocked_users: blocked});
         }
         else {
-            
+            res.status(401).send();
         }
     }
     catch (err) {
-        res.status(500).send();
+        res.status(500).json({error: err});
     }
-}
+};
 
 exports.block_user = async (req, res) => {
     try {
@@ -199,6 +224,48 @@ exports.unblock_user = async (req, res) => {
             await db.query(`DELETE FROM blocked WHERE blocked_user = $1`, [req.params.userid]);
 
             res.status(200).send();
+        }
+        else {
+            res.status(401).send();
+        }
+    }
+    catch (err) {
+        res.status(500).json({error: err});
+    }
+};
+
+exports.get_friends_list = async (req, res) => {
+    try {
+        const user_key = validateToken(req, res);
+
+        if(user_key) {
+            const friendslist = await db.query(
+                `SELECT users.id AS id,
+                users.first_name AS first_name,
+                users.last_name AS last_name,
+                users.profile_picture AS profile_picture,
+                users.online AS online,
+                users.hidden AS hidden
+                FROM friends
+                LEFT JOIN users ON users.id = friends.friend_2
+                WHERE friend_1 = $1`,
+                [user_key.logged_user.id]
+            );
+
+            const friends = [];
+
+            friendslist.rows.forEach(friend => {
+                friends.push({
+                    id: friend.id,
+                    first_name: friend.first_name,
+                    last_name: friend.last_name,
+                    profile_picture: friend.profile_picture,
+                    online: friend.online,
+                    hidden: friend.hidden
+                });
+            });
+
+            res.status(200).json({friendslist: friends});
         }
         else {
             res.status(401).send();
@@ -266,27 +333,53 @@ exports.get_notifications = async (req, res) => {
                 users.profile_picture as profile_picture,
                 alerts.text as text,
                 alerts.sent as sent
-                WHERE alerted_user = $1
-                `,
+                FROM alerts
+                LEFT JOIN users ON users.id = alerts.alerting_user
+                WHERE alerted_user = $1`,
                 [user_key.logged_user.id]
             );
 
-            const alerts = [];
+            const friend_requests = await db.query(
+                `SELECT requests.id AS id,
+                users.first_name AS first_name,
+                users.last_name AS last_name,
+                users.profile_picture AS profile_picture,
+                FROM requests
+                LEFT JOIN users ON users.id = requests.requesting_user
+                WHERE requested_user = $1`,
+                [user_key.logged_user.id]
+            );
+
+            const alerts = {
+                notifications: [],
+                requests: []
+            };
 
             if(notifications.rows.length > 0) {
                 notifications.rows.forEach(notification => {
-                    alerts.push({
+                    alerts.notifications.push({
                         id: notification.id,
                         alerting_user: {
-                            first_name: notification.alerting_user.first_name,
-                            last_name: notification.alerting_user.last_name,
-                            profile_picture: notification.alerting_user.profile_picture,
+                            first_name: notification.first_name,
+                            last_name: notification.last_name,
+                            profile_picture: notification.profile_picture,
                         },
                         text: notification.text,
                         sent: notification.sent
                     });
                 });
-            }
+            };
+
+            if(friend_requests.rows.length > 0) {
+                friend_requests.rows.forEach(request => {
+                    alerts.requests.push({
+                        id: request.id,
+                        first_name: request.first_name,
+                        last_name: request.last_name,
+                        profile_picture: request.profile_picture
+                    });
+                });
+            };
 
             res.status(200).json({alerts: alerts});
         }
@@ -305,10 +398,12 @@ exports.get_friend_requests = async (req, res) => {
 
         if(user_key) {
             const friend_requests = await db.query(
-                `SELECT users.first_name as first_name,
-                users.last_name as last_name,
-                users.profile_picture as profile_picture
+                `SELECT requests.id AS id,
+                users.first_name AS first_name,
+                users.last_name AS last_name,
+                users.profile_picture AS profile_picture
                 FROM friend_requests 
+                LEFT JOIN users ON users.id = requests.requesting_user
                 WHERE requested_user = $1`,
                 [user_key.logged_user.id]
             );
@@ -319,9 +414,9 @@ exports.get_friend_requests = async (req, res) => {
                 all_requests.push({
                     id: request.id,
                     requesting_user: {
-                        first_name: request.requesting_user.first_name,
-                        last_name: request.requesting_user.last_name,
-                        profile_picture: request.requesting_user.profile_picture
+                        first_name: request.first_name,
+                        last_name: request.last_name,
+                        profile_picture: request.profile_picture
                     }
                 });
             });

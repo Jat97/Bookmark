@@ -1,7 +1,6 @@
 const db = require('db');
 const {uploadImage} = require('../database/imageupload');
 const {findGroup} = require('../database/misc');
-const {body, check, validationResult} = require('express-validator');
 const {validateToken} = require('token');
 
 exports.get_all_groups = async (req, res) => {
@@ -30,10 +29,10 @@ exports.get_group_information = async (req, res) => {
 
         if(user_key) {
             const group = await db.query(
-                `SELECT title as title,
-                description as description,
-                group_image as group_image,
-                private as private,
+                `SELECT title,
+                description,
+                group_image,
+                private,
                 FROM groups 
                 WHERE title = $1`,
                 [req.params.groupname]

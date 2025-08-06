@@ -7,14 +7,40 @@ exports.get_all_chats = async (req, res) => {
         const user_key = validateToken(req, res);
 
         if(user_key) {
-            const chats = await db.query(
-                `SELECT id as id,
-                users.user_1 as user_1,
-                users.user_2 as user_2,
-                messages.last_message_sent as last_message_sent
-                FROM chats WHERE user_1 = $1`,
+            const user_chats = await db.query(
+                `SELECT chats.id AS id,
+                users.first_name AS first_name,
+                users.last_name AS last_name,
+                users.profile_picture AS profile_picture
+                users.id AS sender_id
+                messages.text AS text,
+                messages.sent AS sent,
+                messages.checked AS checked
+                FROM chats 
+                LEFT JOIN users ON users.id = chats.user_2
+                LEFT JOIN messages ON messages.id = chats.last_message_sent
+                WHERE user_1 = $1`,
                 [user_key.logged_user.id]
             );
+
+            const chats = [];
+
+            if(user_chats.rows.forEach(chat => {
+                chats.push({
+                    id: chat.id,
+                    user: {
+                        first_name: chat.first_name,
+                        last_name: chat.last_name,
+                        profile_picture: chat.profile_picture
+                    },
+                    last_message_sent: {
+                        sender: chat.sender_id,
+                        text: chat.text,
+                        sent: chat.sent,
+                        checked: chat.checked
+                    }
+                });
+            }));
 
             res.status(200).json({chats: chats});
         }
@@ -32,29 +58,20 @@ exports.get_chat_messages = async (req, res) => {
         const user_key = validateToken(req, res);
 
         if(user_key) {
-            let messages;
-
-            const user_messages = await db.query(
-                `SELECT users.sending_user as sending_user,
-                users.receiving_user as receiving_user,
-                text as text,
-                sent as sent,
-                checked as checked
-                FROM messages WHERE sending_user = $1 AND receiving_user = $2`,
+            const messages = await db.query(
+                `SELECT messages.id AS id,
+                messages.sending_user AS sender,
+                messages.receiving_user AS receiver,
+                messages.text AS text,
+                messages.sent AS sent,
+                messages.checked AS checked
+                FROM messages
+                LEFT JOIN users AS sender ON sender.id = messages.sending_user
+                LEFT JOIN users AS receiver ON receiver.id = messages.receiving_user
+                WHERE (sender = $1 AND receiver = $2)
+                OR (sender = $2 AND receiver = $1)`,
                 [user_key.logged_user.id, req.params.userid]
             );
-
-            const partner_messages = await db.query(
-                `SELECT users.sending_user as sending_user,
-                users.receiving_user as receiving_user,
-                text as text,
-                sent as sent,
-                checked as checked
-                FROM messages WHERE sending_user = $1 AND receiving_user = $2`,
-                [req.params.userid, user_key.logged_user.id]
-            );
-
-            messages = user_messages.rows.concat(partner_messages.rows).sort((a, b) => a.sent > b.sent ? 1 : -1);
 
             res.status(200).json({messages: messages});
         }

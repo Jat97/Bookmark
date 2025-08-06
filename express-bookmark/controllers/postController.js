@@ -7,11 +7,14 @@ exports.get_post_feed = async (req, res) => {
 
         if(user_key) {
             const all_posts = await db.query(`
-                SELECT id as id,
-                users.original_poster as original_poster,
-                text as text,
-                posted as posted
-                FROM posts`
+                SELECT id ,
+                users.first_name AS first_name,
+                users.last_name AS last_name,
+                users.profile_picture AS profile_picture,
+                posts.text AS text,
+                posts.posted AS posted
+                FROM posts
+                LEFT JOIN users ON users.id === posts.original_poster`
             );
 
             const blocked_users = await db.query(
@@ -29,12 +32,14 @@ exports.get_post_feed = async (req, res) => {
             for(let i = 0; i < all_posts.rows.length; i++) {
                 if(blocked_users.rows.some(((block) => block.blocked_user === post.original_poster)) 
                     || friends.rows.some((friend) => friend.friend_2 === post.original_poster) === false) {
-                        const post_likes = await db.query(`SELECT id as id, 
-                            users.liking_user as liking_user,
-                            post.liked_post as liked_post
+                        const post_likes = await db.query(`
+                            SELECT users.first_name AS first_name,
+                            users.last_name AS last_name,
                             FROM likes 
-                            WHERE liked_post = $1`, 
-                            [all_posts.rows[i].id]);
+                            LEFT JOIN users ON users.id === likes.liking_user
+                            WHERE likes.liked_post = $1`, 
+                            [all_posts.rows[i].id]
+                        );
 
                         feed_posts.push({post: all_posts.rows[i], likes: post_likes.rows});
                 }
@@ -57,11 +62,14 @@ exports.get_post_information = async (req, res) => {
 
         if(user_key) {
             const post = await db.query(
-                `SELECT id as id,
-                users.original_poster as original_poster,
-                text as text,
-                posted as posted
+                `SELECT posts.id AS id,
+                users.first_name AS first_name,
+                users.last_name AS last_name,
+                users.profile_picture AS profile_picture,
+                posts.text AS text,
+                posts.posted AS posted
                 FROM posts 
+                LEFT JOIN users ON users.id = posts.original_poster
                 WHERE id = $1`, 
                 [req.params.postid]
             );
@@ -82,10 +90,6 @@ exports.create_post = async (req, res) => {
         const user_key = validateToken(req, res);
 
         if(user_key) {
-            // if(req.file) {
-            //     var result = uploadImage(req);
-            // }
-
             const post = await db.query(
                 `INSERT INTO posts (text, original_poster) VALUES ($1, $2) RETURNING *`,
                 [req.body.text, user_key.logged_user.id]

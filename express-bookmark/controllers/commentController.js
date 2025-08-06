@@ -8,12 +8,17 @@ exports.view_post_commments = async (req, res) => {
 
         if(user_key) {
             const comments = await db.query(
-                `SELECT users.commenter as user,
-                post as post,
-                text as text,
-                reply_to as reply_to
-                posted as posted
-                FROM comments WHERE post = $1`,
+                `SELECT comments.id AS id,
+                users.first_name AS first_name,
+                users.last_name AS last_name,
+                users.profile_picture AS profile_picture,
+                comments.post as postid,
+                comments.text as text,
+                comments.reply_to as reply_to
+                comments.posted as posted
+                FROM comments
+                LEFT JOIN users ON users.id = comments.commenter
+                WHERE post = $1`,
                 [req.params.postid]
             );
 
