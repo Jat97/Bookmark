@@ -340,7 +340,7 @@ exports.get_notifications = async (req, res) => {
             );
 
             const friend_requests = await db.query(
-                `SELECT requests.id AS id,
+                `SELECT users.id AS id,
                 users.first_name AS first_name,
                 users.last_name AS last_name,
                 users.profile_picture AS profile_picture,
