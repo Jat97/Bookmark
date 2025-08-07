@@ -33,7 +33,8 @@ module.exports.createCommentTree = async (comments) => {
         const new_node = nodes[comment.id];
 
         const comment_likes = await db.query(
-            `SELECT users.first_name AS first_name,
+            `SELECT users.id AS id,
+            users.first_name AS first_name,
             users.last_name AS last_name,
             users.profile_picture AS profile_picture,
             FROM likes

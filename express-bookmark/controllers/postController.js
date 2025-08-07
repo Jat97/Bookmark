@@ -33,7 +33,8 @@ exports.get_post_feed = async (req, res) => {
                 if(blocked_users.rows.some(((block) => block.blocked_user === post.original_poster)) 
                     || friends.rows.some((friend) => friend.friend_2 === post.original_poster) === false) {
                         const post_likes = await db.query(`
-                            SELECT users.first_name AS first_name,
+                            SELECT users.id AS id,
+                            users.first_name AS first_name,
                             users.last_name AS last_name,
                             FROM likes 
                             LEFT JOIN users ON users.id === likes.liking_user
