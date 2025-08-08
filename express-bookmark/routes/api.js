@@ -42,6 +42,8 @@ router.patch('/user/hidden/update', userController.update_hidden_status);
 
 router.patch('/logout', userController.log_out);
 
+router.delete('/user', userController.delete_account);
+
 // Group routes
 
 router.get('/groups', groupController.get_all_groups);

@@ -580,3 +580,21 @@ exports.log_out = async (req, res) => {
         res.status(500).json({error: err});
     }
 }
+
+exports.delete_account = async (req, res) => {
+    try {
+        const user_key = validateToken(req, res);
+
+        if(user_key) {
+            await db.query(`DELETE * FROM users WHERE id = $1`, [user_key.logged_user.id]);
+
+            res.status(200).redirect('/');
+        }
+        else {
+            res.status(401).send();
+        }
+    }
+    catch (err) {
+        res.status(500).json({error: err});
+    }
+};
