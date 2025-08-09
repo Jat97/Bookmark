@@ -48,19 +48,19 @@ router.delete('/user', userController.delete_account);
 
 router.get('/groups', groupController.get_all_groups);
 
-router.get('/group/:groupname', groupController.get_group_information);
-
 router.get('/group/create', groupController.create_group);
 
-router.put('/group/update/:groupname', groupController.update_group_information);
+router.put('/group/update/:groupid', groupController.update_group_information);
 
 router.patch('/group/private/toggle', groupController.handle_group_privacy);
 
+router.get('/group/requests', groupController.get_group_requests);
+
 router.post('/group/request/:groupid', groupController.send_group_request);
 
-router.post('/group/request/accept/:groupid', groupController.accept_group_request);
+router.post('/group/:groupid/request/accept/:userid', groupController.accept_group_request);
 
-router.delete('/group/request/reject/:groupid', groupController.reject_group_request);
+router.delete('/group/:groupid/request/reject/:userid', groupController.reject_group_request);
 
 router.delete('/group/:groupid/membership/:userid', groupController.terminate_membership);
 
