@@ -17,9 +17,11 @@ exports.get_all_groups = async (req, res) => {
                 FROM groups`
             );
             
-            const groups_and_members = []
+            const groups_members_requests = []
 
-            for(const group of all_groups.rows) {
+            let group_requests;
+
+            all_groups.rows.map(async (group) => {
                 const group_memberships = await db.query(
                     `SELECT users.id AS id,
                     users.first_name AS first_name,
@@ -29,12 +31,29 @@ exports.get_all_groups = async (req, res) => {
                     INNER JOIN users ON users.id = group_memberships.member
                     WHERE group_memberships.member_of = $1`, 
                     [group.id]
-                );
+                ); 
+                        
+                if(group.moderator === user_key.logged_user.id) {
+                    group_requests = await db.query(
+                        `SELECT users.id AS id, 
+                        users.first_name AS first_name,
+                        users.last_name AS last_name,
+                        users.profile_picture AS profile_picture
+                        FROM group_requests
+                        INNER JOIN users ON users.id = group_requests.requesting_user
+                        WHERE requested_group = $1`,
+                        [group.id]
+                    );
+                }
 
-                groups_and_members.push({group: group, members: group_memberships.rows});
-            }
+                return groups_members_requests.push({
+                    group: group, 
+                    members: group_memberships.rows, 
+                    requests: group_requests ? group_requests.rows : null
+                });   
+            });
 
-            res.status(200).json({groups: groups_and_members});
+            res.status(200).json({groups: groups_members_requests});
         }
         else {
             res.status(401).send();
