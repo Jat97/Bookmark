@@ -107,7 +107,7 @@ exports.update_group_information = async (req, res) => {
                 res.status(400).json({title_error: 'A group by this name already exists.'});
             }
             else {
-                const group_to_update = await db.query(`SELECT * FROM groups WHERE title = $1`, [req.params.groupname]);
+                const group_to_update = await db.query(`SELECT * FROM groups WHERE title = $1`, [req.params.groupid]);
 
                 if(req.file) {
                     var result = uploadImage(req);
@@ -135,10 +135,12 @@ exports.handle_group_privacy = async (req, res) => {
         if(user_key) {
             const group = await db.query(`SELECT * FROM groups WHERE title = $1`, [req.params.title]);
 
-            await db.query(
-                `ALTER TABLE groups SET private = $1 WHERE title = $2`, 
-                [group.rows[0].private ? false : true, req.params.groupname]
+            const updated_group = await db.query(
+                `ALTER TABLE groups SET private = $1 WHERE title = $2 RETURNING *`, 
+                [group.rows[0].private ? false : true, req.params.groupid]
             );
+
+            res.status(200).json({group: updated_group});
         }
         else {
             res.status(401).send();

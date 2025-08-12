@@ -52,7 +52,7 @@ router.get('/group/create', groupController.create_group);
 
 router.put('/group/update/:groupid', groupController.update_group_information);
 
-router.patch('/group/private/toggle', groupController.handle_group_privacy);
+router.patch('/group/private/:groupid', groupController.handle_group_privacy);
 
 router.get('/group/requests', groupController.get_group_requests);
 
