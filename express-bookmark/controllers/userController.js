@@ -276,31 +276,6 @@ exports.get_friends_list = async (req, res) => {
     }
 };
 
-exports.add_to_friendslist = async (req, res) => {
-    try {
-        const user_key = validateToken(req, res);
-
-        if(user_key) {
-            const friend = await db.query(
-                `INSERT INTO friends (friend_1, friend_2) VALUES ($1, $2) RETURNING *`, 
-                [user_key.logged_user.id, req.params.userid]
-            );
-
-            await db.query(
-                `INSERT INTO friends (friend_1, friend_2) VALUES ($1, $2)`, [req.params.userid, user_key.logged_user.id]
-            );
-            
-            res.status(200).json({friend: friend});
-        }
-        else {
-            res.status(401).send();
-        }
-    }
-    catch (err) {
-        res.status(500).json({error: err});
-    }
-};
-
 exports.remove_from_friendslist = async (req, res) => {
     try {
         const user_key = validateToken(req, res);
@@ -345,14 +320,26 @@ exports.get_notifications = async (req, res) => {
                 users.last_name AS last_name,
                 users.profile_picture AS profile_picture,
                 FROM requests
-                LEFT JOIN users ON users.id = requests.requesting_user
+                INNER JOIN users ON users.id = requests.requesting_user
                 WHERE requested_user = $1`,
+                [user_key.logged_user.id]
+            );
+
+            const pending_requests = await db.query(
+                `SELECT users.id AS id,
+                users.first_name AS first_name,
+                users.last_name AS last_name,
+                users.profile_picture AS profile_picture,
+                FROM requests
+                INNER JOIN users ON users.id = requests.requested_user
+                WHERE requesting_user = $1`,
                 [user_key.logged_user.id]
             );
 
             const alerts = {
                 notifications: [],
-                requests: []
+                requests: [],
+                pending: []
             };
 
             if(notifications.rows.length > 0) {
@@ -381,6 +368,17 @@ exports.get_notifications = async (req, res) => {
                 });
             };
 
+            if(pending_requests.rows.length > 0) {
+                pending_requests.rows.forEach(pending => {
+                    alerts.pending.push({
+                        id: pending.id,
+                        first_name: pending.first_name,
+                        last_name: pending.last_name,
+                        profile_picture: pending.profile_picture
+                    });
+                });
+            };
+
             res.status(200).json({alerts: alerts});
         }
         else {
@@ -392,36 +390,17 @@ exports.get_notifications = async (req, res) => {
     }
 };
 
-exports.get_friend_requests = async (req, res) => {
+exports.send_friend_request = async (req, res) => {
     try {
         const user_key = validateToken(req, res);
 
         if(user_key) {
-            const friend_requests = await db.query(
-                `SELECT requests.id AS id,
-                users.first_name AS first_name,
-                users.last_name AS last_name,
-                users.profile_picture AS profile_picture
-                FROM friend_requests 
-                LEFT JOIN users ON users.id = requests.requesting_user
-                WHERE requested_user = $1`,
-                [user_key.logged_user.id]
+            const friend_request = await db.query(
+                `INSERT INTO friend_requests (requested_user, requesting_user) VALUES ($1, $2) RETURNING *`,
+                [req.params.userid, user_key.logged_user.id]
             );
 
-            const all_requests = [];
-
-            friend_requests.forEach(request => {
-                all_requests.push({
-                    id: request.id,
-                    requesting_user: {
-                        first_name: request.first_name,
-                        last_name: request.last_name,
-                        profile_picture: request.profile_picture
-                    }
-                });
-            });
-
-            res.status(200).json({requests: all_requests});
+            res.json({friend_request: friend_request});
         }
         else {
             res.status(401).send();

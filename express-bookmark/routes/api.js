@@ -24,11 +24,11 @@ router.delete('/unblock/:userid', userController.unblock_user);
 
 router.get('/friends', userController.get_friends_list);
 
-router.post('/friend/:userid', userController.add_to_friendslist);
-
 router.delete('/unfriend/:userid', userController.remove_from_friendslist);
 
 router.get('/notifications', userController.get_alerts_and_requests);
+
+router.post('/request/send/:userid', userController.send_friend_request);
 
 router.post('/request/accept/:userid', userController.accept_friend_request);
 
