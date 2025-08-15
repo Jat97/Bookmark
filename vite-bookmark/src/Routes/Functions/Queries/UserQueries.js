@@ -82,7 +82,8 @@ export const useFetchFriends = ([authorized, setAuthorized, setSiteError]) => {
 
                     return res.json();
                 }
-            });
+            })
+            .catch(err => setSiteError(err))
         }
     });
 

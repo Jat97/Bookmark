@@ -59,7 +59,3 @@ export const useFetchGroupRequests = ([group, authorized, setAuthorized, setSite
 
     return result;
 };
-
-export const useFetchMemberships = ([group]) => {
-
-}
