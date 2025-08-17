@@ -11,6 +11,8 @@ exports.get_post_feed = async (req, res) => {
                 users.first_name AS first_name,
                 users.last_name AS last_name,
                 users.profile_picture AS profile_picture,
+                groups.title AS group_title,
+                groups.group_image AS group_image,
                 posts.text AS text,
                 posts.posted AS posted
                 FROM posts
@@ -26,12 +28,18 @@ exports.get_post_feed = async (req, res) => {
                 `SELECT * from friends WHERE friend_1 = $1`,
                 [user_key.logged_user.id]
             );
+
+            const groups = await db.query(
+                `SELECT * FROM group_memberships WHERE member = $1`,
+                [user_key.logged_user.id]
+            );
             
             const feed_posts = []; 
             
             for(let i = 0; i < all_posts.rows.length; i++) {
-                if(blocked_users.rows.some(((block) => block.blocked_user === post.original_poster)) 
-                    || friends.rows.some((friend) => friend.friend_2 === post.original_poster) === false) {
+                if(blocked_users.rows.some(((block) => block.blocked_user === post.original_poster) === false) 
+                    || friends.rows.some((friend) => friend.friend_2 === post.original_poster) ||
+                    groups.some((group) => group.member_of === post.original_poster)) {
                         const post_likes = await db.query(`
                             SELECT users.id AS id,
                             users.first_name AS first_name,
@@ -63,10 +71,12 @@ exports.get_post_information = async (req, res) => {
 
         if(user_key) {
             const post = await db.query(
-                `SELECT posts.id AS id,
+                `SELECT posts.id AS userid,
                 users.first_name AS first_name,
                 users.last_name AS last_name,
                 users.profile_picture AS profile_picture,
+                groups.id AS groupid,
+                groups.title AS group_title,
                 posts.text AS text,
                 posts.posted AS posted
                 FROM posts 
