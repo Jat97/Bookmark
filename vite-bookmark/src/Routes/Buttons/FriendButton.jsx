@@ -17,24 +17,22 @@ const FriendButton = (props) => {
     const request_mutation = useSendFriendRequestMutation([user, setSiteError]);
     const remove_mutation = useRemoveFriendMutation([user, setSiteError]);
 
-    const sendRequest = () => {
-        request_mutation.mutate();
-    }
-
-    const removeFriend = () => {
-        remove_mutation.mutate();
+    const handleFriendMutations = () => {
+        if(friendData.data.friendslist.some((friend) => friend.id === user.id)) {
+            return remove_mutation.mutate();
+        }
+        else {
+            return request_mutation.mutate();
+        }
     }
 
     return (
-        <button onClick={() => {
+        <button onClick={() => 
             alertData.data.pending.some((pending) => pending.id === user.id) ?
                 null
             :
-                friendData.data.friendslist.some((friend) => friend.id === user.id) ?
-                    removeFriend()
-                :
-                    sendRequest()
-        }}>
+                handleFriendMutations()
+        }>
             {alertData.data.pending.some((pending) => pending.id === user.id) ? 
                 'Pending...'
             :

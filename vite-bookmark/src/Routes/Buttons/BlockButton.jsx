@@ -15,21 +15,17 @@ const BlockButton = (props) => {
     const block_mutation = useBlockUserMutation([user, setSiteError]);
     const unblock_mutation = useUnblockUserMutation([user, setSiteError]);
 
-    const blockUser = () => {
-        block_mutation.mutate();
-    }
-
-    const unblockUser = () => {
-        unblock_mutation.mutate();
+    const handleBlockMutations = () => {
+        if(blockData.data.blocked_users.some((blocked) => blocked.id === user.id)) {
+            return block_mutation.mutate();
+        }
+        else {
+            return unblock_mutation.mutate();
+        }
     }
 
     return (   
-        <button onClick={() => {
-            blockData.data.blocked_users.some((blocked) => blocked.id === user.id) ?
-                unblockUser()
-            :
-                blockUser()
-        }}>
+        <button onClick={() => handleBlockMutations()}>
             {blockData.data.blocked_users.some((blocked) => blocked.id === user.id ?
                 'Unblock'
             :
