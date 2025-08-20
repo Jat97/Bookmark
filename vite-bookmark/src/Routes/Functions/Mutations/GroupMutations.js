@@ -154,7 +154,7 @@ export const useGroupAcceptMutation = ([user, group, setSiteError]) => {
     return mutation;
 }
 
-export const useGroupRejection = ([user, group, setSiteError]) => {
+export const useGroupRejectMutation = ([user, group, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
             return await fetch(`http://127.0.0.1:9000/api/group/${group}/request/reject/${user.id}`, {
