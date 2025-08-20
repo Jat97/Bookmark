@@ -3,7 +3,8 @@ import {bookStore} from '../../Context/bookStore';
 import {CameraIcon, UserIcon} from '@heroicons/react/24/solid';
 
 const UserDisplay = (props) => {
-    const user = props.props;
+    const user = props.props[0];
+    const user_mode = props.props[1];
 
     const setSiteError = bookStore((state) => state.setSiteError);
 
