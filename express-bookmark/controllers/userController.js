@@ -131,7 +131,10 @@ exports.get_all_users = async (req, res) => {
                 FROM users`
             );
 
-            const blocked = await db.query(`SELECT * FROM blocked WHERE blocked_by = $1`, [user_key.logged_user.id]);
+            const blocked = await db.query(
+                `SELECT * FROM blocked WHERE blocked_by = $1`, 
+                [user_key.logged_user.id]
+            );
 
             users.rows.forEach((user, index) => {
                 blocked.rows.forEach(block => {
@@ -165,7 +168,7 @@ exports.get_blocked_list = async (req, res) => {
                 users.online AS online,
                 users.hidden AS hidden
                 FROM blocked
-                LEFT JOIN users ON users.id = blocked.blocked_user
+                INNER JOIN users ON users.id = blocked.blocked_user
                 WHERE blocked_by = $1`,
                 [user_key.logged_user.id]
             );
@@ -198,7 +201,10 @@ exports.block_user = async (req, res) => {
         const user_key = validateToken(req, res);
 
         if(user_key) {
-            const user = await db.query(`SELECT * FROM users WHERE id = $1`, [req.params.userid]);
+            const user = await db.query(
+                `SELECT * FROM users WHERE id = $1`, 
+                [req.params.userid]
+            );
 
             const block = await db.query(
                 `INSERT INTO blocked (blocked_user, blocked_by) VALUES ($1, $2) RETURNING id, blocked_user, blocked_by`, 
@@ -221,7 +227,10 @@ exports.unblock_user = async (req, res) => {
         const user_key = await validateToken(req, res);
 
         if(user_key) {
-            await db.query(`DELETE FROM blocked WHERE blocked_user = $1`, [req.params.userid]);
+            await db.query(
+                `DELETE FROM blocked WHERE blocked_user = $1`, 
+                [req.params.userid]
+            );
 
             res.status(200).send();
         }
@@ -247,7 +256,7 @@ exports.get_friends_list = async (req, res) => {
                 users.online AS online,
                 users.hidden AS hidden
                 FROM friends
-                LEFT JOIN users ON users.id = friends.friend_2
+                INNER JOIN users ON users.id = friends.friend_2
                 WHERE friend_1 = $1`,
                 [user_key.logged_user.id]
             );
@@ -282,7 +291,8 @@ exports.remove_from_friendslist = async (req, res) => {
 
         if(user_key) {
             await db.query(
-                `DELETE FROM friends WHERE friend_1 = $1 AND friend_2 = $2`, [user_key.logged_user.id, req.params.userid]
+                `DELETE FROM friends WHERE friend_1 = $1 AND friend_2 = $2`, 
+                [user_key.logged_user.id, req.params.userid]
             );
 
             res.status(200).send();
@@ -309,7 +319,7 @@ exports.get_notifications = async (req, res) => {
                 alerts.text as text,
                 alerts.sent as sent
                 FROM alerts
-                LEFT JOIN users ON users.id = alerts.alerting_user
+                INNER JOIN users ON users.id = alerts.alerting_user
                 WHERE alerted_user = $1`,
                 [user_key.logged_user.id]
             );
@@ -545,7 +555,10 @@ exports.log_out = async (req, res) => {
         const user_key = validateToken(req, res);
 
         if(user_key) {
-            await db.query(`ALTER TABLE users SET online = $1 WHERE id = $2`, [false, user_key.logged_user.id]);
+            await db.query(
+                `ALTER TABLE users SET online = $1 WHERE id = $2`, 
+                [false, user_key.logged_user.id]
+            );
 
             res.clearCookie(req.cookies.usertoken ? 'usertoken' : 'signtoken', {path: '/api'});
 
@@ -565,7 +578,10 @@ exports.delete_account = async (req, res) => {
         const user_key = validateToken(req, res);
 
         if(user_key) {
-            await db.query(`DELETE * FROM users WHERE id = $1`, [user_key.logged_user.id]);
+            await db.query(
+                `DELETE * FROM users WHERE id = $1`, 
+                [user_key.logged_user.id]
+            );
 
             res.status(200).redirect('/');
         }

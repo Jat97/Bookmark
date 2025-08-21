@@ -16,7 +16,7 @@ exports.get_post_feed = async (req, res) => {
                 posts.text AS text,
                 posts.posted AS posted
                 FROM posts
-                LEFT JOIN users ON users.id === posts.original_poster`
+                INNER JOIN users ON users.id === posts.original_poster`
             );
 
             const blocked_users = await db.query(
@@ -80,7 +80,7 @@ exports.get_post_information = async (req, res) => {
                 posts.text AS text,
                 posts.posted AS posted
                 FROM posts 
-                LEFT JOIN users ON users.id = posts.original_poster
+                INNER JOIN users ON users.id = posts.original_poster
                 WHERE id = $1`, 
                 [req.params.postid]
             );
