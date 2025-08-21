@@ -86,8 +86,6 @@ router.delete('/post/:postid', postController.delete_post);
 
 router.get('/post/:postid/comments', commentController.view_post_comments);
 
-// router.get('/comment/:commentid', commentController.view_comment_thread);
-
 router.post('/post/comment/:postid', upload.single('commentimage'), commentController.create_parent_comment);
 
 router.post('/comment/reply/:commentid', upload.single('commentimage'), commentController.reply_to_comment);
@@ -104,7 +102,7 @@ router.delete('/comment/unlike/:commentid', commentController.unlike_comment);
 
 router.get('/chats', chatController.get_all_chats);
 
-router.get('/chat/:userid', chatController.get_chat_messages);
+// router.get('/chat/:userid', chatController.get_chat_messages);
 
 router.get('/message/:userid', upload.single('chatimage'), chatController.send_message);
 
