@@ -12,12 +12,15 @@ exports.view_post_commments = async (req, res) => {
                 users.first_name AS first_name,
                 users.last_name AS last_name,
                 users.profile_picture AS profile_picture,
+                groups.title AS title,
+                groups.group_image AS group_image,
                 comments.post as postid,
                 comments.text as text,
                 comments.reply_to as reply_to
                 comments.posted as posted
                 FROM comments
-                LEFT JOIN users ON users.id = comments.commenter
+                INNER JOIN users ON users.id = comments.commenting_user
+                INNER JOIN groups ON group.id = comments.commenting_group,
                 WHERE post = $1`,
                 [req.params.postid]
             );
@@ -35,43 +38,28 @@ exports.view_post_commments = async (req, res) => {
     }
 };
 
-// exports.view_comment_thread = async (req, res) => {
-//     try {
-//         const user_key = validateToken();
-
-//         if(user_key) {
-//             const comments = await db.query(
-//                 `SELECT users.commenter as user, 
-//                 text as text, 
-//                 post as post,
-//                 reply_to as reply_to,
-//                 posted as posted
-//                 FROM comments WHERE post = $1`,
-//                 [parent_comment.post]
-//             );
-
-//             const comment_tree = createCommentTree(comments.rows);
-
-//             res.status(200).json({comments: comment_tree});
-//         }
-//         else {
-//             res.status(401).send();
-//         }
-//     }
-//     catch (err) {
-//         res.send(500).json({error: err});
-//     }
-// };
-
 exports.create_parent_comment = async (req, res) => {
     try {
         const user_key = validateToken(req, res);
 
         if(user_key) {
+            const group = await db.query(
+                `SELECT * FROM groups WHERE id = $1`,
+                [req.body.groupid]
+            );
+
             const comment = await db.query(
-                `INSERT INTO comments (commenter, text, post, reply_to, posted) VALUES ($1, $2, $3, $4) RETURNING *`,
-                [user_key.logged_user.id, req.body.text, req.params.postid, null, new Date(Date.now())]
-            )
+                `INSERT INTO comments (commenting_user, commenting_group, text, post, reply_to, posted) 
+                VALUES ($1, $2, $3, $4) RETURNING *`,
+                [
+                    group.rows.length > 0 ? null : user_key.logged_user.id, 
+                    group.rows.length > 0 ? group.rows[0] : null, 
+                    req.body.text, 
+                    req.params.postid, 
+                    null, 
+                    new Date(Date.now())
+                ]
+            );
 
             res.status(200).json({comment: comment.rows[0]});
         }
@@ -89,11 +77,27 @@ exports.reply_to_comment = async (req, res) => {
         const user_key = validateToken(req, res);
 
         if(user_key) {
-            const comment = await db.query(`SELECT * FROM comments WHERE id = $1`, [req.params.commentid]);
+            const group = await db.query(
+                `SELECT * FROM groups WHERE id = $1`,
+                [req.body.groupid]
+            );
+
+            const comment = await db.query(
+                `SELECT * FROM comments WHERE id = $1`, 
+                [req.params.commentid]
+            );
 
             const reply = await db.query(
-                `INSERT INTO comments (commenter, text, post, reply_to, posted) VALUE ($1, $2, $3, $4, $5) RETURNING *`,
-                [user_key.logged_user.id, req.body.text, comment.rows[0].post, comment.rows[0].id, Date.now()]
+                `INSERT INTO comments (commenting_user, commenting_group, text, post, reply_to, posted) 
+                VALUE ($1, $2, $3, $4, $5) RETURNING *`,
+                [
+                    group.rows.length > 0 ? null : user_key.logged_user.id, 
+                    group.rows.length > 0 ? group.rows[0] : null,
+                    req.body.text, 
+                    comment.rows[0].post, 
+                    comment.rows[0].id, 
+                    Date.now()
+                ]
             );
 
             res.status(200).json({reply: reply.rows[0]});
