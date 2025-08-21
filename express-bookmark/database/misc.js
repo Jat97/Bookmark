@@ -1,7 +1,10 @@
 const db = require('db');
 
 module.exports.findGroup = async (req) => {
-    const found_group = await db.query(`SELECT * FROM groups WHERE title = $1`, [req.body.title]);
+    const found_group = await db.query(
+        `SELECT * FROM groups WHERE title = $1`, 
+        [req.body.title]
+    );
 
     return found_group.rows[0];
 };
@@ -15,11 +18,15 @@ module.exports.createCommentTree = async (comments) => {
         if(comment.reply_to === null) {
             nodes[comment.id] = {
                 id: comment.id,
-                commenter: {
+                commenting_user: comment.first_name ? {
                     first_name: comment.first_name,
                     last_name: comment.last_name,
                     profile_picture: comment.profile_picture
-                },
+                } : null,
+                commenting_group: comment.title ? {
+                    title: comment.title,
+                    group_image: comment.group_image
+                } : null,
                 reply_to: null,
                 text: comment.text,
                 posted: comment.posted,
@@ -37,8 +44,11 @@ module.exports.createCommentTree = async (comments) => {
             users.first_name AS first_name,
             users.last_name AS last_name,
             users.profile_picture AS profile_picture,
+            groups.title AS title,
+            group.group_image AS group_image
             FROM likes
             LEFT JOIN users ON users.id === likes.liking_user,
+            LEFT JOIN groups ON groups.id === likes.liking_group,
             WHERE likes.liked_comment = $1`, 
             [comment.id]
         );
@@ -48,11 +58,15 @@ module.exports.createCommentTree = async (comments) => {
         if(comment.reply_to !== null) {
             nodes[comment.id].replies.push({
                 id: comment.id,
-                commenter: {
+                commenting_user: comment.first_name ? {
                     first_name: comment.first_name,
                     last_name: comment.last_name,
                     profile_picture: comment.profile_picture
-                },
+                } : null,
+                commenting_group: comment.title ? {
+                    title: comment.title,
+                    group_image: comment.group_image
+                } : null,
                 text: comment.text,
                 posted: comment.posted,
             });
