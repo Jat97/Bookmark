@@ -1,7 +1,6 @@
 import {UserPlusIcon, UserMinusIcon} from '@tanstack/react-query';
 import {useFetchAlerts, useFetchFriends} from '../Functions/Queries/UserQueries';
 import {useSendFriendRequestMutation, useRemoveFriendMutation} from '../Functions/Mutation/FriendMutation';
-import {useSendFriendRequestMutation, useRemoveFriendMutation} from '../Functions/Mutations/AlertMutations';
 import {bookStore} from '../../Context/bookStore';
 
 const FriendButton = (props) => {
