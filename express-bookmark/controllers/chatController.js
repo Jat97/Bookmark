@@ -11,7 +11,9 @@ exports.get_all_chats = async (req, res) => {
                 `SELECT chats.id AS id,
                 users.first_name AS first_name,
                 users.last_name AS last_name,
-                users.profile_picture AS profile_picture
+                users.profile_picture AS profile_picture,
+                users.online AS online,
+                users.hidden AS hidden
                 FROM chats 
                 INNER JOIN users ON users.id = chats.user_2
                 WHERE user_1 = $1`,
@@ -26,7 +28,9 @@ exports.get_all_chats = async (req, res) => {
                     user: {
                         first_name: chat.first_name,
                         last_name: chat.last_name,
-                        profile_picture: chat.profile_picture
+                        profile_picture: chat.profile_picture,
+                        online: chat.online,
+                        hidden: chat.hidden
                     },
                 };
 
