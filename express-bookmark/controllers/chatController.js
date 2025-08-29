@@ -12,13 +12,8 @@ exports.get_all_chats = async (req, res) => {
                 users.first_name AS first_name,
                 users.last_name AS last_name,
                 users.profile_picture AS profile_picture
-                users.id AS sender_id
-                messages.text AS text,
-                messages.sent AS sent,
-                messages.checked AS checked
                 FROM chats 
                 INNER JOIN users ON users.id = chats.user_2
-                INNER JOIN messages ON messages.id = chats.last_message_sent
                 WHERE user_1 = $1`,
                 [user_key.logged_user.id]
             );
