@@ -157,44 +157,6 @@ exports.handle_group_privacy = async (req, res) => {
     }
 };
 
-exports.get_group_requests = async (req, res) => {
-    try {
-        const user_key = validateToken(req, res);
-
-        if(user_key) {
-            const requests = await db.query(
-                `SELECT users.id AS id,
-                users.first_name AS first_name,
-                users.last_name AS last_name,
-                users.profile_picture AS profile_picture
-                FROM group_requests
-                INNER JOIN users ON users.id = group_requests.requesting_user
-                WHERE group_requests.id = $1`,
-                [req.params.groupid]
-            );
-
-            const group_requests = [];
-
-            requests.rows.forEach(request => {
-                group_requests.push({
-                    id: request.id,
-                    first_name: request.first_name,
-                    last_name: request.last_name,
-                    profile_picture: request.profile_picture
-                });
-            });
-
-            res.status(200).json({group_requests: group_requests});
-        }
-        else {
-            res.status(401).send();
-        }
-    }  
-    catch (err) {
-        res.status(500).json({error: err});
-    }
-};
-
 exports.send_group_request = async (req, res) => {
     try {
         const user_key = validateToken(req, res);

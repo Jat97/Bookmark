@@ -38,7 +38,7 @@ router.get('/user', userController.get_logged_information);
 
 router.patch('/user/picture', upload.single('profilepic'), userController.edit_profile_picture);
 
-router.patch('/user/hidden/update', userController.update_hidden_status);
+router.patch('/user/hidden', userController.update_hidden_status);
 
 router.patch('/logout', userController.log_out);
 
@@ -48,13 +48,11 @@ router.delete('/user', userController.delete_account);
 
 router.get('/groups', groupController.get_all_groups);
 
-router.get('/group/create', groupController.create_group);
+router.post('/group/create', groupController.create_group);
 
 router.put('/group/update/:groupid', groupController.update_group_information);
 
 router.patch('/group/private/:groupid', groupController.handle_group_privacy);
-
-router.get('/group/requests', groupController.get_group_requests);
 
 router.post('/group/request/:groupid', groupController.send_group_request);
 
