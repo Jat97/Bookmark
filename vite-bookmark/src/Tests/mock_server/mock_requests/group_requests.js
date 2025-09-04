@@ -49,7 +49,7 @@ export const group_requests = [
         return getResponse('group', selected_group);
     }),
 
-    http.patch<{groupid}>('http://127.0.0.1:9000/api/group/private/:groupid', ({cookies, params}) => {
+    http.patch<{groupid: string}>('http://127.0.0.1:9000/api/group/private/:groupid', ({cookies, params}) => {
         if(!cookies.usertoken || !cookies.signtoken) {
             return blockRequest();
         }
