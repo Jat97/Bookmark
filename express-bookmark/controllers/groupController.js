@@ -162,12 +162,12 @@ exports.send_group_request = async (req, res) => {
         const user_key = validateToken(req, res);
 
         if(user_key) {
-            await db.query(
-                `INSERT INTO group_requests (requested_group, requesting_user) VALUES ($1, $2)`, 
+            const updated_group = await db.query(
+                `INSERT INTO group_requests (requested_group, requesting_user) VALUES ($1, $2) RETURNING *`, 
                 [req.params.groupid, user_key.logged_user.id]
             );
             
-            res.status(200).send();
+            res.status(200).json({group: updated_group});
         }
         else {
             res.status(401).send();
@@ -210,7 +210,7 @@ exports.reject_group_request = async (req, res) => {
 
         if(user_key) {
             await db.query(
-                `DELETE FROM group_requests WHERE requested_group = $1 AND requesting_uer = $2`, 
+                `DELETE FROM group_requests WHERE requested_group = $1 AND requesting_user = $2`, 
                 [req.params.groupid, user_key.logged_user.id]
             );
 

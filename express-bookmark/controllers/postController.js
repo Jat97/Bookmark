@@ -158,6 +158,8 @@ exports.delete_post = async (req, res) => {
                 `DELETE FROM posts WHERE id = $1`,
                 [req.params.postid]
             );
+
+            res.status(200).send();
         }
         else {
             res.status(401).send();

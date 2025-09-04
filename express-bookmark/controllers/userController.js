@@ -227,12 +227,12 @@ exports.unblock_user = async (req, res) => {
         const user_key = await validateToken(req, res);
 
         if(user_key) {
-            await db.query(
-                `DELETE FROM blocked WHERE blocked_user = $1`, 
+            const updated_block = await db.query(
+                `DELETE FROM blocked WHERE blocked_user = $1 RETURNING *`, 
                 [req.params.userid]
             );
 
-            res.status(200).send();
+            res.status(200).json({blocked: updated_block});
         }
         else {
             res.status(401).send();
@@ -534,12 +534,12 @@ exports.update_hidden_status = async (req, res) => {
         const user_key = validateToken(req, res);
 
         if(user_key) {
-            await db.query(
-                `ALTER TABLE users SET hidden = $1 WHERE id = $2`,
+            const updated_user = await db.query(
+                `ALTER TABLE users SET hidden = $1 WHERE id = $2 RETURNING *`,
                 [req.body.hidden === 'true' ? true : false, user_key.logged_user.id]
             );
 
-            res.status(200).send();
+            res.status(200).json({user: updated_user});
         }
         else {
             res.status(401).send();
