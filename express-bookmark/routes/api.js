@@ -68,8 +68,6 @@ router.delete('/group/:groupid', groupController.delete_group);
 
 router.get('/posts', postController.get_post_feed);
 
-router.get('/post/:postid', postController.get_post_information);
-
 router.post('/post', upload.array('postimage', 10), postController.create_post);
 
 router.put('/post/edit/:postid', upload.array('postimage', 10), postController.edit_post);
