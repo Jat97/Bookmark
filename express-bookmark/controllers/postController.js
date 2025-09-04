@@ -65,37 +65,6 @@ exports.get_post_feed = async (req, res) => {
     }
 };
 
-exports.get_post_information = async (req, res) => {
-    try {
-        const user_key = validateToken(req, res);
-
-        if(user_key) {
-            const post = await db.query(
-                `SELECT posts.id AS userid,
-                users.first_name AS first_name,
-                users.last_name AS last_name,
-                users.profile_picture AS profile_picture,
-                groups.id AS groupid,
-                groups.title AS group_title,
-                posts.text AS text,
-                posts.posted AS posted
-                FROM posts 
-                INNER JOIN users ON users.id = posts.original_poster
-                WHERE id = $1`, 
-                [req.params.postid]
-            );
-
-            res.status(200).json({post: post.rows[0]});
-        }
-        else {
-            res.send(401).send();
-        }
-    }
-    catch (err) {
-        res.status(500).json({error: err});
-    }
-};
-
 exports.create_post = async (req, res) => {
     try {
         const user_key = validateToken(req, res);
