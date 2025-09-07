@@ -89,6 +89,52 @@ export const useEditPictureMutation = ([file, setSiteError]) => {
     return mutation;
 };
 
+export const useLogInMutation = (setSiteError) => {
+    const mutation = useMutation({
+        mutationFn: async () => {
+            return await fetch('http://127.0.0.1:9000/api/login', {
+                method: 'PUT',
+                credentials: 'include'
+            })
+            .then(res => {
+                if(!res.ok) {
+                    throw Error(`Error ${res.status}: ${res.statusText}`);
+                } 
+                else {
+                    const data = res.json();
+                    return data;
+                }
+            })
+            .catch(err => setSiteError(err))
+        },
+        onMutate: async (data) => {
+            await query_client.invalidateQueries({queryKey: ['users']});
+
+            const user_cache = query_client.getQueryData(['comments']);
+            const user_arr = user_cache.users || [];
+
+            user_arr.forEach(user => {
+                if(user.email === data.email) {
+                    user = {
+                        ...user,
+                        online: true
+                    }
+                }
+            });
+
+            return {user_arr}
+        },
+        onError: (err, data, context) => {
+            query_client.setQueryData(['users'], context.user_arr);
+        },
+        onSettled: async () => {
+            return query_client.invalidateQueries({queryKey: ['users']});
+        }
+    });
+
+    return mutation;
+};
+
 export const useLogOutMutation = (setSiteError) => {
     const mutation = useMutation({
         mutationFn: async () => {
