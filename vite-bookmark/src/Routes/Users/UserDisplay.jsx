@@ -4,7 +4,8 @@ import {CameraIcon, UserIcon} from '@heroicons/react/24/solid';
 
 const UserDisplay = (props) => {
     const user = props.props[0];
-    const user_mode = props.props[1];
+    const logged = props.props[1];
+    const user_mode = props.props[2];
 
     const setSiteError = bookStore((state) => state.setSiteError);
 
@@ -24,10 +25,12 @@ const UserDisplay = (props) => {
                         <UserIcon className='h-6' />
                     }
 
-                    <label onChange={() => editProfilePicture()}>
-                        <input type='file' className='hidden'></input>
-                        <CameraIcon className='h-6' />
-                    </label>
+                    {user.id === logged.id &&
+                        <label onChange={() => editProfilePicture()}>
+                            <input type='file' className='hidden'></input>
+                            <CameraIcon className='h-6' />
+                        </label>
+                    }
                 </div>
                 
                 <p> {`${user.first_name} ${user.last_name}`} </p>
