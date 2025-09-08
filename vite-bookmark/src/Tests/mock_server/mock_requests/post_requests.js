@@ -8,7 +8,7 @@ export const post_requests = [
             return blockRequest();
         }
 
-        return getResponse('posts', posts);
+        return getResponse('posts', cookies.usertoken ? posts : []);
     }),
 
     http.post('http://127.0.0.1:9000/api/post', ({cookies, req}) => {
