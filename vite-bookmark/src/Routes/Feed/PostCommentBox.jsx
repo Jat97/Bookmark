@@ -1,14 +1,14 @@
 import {ArrowUTurnLeftIcon, ChatBubbleLeftRightIcon, HandThumbUpIcon, HandThumbDownIcon} from "@heroicons/react/24/solid";
-import {bookStore} from '../../Context/bookStore';
+import {useBookStore} from '../../Context/bookStore';
 import {useFetchLogged} from '../Functions/Queries/UserQueries';
 import LikeButton from '../Buttons/LikeButton';
 
 const PostCommentBox = (props) => {
     const post = props.props;
 
-    const authorized = bookStore((state) => state.authorized);
-    const setAuthorized = bookStore((state) => state.setAuthorized);
-    const setSiteError = bookStore((state) => state.setSiteError);
+    const authorized = useBookStore((state) => state.authorized);
+    const setAuthorized = useBookStore((state) => state.setAuthorized);
+    const setSiteError = useBookStore((state) => state.setSiteError);
 
     const loggedData = useFetchLogged([authorized, setAuthorized, setSiteError]);
 

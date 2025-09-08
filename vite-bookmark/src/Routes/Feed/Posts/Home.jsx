@@ -1,15 +1,15 @@
 import {useFetchPosts}  from "../../Functions/Queries/PostQueries";
 import {useFetchFriends} from '../../Functions/Queries/UserQueries';
-import {bookStore} from '../../../Context/bookStore';
+import {useBookStore} from '../../../Context/bookStore';
 import PostCard from './PostCard';
 import TextBox from '../../Miscellaneous/Inputs/TextBox';
 import NoItems from '../../Miscellaneous/Text/NoItems';
 import UserDisplay from '../../Users/UserDisplay';
 
 const Home = () => {
-    const authorized = bookStore((state) => state.authorized);
-    const setAuthorized = bookStore((state) => state.setAuthorized);
-    const setSiteError = bookStore((state) => state.setSiteError);
+    const authorized = useBookStore((state) => state.authorized);
+    const setAuthorized = useBookStore((state) => state.setAuthorized);
+    const setSiteError = useBookStore((state) => state.setSiteError);
 
     const postData = useFetchPosts([authorized, setAuthorized, setSiteError]);
     const friendData = useFetchFriends([authorized, setAuthorized, setSiteError]);
