@@ -1,11 +1,11 @@
 import {Link} from 'react-router-dom';
 import {useLogOutMutation} from '../Functions/Mutations/UserMutations';
-import {bookStore} from '../../Context/bookStore';
+import {useBookStore} from '../../Context/bookStore';
 
 const UserMenu = (props) => {
     const user = props.props;
 
-    const setSiteError = bookStore((state) => state.setSiteError);
+    const setSiteError = useBookStore((state) => state.setSiteError);
 
     const logout_mutation = useLogOutMutation(setSiteError);
 

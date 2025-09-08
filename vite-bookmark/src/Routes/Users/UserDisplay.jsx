@@ -1,5 +1,5 @@
 import {useEditPictureMutation} from '../Functions/Mutations/UserMutations';
-import {bookStore} from '../../Context/bookStore';
+import {useBookStore} from '../../Context/bookStore';
 import {CameraIcon, UserIcon} from '@heroicons/react/24/solid';
 
 const UserDisplay = (props) => {
@@ -7,7 +7,7 @@ const UserDisplay = (props) => {
     const logged = props.props[1];
     const user_mode = props.props[2];
 
-    const setSiteError = bookStore((state) => state.setSiteError);
+    const setSiteError = useBookStore((state) => state.setSiteError);
 
     const picture_mutation = useEditPictureMutation([user, setSiteError]);
 
