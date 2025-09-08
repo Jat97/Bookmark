@@ -40,17 +40,36 @@ exports.get_post_feed = async (req, res) => {
                 if(blocked_users.rows.some(((block) => block.blocked_user === post.original_poster) === false) 
                     || friends.rows.some((friend) => friend.friend_2 === post.original_poster) ||
                     groups.some((group) => group.member_of === post.original_poster)) {
-                        const post_likes = await db.query(`
-                            SELECT users.id AS id,
-                            users.first_name AS first_name,
-                            users.last_name AS last_name,
-                            FROM likes 
-                            LEFT JOIN users ON users.id === likes.liking_user
-                            WHERE likes.liked_post = $1`, 
-                            [all_posts.rows[i].id]
-                        );
+                    const post_likes = await db.query(`
+                        SELECT users.id AS id,
+                        users.first_name AS first_name,
+                        users.last_name AS last_name,
+                        users.profile_picture AS profile_picture,
+                        groups.title AS title,
+                        groups.group_image AS group_image,
+                        FROM likes 
+                        LEFT JOIN users ON users.id === likes.liking_user
+                        WHERE likes.liked_post = $1`, 
+                        [all_posts.rows[i].id]
+                    );
 
-                        feed_posts.push({post: all_posts.rows[i], likes: post_likes.rows});
+                    feed_posts.push({
+                        id: all_posts.rows[i],
+                        original_poster: all_posts.rows[i].first_name ? {
+                            first_name: all_posts.rows[i].first_name,
+                            last_name: all_posts.rows[i].last_name,
+                            profile_picture: all_posts.rows[i].profile_picture
+                        } : null,
+                        text: all_posts.rows[i].text,
+                        posted: all_posts.rows[i].posted,
+                        original_group: all_posts.rows[i].title ? {
+                            title: all_posts.rows[i].title,
+                            group_image: all_posts.rows[i].group_image
+                        } : null,
+                        edited: all_posts.rows[i].edited,
+                        shared_by: all_posts.rows[i].shared_by,
+                        likes: post_likes.rows
+                    });
                 }
             }
 
@@ -117,7 +136,41 @@ exports.like_post = async (req, res) => {
                 [user_key.logged_user.id, req.params.postid, null]
             );
 
-            res.send(200).json({like: post_like.rows[0]});
+            const post = await db.query(
+                `SELECT id AS id,
+                users.first_name AS first_name,
+                users.last_name AS last_name,
+                users.profile_picture AS profile_picture,
+                groups.title AS title,
+                groups.group_image AS group_image,
+                posts.text AS text,
+                posts.posted AS posted,
+                posts.edited AS edited,
+                posts.shared_by AS shared_by
+                FROM posts
+                WHERE id = $1`,
+                [req.params.postid]
+            )
+
+            const updated_post = {
+                id: post.rows[0].id,
+                original_poster: post.rows[0].first_name ? {
+                    first_name: post.rows[0].first_name,
+                    last_name: post.rows[0].last_name,
+                    profile_picture: post.rows[0].profile_picture
+                } : null,
+                text: post.rows[0].text,
+                posted: post.rows[0].posted,
+                original_group: post.rows[0].title ? {
+                    title: post.rows[0].title,
+                    group_image: post.rows[0].group_image
+                } : null,
+                edited: post.rows[0].edited,
+                shared_by: post.rows[0].shared_by,
+                likes: post_like.rows[0]
+            }
+
+            res.send(200).json({post: updated_post});
         }
         else {
             res.send(401).send();
