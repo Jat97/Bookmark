@@ -10,9 +10,9 @@ const chatController = require('../controller/chatController');
 
 // User routes //
 
-router.get('/signup', userController.create_account);
+router.post('/signup', userController.create_account);
 
-router.get('/login', userController.log_in);
+router.put('/login', userController.log_in);
 
 router.get('/users', userController.get_all_users);
 
