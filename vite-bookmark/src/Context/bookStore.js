@@ -1,6 +1,6 @@
 import {create} from 'zustand';
 
-export const bookStore = create((set) => ({
+export const useBookStore = create((set) => ({
     authorized: true,
     selected_chat: null,
     textRef: null,
