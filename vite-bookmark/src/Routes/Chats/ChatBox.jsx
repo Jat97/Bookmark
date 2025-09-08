@@ -1,4 +1,4 @@
-import {bookStore} from '../../Context/bookStore';
+import {useBookStore} from '../../Context/bookStore';
 import UserDisplay from '../Users/UserDisplay';
 import ActiveChat from './ActiveChat';
 import dayjs from 'dayjs';
@@ -8,8 +8,8 @@ dayjs.extend(relativeTime);
 const ChatBox = (props) => {
     const chats = props.props;
 
-    const selected_chat = bookStore((state) => state.selected_chat);
-    const setSelectedChat = bookStore((state) => state.setSelectedChat);
+    const selected_chat = useBookStore((state) => state.selected_chat);
+    const setSelectedChat = useBookStore((state) => state.setSelectedChat);
 
     const changeActiveChat = (e) => {
         chats.forEach(chat => {
