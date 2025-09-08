@@ -1,14 +1,13 @@
 import {HandThumbDownIcon, HandThumbUpIcon} from "@heroicons/react/24/solid";
-import {useFetchLogged} from '../Functions/Queries/UserQueries';
 import {useLikeCommentMutation, useUnlikeCommentMutation, 
     useLikePostMutation, useUnlikePostMutation} from '../Functions/Mutations/LikeMutations';
-import {bookStore} from '../../Context/bookStore';
+import {useBookStore} from '../../Context/bookStore';
 
 const LikeButton = (props) => {
     const logged = props.props[0];
     const post = props.props[1];
 
-    const setSiteError = bookStore((state) => state.setSiteError);
+    const setSiteError = useBookStore((state) => state.setSiteError);
 
     const like_comment_mutation = useLikeCommentMutation([post, setSiteError]);
     const unlike_comment_mutation = useUnlikeCommentMutation([post, setSiteError]);

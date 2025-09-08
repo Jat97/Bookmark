@@ -1,11 +1,11 @@
 import {useGroupAcceptMutation, useGroupRejectMutation} from '../Functions/Mutations/GroupMutations';
-import {bookStore} from '../../Context/bookStore';
+import {useBookStore} from '../../Context/bookStore';
 
 const GroupAcceptRejectMutation = (props) => {
     const group = props.props[0];
     const request = props.props[1];
 
-    const setSiteError = bookStore((state) => state.setSiteError);
+    const setSiteError = useBookStore((state) => state.setSiteError);
 
     const group_accept_mutation = useGroupAcceptMutation([group, request, setSiteError]);
     const group_reject_mutation = useGroupRejectMutation([group, request, setSiteError]);

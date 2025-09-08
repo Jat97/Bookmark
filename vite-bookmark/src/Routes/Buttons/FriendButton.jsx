@@ -1,14 +1,14 @@
 import {UserPlusIcon, UserMinusIcon} from '@tanstack/react-query';
 import {useFetchAlerts, useFetchFriends} from '../Functions/Queries/UserQueries';
 import {useSendFriendRequestMutation, useRemoveFriendMutation} from '../Functions/Mutation/FriendMutation';
-import {bookStore} from '../../Context/bookStore';
+import {useBookStore} from '../../Context/bookStore';
 
 const FriendButton = (props) => {
     const user = props.props;
 
-    const authorized = bookStore((state) => state.authorized);
-    const setAuthorized = bookStore((state) => state.setAuthorized);
-    const setSiteError = bookStore((state) => state.setSiteError);
+    const authorized = useBookStore((state) => state.authorized);
+    const setAuthorized = useBookStore((state) => state.setAuthorized);
+    const setSiteError = useBookStore((state) => state.setSiteError);
 
     const alertData = useFetchAlerts([authorized, setAuthorized, setSiteError]);
     const friendData = useFetchFriends([authorized, setAuthorized, setSiteError]);

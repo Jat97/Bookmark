@@ -1,10 +1,10 @@
 import {useAcceptRequestMutation, useRejectRequestMutation} from "../Functions/Mutations/FriendMutations";
-import {bookStore} from '../../Context/bookStore';
+import {useBookStore} from '../../Context/bookStore';
 
 const FriendRequestButtons = (props) => {
     const user = props.props;
 
-    const setSiteError = bookStore((state) => state.setSiteError);
+    const setSiteError = useBookStore((state) => state.setSiteError);
 
     const accept_friend_mutation = useAcceptRequestMutation([user, setSiteError]);
     const reject_friend_mutation = useRejectRequestMutation([user, setSiteError]);
