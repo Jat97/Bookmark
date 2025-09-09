@@ -61,6 +61,15 @@ export const users = [
         profile_picture: 'EricGoldberg.jpg',
         online: true,
         hidden: false
+    },
+    {
+        id: 8,
+        first_name: 'Samantha',
+        last_name: 'Jones',
+        dob: '06/06/1998',
+        profile_picture: 'SamanthaJones.jpg',
+        online: true,
+        hidden: false
     }
 ];
 
