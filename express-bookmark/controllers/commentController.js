@@ -2,7 +2,7 @@ const {db} = require('../database/db');
 const {validateToken} = require('../database/token');
 const {createCommentTree} = require('../database/misc');
 
-exports.view_post_commments = async (req, res) => {
+exports.view_post_comments = async (req, res) => {
     try {
         const user_key = validateToken(req, res);
 
@@ -170,6 +170,29 @@ exports.unlike_comment = async (req, res) => {
         }
     }
     catch (err) {
-        res.status(500).send();
+        res.status(500).send({err: err});
+    }
+};
+
+exports.delete_comment = async (req, res) => {
+    try {
+        const user_key = validateToken(req, res);
+
+        if(user_key) {
+            await db.query(`
+                DELETE * 
+                FROM comments 
+                WHERE id = $1`,
+                [req.params.commentid]
+            );
+
+            res.status(200).send();
+        }
+        else {
+            res.status(401).send();
+        }
+    }
+    catch (err) {
+        res.status(500).send({err: err});
     }
 };
