@@ -1,4 +1,4 @@
-const db = require('db');
+const db = require('./db');
 
 module.exports.findGroup = async (req) => {
     const found_group = await db.query(
