@@ -1,7 +1,7 @@
-const db = require('db');
+const db = require('../database/db');
 const {uploadImage} = require('../database/imageupload');
 const {findGroup} = require('../database/misc');
-const {validateToken} = require('token');
+const {validateToken} = require('../database/token');
 
 exports.get_all_groups = async (req, res) => {
     try {

@@ -1,5 +1,5 @@
-const db = require('db');
-const {validateToken} = require('token');
+const db = require('../database/db');
+const {validateToken} = require('../database/token');
 
 exports.get_post_feed = async (req, res) => {
     try {

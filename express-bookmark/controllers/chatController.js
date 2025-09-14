@@ -1,6 +1,6 @@
 const {db} = require('../database/db');
 const {validateToken} = require('../database/token');
-const {uploadImage} = require('uploadimage');
+const {uploadImage} = require('../database/imageupload');
 
 exports.get_all_chats = async (req, res) => {
     try {
