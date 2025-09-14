@@ -1,12 +1,12 @@
 const express = require('express');
-const router = express.router();
+const router = express.Router();
 const {upload} = require('../database/imageupload');
 
-const userController = require('../controllers/userControler');
+const userController = require('../controllers/userController');
 const groupController = require('../controllers/groupController');
-const postController = require('../controller/postController');
-const commentController = require('../controller/commentController');
-const chatController = require('../controller/chatController');
+const postController = require('../controllers/postController');
+const commentController = require('../controllers/commentController');
+const chatController = require('../controllers/chatController');
 
 // User routes //
 
@@ -16,7 +16,7 @@ router.put('/login', userController.log_in);
 
 router.get('/users', userController.get_all_users);
 
-router.get('/blocked', userController.get_block_list);
+router.get('/blocked', userController.get_blocked_list);
 
 router.post('/block/:userid', userController.block_user);
 
@@ -26,7 +26,7 @@ router.get('/friends', userController.get_friends_list);
 
 router.delete('/unfriend/:userid', userController.remove_from_friendslist);
 
-router.get('/notifications', userController.get_alerts_and_requests);
+router.get('/notifications', userController.get_notifications);
 
 router.post('/request/send/:userid', userController.send_friend_request);
 
@@ -103,3 +103,5 @@ router.get('/chats', chatController.get_all_chats);
 router.get('/message/:userid', upload.single('chatimage'), chatController.send_message);
 
 router.delete('/chat/:chatid', chatController.delete_chat);
+
+module.exports = router;
