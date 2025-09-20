@@ -24,7 +24,7 @@ const BlockButton = (props) => {
     }
 
     return (   
-        <button onClick={() => handleBlockMutations()}>
+        <button id={user.id} data-testid={user.id} onClick={() => handleBlockMutations()}>
             {blockData.data.blocked_users.some((blocked) => blocked.id === user.id ?
                 'Unblock'
             :

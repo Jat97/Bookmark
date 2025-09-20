@@ -20,11 +20,11 @@ const Home = () => {
         <div>
             <div>
                 <div>
-                    <TextBox />
+                    <TextBox props={['', '']}/>
                 </div>
             
                 <div>
-                    {postData.data.posts.map(post => {
+                    {postData.data?.posts.map(post => {
                         return <PostCard props={post} />
                     })}
                 </div>  

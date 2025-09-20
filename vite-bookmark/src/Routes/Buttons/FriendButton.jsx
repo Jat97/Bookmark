@@ -1,6 +1,6 @@
 import {UserPlusIcon, UserMinusIcon} from '@tanstack/react-query';
 import {useFetchAlerts, useFetchFriends} from '../Functions/Queries/UserQueries';
-import {useSendFriendRequestMutation, useRemoveFriendMutation} from '../Functions/Mutation/FriendMutation';
+import {useSendFriendRequestMutation, useRemoveFriendMutation} from '../Functions/Mutations/FriendMutations';
 import {useBookStore} from '../../Context/bookStore';
 
 const FriendButton = (props) => {
@@ -26,7 +26,7 @@ const FriendButton = (props) => {
     }
 
     return (
-        <button onClick={() => 
+        <button id={user.id} data-testid={user.id} onClick={() => 
             alertData.data.pending.some((pending) => pending.id === user.id) ?
                 null
             :

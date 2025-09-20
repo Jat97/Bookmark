@@ -67,6 +67,14 @@ const Signup = () => {
                             <InputErr props={signErrors.confirm} />
                         }
                     </div>
+
+                    <div>
+                        <button type='button'>
+                            Create account
+                        </button>
+
+                        Already have an account? <Link to='/api/login'> Log in here! </Link>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,5 +1,5 @@
 import {useMutation} from '@tanstack/react-query';
-import {query_client} from '../../client';
+import {query_client} from '../../../client';
 
 export const useBlockUserMutation = ([user, setSiteError]) => {
     const mutation = useMutation({

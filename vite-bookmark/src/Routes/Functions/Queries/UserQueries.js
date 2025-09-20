@@ -4,7 +4,7 @@ export const useFetchLogged = ([authorized, setAuthorized, setSiteError]) => {
     const result = useQuery({
         queryKey: ['logged'],
         queryFn: async () => {
-            return await ('http://127.0.0.1:9000/api/user', {
+            return await fetch('http://127.0.0.1:9000/api/user', {
                 method: 'GET',
                 credentials: 'include'
             })
@@ -33,8 +33,8 @@ export const useFetchLogged = ([authorized, setAuthorized, setSiteError]) => {
 export const useFetchUsers = ([authorized, setAuthorized, setSiteError]) => {
     const result = useQuery({
         queryKey: ['user'],
-        queryFn: () => {
-            fetch('http://127.0.0.1:9000/api/users', {
+        queryFn: async () => {
+            return await fetch('http://127.0.0.1:9000/api/users', {
                 method: 'GET',
                 credentials: 'include'
             })

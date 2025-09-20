@@ -20,11 +20,11 @@ const FriendRequestButtons = (props) => {
 
     return (
         <div>
-            <button type='button' id='accept' onClick={(e) => handleFriendRequest(e)}>
+            <button type='button' id='accept' data-testid={`accept-${user.id}`} onClick={(e) => handleFriendRequest(e)}>
                 Accept
             </button>
 
-            <button type='button' id='reject' onClick={(e) => handleFriendRequest(e)}>
+            <button type='button' id='reject' data-testid={`reject-${user.id}`} onClick={(e) => handleFriendRequest(e)}>
                 Reject
             </button>
         </div>

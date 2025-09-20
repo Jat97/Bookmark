@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import UserDisplay from '../UserDisplay';
 import GroupDisplay from '../../Groups/GroupDisplay';
-import {FriendRequestButtons} from '../../Buttons/FriendRequestButtons';
+import FriendRequestButtons from '../../Buttons/FriendRequestButtons';
 import {XMarkIcon} from '@heroicons/react/24/solid';
 
 const AlertTab = (props) => {

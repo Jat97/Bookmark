@@ -9,10 +9,10 @@ const LikeButton = (props) => {
 
     const setSiteError = useBookStore((state) => state.setSiteError);
 
-    const like_comment_mutation = useLikeCommentMutation([post, setSiteError]);
-    const unlike_comment_mutation = useUnlikeCommentMutation([post, setSiteError]);
-    const like_post_mutation = useLikePostMutation([post, setSiteError]);
-    const unlike_post_mutation = useUnlikePostMutation([post, setSiteError]);
+    const like_comment_mutation = useLikeCommentMutation([logged, post.id, setSiteError]);
+    const unlike_comment_mutation = useUnlikeCommentMutation([logged, post.id, setSiteError]);
+    const like_post_mutation = useLikePostMutation([logged, post.id, setSiteError]);
+    const unlike_post_mutation = useUnlikePostMutation([logged, post.id, setSiteError]);
 
     const handleLikeMutations = () => {
         if(post.likes.some((like) => like.id === logged.id)) {
@@ -34,7 +34,7 @@ const LikeButton = (props) => {
     }
 
     return (
-        <button onClick={() => handleLikeMutations()}>
+        <button id={post.id} data-testid={`like-${post.id}`} onClick={() => handleLikeMutations()}>
             {post.likes.some((like) => like.id === loggedData.data.logged_user.id) ?
                 <div>
                     <HandThumbDownIcon className='h-6' />

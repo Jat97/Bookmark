@@ -5,6 +5,7 @@ import {useBookStore} from '../../Context/bookStore';
 import UserDisplay from './UserDisplay';
 import GroupDisplay from '../Groups/GroupDisplay';
 import FriendButton from '../Buttons/FriendButton';
+import BlockButton from '../Buttons/BlockButton';
 
 const Index = () => {
     const {groupid} = useParams();
@@ -28,7 +29,11 @@ const Index = () => {
                         <li>
                             <UserDisplay props={[user, '']} />
 
-                            <FriendButton props={user} />
+                            <div>
+                                <FriendButton props={user} />
+
+                                <BlockButton props={user} />
+                            </div>
                         </li>
                     )
                 })}

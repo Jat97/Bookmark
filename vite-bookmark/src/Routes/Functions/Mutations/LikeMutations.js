@@ -1,7 +1,7 @@
 import {useMutation} from '@tanstack/react-query';
 import {query_client} from '../../../client';
 
-export const usePostLikeMutation = ([logged, postid, setSiteError]) => {
+export const useLikePostMutation = ([logged, postid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
             return await fetch(`http://127.0.0.1:9000/api/post/like/${postid}`, {

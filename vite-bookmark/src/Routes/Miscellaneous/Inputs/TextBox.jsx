@@ -1,11 +1,13 @@
 import {Editor} from '@tinymce/tinymce-react';
-import {bookStore} from '../../../Context/bookStore';
+import {useBookStore} from '../../../Context/bookStore';
 
 const TextBox = (props) => {
+    console.log(props);
+
     const text = props.props[0];
     const textHandler = props.props[1];
 
-    const setTextEditor = bookStore((state) => state.setTextEditor);
+    const setTextEditor = useBookStore((state) => state.setTextEditor);
 
     return (
         <Editor placeholder='What would you like to say?'

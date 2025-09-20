@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {Link} from 'react-router-dom';
-import LogSignInput from '../../Inputs/LogSignInput';
+import LogSignInput from '../../Miscellaneous/Inputs/LogSignInput';
 import InputErr from '../../Miscellaneous/Text/Errors/InputErr';
 
 const Login = () => {
@@ -18,7 +18,7 @@ const Login = () => {
                     <div>
                         Username
 
-                        <LogSignInput props={'username'} />
+                        <LogSignInput props={'email'} />
 
                         {logErrors.username &&
                             <InputErr props={logErrors.username} />

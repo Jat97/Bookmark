@@ -21,11 +21,11 @@ const GroupAcceptRejectMutation = (props) => {
 
     return (
         <div>
-            <button type='button' id='accept' onClick={(e) => handleGroupRequest(e)}>
+            <button type='button' id='accept' data-testid={`accept-${user.id}`} onClick={(e) => handleGroupRequest(e)}>
                 Accept request
             </button>
 
-            <button type='button' id='reject' onClick={(e) => handleGroupRequest(e)}>
+            <button type='button' id='reject' data-testid={`reject-${user.id}`} onClick={(e) => handleGroupRequest(e)}>
                 Reject request
             </button>
         </div>

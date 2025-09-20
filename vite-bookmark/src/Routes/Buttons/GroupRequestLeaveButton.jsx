@@ -21,7 +21,7 @@ const GroupRequestLeaveButton = (props) => {
     }
 
     return (
-        <button type='button' onClick={() => handleGroupMutations()}>
+        <button type='button' data-testid={'group_membership_button'} onClick={() => handleGroupMutations()}>
             {is_member ?
                 'Leave group'
             :

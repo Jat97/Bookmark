@@ -3,8 +3,8 @@ import {useQuery} from '@tanstack/react-query';
 export const useFetchChats = ([authorized, setAuthorized, setSiteError]) => {
     const result = useQuery({
         queryKey: ['chats'],
-        queryFn: () => {
-            fetch('http://127.0.0.1:9000/api/chats', {
+        queryFn: async () => {
+            return await fetch('http://127.0.0.1:9000/api/chats', {
                 method: 'GET',
                 credentials: 'include'
             })
@@ -33,8 +33,8 @@ export const useFetchChats = ([authorized, setAuthorized, setSiteError]) => {
 export const useFetchMessages = ([userid, authorized, setAuthorized, setSiteError]) => {
     const result = useQuery({
         queryKey: ['messages'], 
-        queryFn: () => {
-            fetch(`http://127.0.0.1:9000/api/chat/${userid}`, {
+        queryFn: async () => {
+            return await fetch(`http://127.0.0.1:9000/api/chat/${userid}`, {
                 method: 'GET',
                 credentials: 'include'
             })
