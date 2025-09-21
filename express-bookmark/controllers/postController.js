@@ -16,7 +16,7 @@ exports.get_post_feed = async (req, res) => {
                 posts.text AS text,
                 posts.posted AS posted
                 FROM posts
-                INNER JOIN users ON users.id === posts.original_poster`
+                INNER JOIN users ON users.id = posts.original_poster`
             );
 
             const blocked_users = await db.query(
@@ -48,7 +48,7 @@ exports.get_post_feed = async (req, res) => {
                         groups.title AS title,
                         groups.group_image AS group_image,
                         FROM likes 
-                        LEFT JOIN users ON users.id === likes.liking_user
+                        LEFT JOIN users ON users.id = likes.liking_user
                         WHERE likes.liked_post = $1`, 
                         [all_posts.rows[i].id]
                     );
@@ -199,6 +199,43 @@ exports.unlike_post = async (req, res) => {
     }
     catch (err) {
         res.send(500).json({error: err});
+    }
+};
+
+exports.share_post = async (req, res) => {
+    try {
+        const user_key = validateToken(req, res);
+
+        if(user_key) {
+            const original_post = await db.query(
+                `SELECT * 
+                FROM posts
+                WHERE id = $1`,
+                [req.params.postid]
+            );
+
+            const shared_post = await db.query(`
+                INSERT INTO posts (original_poster, text, posted, original_group, shared_by, edited)
+                VALUES ($1, $2, $3, $4, $5, $6)
+                RETURNING *`,
+                [
+                    original_post.rows[0].original_poster, 
+                    original_post.rows[0].text, 
+                    original_post.rows[0].posted,
+                    original_post.rows[0].original_group,
+                    user_key.logged_user,
+                    original_post.rows[0].edited
+                ]
+            );
+
+            res.status(200).json({post: shared_post.rows[0]})
+        }
+        else {
+            res.status(401).send();
+        }
+    }
+    catch (err) {
+        res.status(500).json({err: err});
     }
 }
 
