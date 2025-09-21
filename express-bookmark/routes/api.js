@@ -76,6 +76,8 @@ router.post('/post/like/:postid', postController.like_post);
 
 router.delete('/post/unlike/:postid', postController.unlike_post);
 
+router.post('/post/share/:postid', postController.share_post);
+
 router.delete('/post/:postid', postController.delete_post);
 
 // Comment routes
