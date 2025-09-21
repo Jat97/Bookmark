@@ -1,16 +1,24 @@
+import {useState} from 'React';
 import {ArrowUTurnLeftIcon, ChatBubbleLeftRightIcon, HandThumbUpIcon, HandThumbDownIcon} from "@heroicons/react/24/solid";
 import {useBookStore} from '../../Context/bookStore';
 import {useFetchLogged} from '../Functions/Queries/UserQueries';
 import LikeButton from '../Buttons/LikeButton';
+import TextBox from '../Miscellaneous/Inputs/TextBox';
 
 const PostCommentBox = (props) => {
     const post = props.props;
+
+    const [displayTextBox, setDisplayTextBox] = useState(false);
 
     const authorized = useBookStore((state) => state.authorized);
     const setAuthorized = useBookStore((state) => state.setAuthorized);
     const setSiteError = useBookStore((state) => state.setSiteError);
 
     const loggedData = useFetchLogged([authorized, setAuthorized, setSiteError]);
+
+    const toggleTextBox = () => {
+        setDisplayTextBox(displayTextBox ? false : true);
+    }
 
     return (
         <div>
@@ -41,12 +49,16 @@ const PostCommentBox = (props) => {
                     Share
                 </button>
 
-                <button>
+                <button type='button' onClick={() => toggleTextBox()}>
                     <ChatBubbleLeftRightIcon className='h-6' />
 
                     Comment
                 </button>
             </div>
+
+            {displayTextBox && 
+                <TextBox props={['', '']} />
+            }
         </div>
     )
 }
