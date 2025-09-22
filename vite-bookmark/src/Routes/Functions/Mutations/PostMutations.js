@@ -1,4 +1,4 @@
-import {QueryClient, useMutation} from '@tanstack/react-query';
+import {useMutation} from '@tanstack/react-query';
 import {query_client} from '../../../client';
 
 export const useCreatePostMutation = (setSiteError) => {
@@ -104,6 +104,57 @@ export const useEditPostMutation = ([postid, setSiteError]) => {
     return mutation;
 };
 
+export const useSharePostMutation = ([postid, setSiteError]) => {
+    const mutation = useMutation({
+        mutationFn: async () => {
+            return await fetch(`http://127.0.0.1:9000/api/post/share/${postid}`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => {
+                if(!res.ok) {
+                    throw Error(`Error ${res.status}: ${res.statusText}`);
+                } 
+                else {
+                    const data = res.json();
+                    
+                    return data;
+                }
+            })
+            .catch(err => setSiteError(err))
+        },
+        onMutate: async (data) => {
+            await query_client.invalidateQueries({queryKey: ['posts']});
+
+            const post_cache = query_client.getQueryData(['posts']);
+            const post_arr = post_cache.posts || [];
+
+            post_arr.push({
+                id: post_arr.length + 25,
+                original_poster: data.original_poster,
+                text: data.text,
+                posted: data.posted,
+                original_group: data.original_group,
+                shared_by: data.shared_by,
+                edited: data.edited
+            });
+
+            return {post_arr};
+        },
+        onError: (err, data, context) => {
+            query_client.setQueryData(['posts'], context.post_arr);
+        },
+        onSettled: async () => {
+            await query_client.invalidateQueries({queryKey: ['posts']});
+        }
+    });
+
+    return mutation;
+};
+
 export const useDeletePostMutation = ([postid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
@@ -167,18 +218,18 @@ export const useParentCommentMutation = ([postid, setSiteError]) => {
             })
             .catch(err => setSiteError(err))
         },
-        onMutate: async () => {
+        onMutate: async (data) => {
             await query_client.invalidateQueries({queryKey: ['comments']});
 
             const comment_cache = query_client.getQueryData(['comments']);
             const comment_arr = comment_cache.comments || [];
 
             const comment = {
-                id: comment_arr + 50,
-                commenting_user: comment.commenting_user,
-                commenting_group: comment.commenting_group,
-                text: comment.text,
-                posted: comment.posted,
+                id: comment_arr.length + 50,
+                commenting_user: data.commenting_user,
+                commenting_group: data.commenting_group,
+                text: data.text,
+                posted: data.posted,
                 reply_to: null,
                 likes: [],
                 replies: []
