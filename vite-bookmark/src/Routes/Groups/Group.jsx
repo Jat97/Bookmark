@@ -6,6 +6,7 @@ import {useBookStore} from '../../Context/bookStore';
 import GroupDisplay from './GroupDisplay';
 import UserDisplay from '../Users/UserDisplay';
 import GroupRequestLeaveButton from '../Buttons/GroupRequestLeaveButton';
+import GroupAcceptRejectButton from '../Buttons/GroupAcceptRejectButton';
 
 const Group = () => {
     const {groupid} = useParams();
@@ -48,10 +49,12 @@ const Group = () => {
                         :   
                             <div>
                                 <ul>
-                                    {current_group.requests.forEach(request => {
+                                    {current_group.slice(0, 3).requests.map(request => {
                                         return (
                                             <li>
                                                 <UserDisplay props={[request, '']} />
+
+                                                <GroupAcceptRejectButton props={[current_group, request]} />
                                             </li>
                                         )
                                     })}
