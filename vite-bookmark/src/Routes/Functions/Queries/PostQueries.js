@@ -1,17 +1,14 @@
 import {useQuery} from '@tanstack/react-query';
 
 export const useFetchPosts = ([authorized, setAuthorized, setSiteError]) => {
-    console.log('jmskljlksklKLJLKSJFKLSDJFSKDLN')
     const result = useQuery({
         queryKey: ['posts'],
         queryFn: async () => {
-            return await fetch('http://127.0.0.1:9000/api/posts', {
+            return await fetch('http://localhost:9000/api/posts', {
                 method: 'GET',
                 credentials: 'include'
             })
-            .then(res => {
-                console.log(res);
-                
+            .then(res => {            
                 if(res.status === 401) {
                     setAuthorized(false);
                 }
@@ -27,7 +24,6 @@ export const useFetchPosts = ([authorized, setAuthorized, setSiteError]) => {
                 }
             })
             .catch(err => {
-                console.log(err);
                 setSiteError(err)
             })
         }
@@ -40,7 +36,7 @@ export const useFetchComments = ([postid, authorized, setAuthorized, setSiteErro
     const result = useQuery({
         queryKey: ['comments'],
         queryFn: async () => {
-            return await fetch(`http://127.0.0.1:9000/api/post/${postid}/comments`, {
+            return await fetch(`http://localhost:9000/api/post/${postid}/comments`, {
                 method: 'GET',
                 credentials: 'include'
             })

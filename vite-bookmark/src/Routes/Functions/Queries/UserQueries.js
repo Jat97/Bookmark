@@ -4,7 +4,7 @@ export const useFetchLogged = ([authorized, setAuthorized, setSiteError]) => {
     const result = useQuery({
         queryKey: ['logged'],
         queryFn: async () => {
-            return await fetch('http://127.0.0.1:9000/api/user', {
+            return await fetch('http://localhost:9000/api/user', {
                 method: 'GET',
                 credentials: 'include'
             })
@@ -34,7 +34,7 @@ export const useFetchUsers = ([authorized, setAuthorized, setSiteError]) => {
     const result = useQuery({
         queryKey: ['user'],
         queryFn: async () => {
-            return await fetch('http://127.0.0.1:9000/api/users', {
+            return await fetch('http://localhost:9000/api/users', {
                 method: 'GET',
                 credentials: 'include'
             })
@@ -64,7 +64,7 @@ export const useFetchFriends = ([authorized, setAuthorized, setSiteError]) => {
     const result = useQuery({
         queryKey: ['friends'],
         queryFn: async () => {
-            return await fetch('http://127.0.0.1:9000/api/friends', {
+            return await fetch('http://localhost:9000/api/friends', {
                 method: 'GET',
                 credentials: 'include'
             })
@@ -94,7 +94,7 @@ export const useFetchBlocked = ([authorized, setAuthorized, setSiteError]) => {
     const result = useQuery({
         queryKey: ['blocked'],
         queryFn: async () => {
-            return await fetch('http://127.0.0.1:9000/api/blocked', {
+            return await fetch('http://localhost:9000/api/blocked', {
                 method: 'GET',
                 credentials: 'include'
             })
@@ -124,7 +124,7 @@ export const useFetchAlerts = ([authorized, setAuthorized, setSiteError]) => {
     const result = useQuery({
         queryKey: ['alerts'],
         queryFn: async () => {
-            return await fetch('http://127.0.0.1:9000/api/alerts', {
+            return await fetch('http://localhost:9000/api/alerts', {
                 method: 'GET',
                 credentials: 'include'
             })
