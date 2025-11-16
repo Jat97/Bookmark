@@ -6,8 +6,8 @@ exports.get_post_feed = async (req, res) => {
         const user_key = validateToken(req, res);
 
         if(user_key) {
-            const all_posts = await db.query(`
-                SELECT id ,
+            const user_posts = await db.query(
+                `SELECT posts.id as id,
                 users.first_name AS first_name,
                 users.last_name AS last_name,
                 users.profile_picture AS profile_picture,
@@ -16,8 +16,22 @@ exports.get_post_feed = async (req, res) => {
                 posts.text AS text,
                 posts.posted AS posted
                 FROM posts
-                INNER JOIN users ON users.id = posts.original_poster`
+                INNER JOIN users ON users.id = posts.original_poster
+                WHERE posts.original_group = $1`,
+                [null]
             );
+
+            const group_posts = await db.query(
+                `SELECT posts.id as id,
+                groups.title AS title,
+                groups.group_image AS group_image,
+                FROM posts 
+                INNER JOIN groups ON groups.id = posts.original_group
+                WHERE posts.original_poster = $1`,
+                [null]
+            );
+
+            const all_posts = user_posts.rows.concat(group_posts.rows);
 
             const blocked_users = await db.query(
                 `SELECT * from blocked_users WHERE blocked_by = $1`, 
@@ -40,18 +54,28 @@ exports.get_post_feed = async (req, res) => {
                 if(blocked_users.rows.some(((block) => block.blocked_user === post.original_poster) === false) 
                     || friends.rows.some((friend) => friend.friend_2 === post.original_poster) ||
                     groups.some((group) => group.member_of === post.original_poster)) {
-                    const post_likes = await db.query(`
-                        SELECT users.id AS id,
+                    const user_likes = await db.query(
+                        `SELECT users.id AS id,
                         users.first_name AS first_name,
                         users.last_name AS last_name,
                         users.profile_picture AS profile_picture,
+                        FROM likes 
+                        INNER JOIN users ON users.id = likes.liking_user
+                        WHERE likes.liked_post = $1 AND likes.liking_group = $2`, 
+                        [all_posts.rows[i].id, null]
+                    );
+
+                    const group_likes = await db.query(
+                        `SELECT groups.id AS id,
                         groups.title AS title,
                         groups.group_image AS group_image,
-                        FROM likes 
-                        LEFT JOIN users ON users.id = likes.liking_user
-                        WHERE likes.liked_post = $1`, 
-                        [all_posts.rows[i].id]
-                    );
+                        FROM likes
+                        INNER JOIN groups ON groups.id = likes.liking_group
+                        WHERE likes.liked_post = $1 AND likes.liking_user = $2`,
+                        [all_posts.rows[i].id, null]
+                    )
+
+                    const post_likes = user_likes.rows.concat(group_likes.rows);
 
                     feed_posts.push({
                         id: all_posts.rows[i],
@@ -68,7 +92,7 @@ exports.get_post_feed = async (req, res) => {
                         } : null,
                         edited: all_posts.rows[i].edited,
                         shared_by: all_posts.rows[i].shared_by,
-                        likes: post_likes.rows
+                        likes: post_likes
                     });
                 }
             }
