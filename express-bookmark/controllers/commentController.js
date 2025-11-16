@@ -7,25 +7,38 @@ exports.view_post_comments = async (req, res) => {
         const user_key = validateToken(req, res);
 
         if(user_key) {
-            const comments = await db.query(
+            const user_comments = await db.query(
                 `SELECT comments.id AS id,
                 users.first_name AS first_name,
                 users.last_name AS last_name,
                 users.profile_picture AS profile_picture,
-                groups.title AS title,
-                groups.group_image AS group_image,
                 comments.post as postid,
                 comments.text as text,
                 comments.reply_to as reply_to
                 comments.posted as posted
                 FROM comments
                 INNER JOIN users ON users.id = comments.commenting_user
-                INNER JOIN groups ON group.id = comments.commenting_group,
-                WHERE post = $1`,
-                [req.params.postid]
+                WHERE post = $1 AND comments.commenting_group = $2`,
+                [req.params.postid, null]
             );
 
-            const comment_tree = createCommentTree(comments.rows)
+            const group_comments = await db.query(
+                `comments.id AS id,
+                groups.title AS title,
+                groups.group_image AS group_image,
+                comments.post AS post AS postid,
+                comment.text AS text,
+                comments.reply_to AS reply_to,
+                comment.posted AS posted
+                FROM comments
+                INNER JOIN groups ON groups.id = comments.commenting_group
+                WHERE post = $1 AND comments.commenting_user = $2`,
+                [req.params.postid, null]
+            );
+
+            const comments = user_comments.rows.concat(group_comments.rows);
+
+            const comment_tree = createCommentTree(comments)
 
             res.status(200).json({comments: comment_tree});
         }
