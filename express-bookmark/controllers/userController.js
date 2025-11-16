@@ -329,8 +329,8 @@ exports.get_notifications = async (req, res) => {
                 users.first_name AS first_name,
                 users.last_name AS last_name,
                 users.profile_picture AS profile_picture,
-                FROM requests
-                INNER JOIN users ON users.id = requests.requesting_user
+                FROM friend_requests
+                INNER JOIN users ON users.id = friend_requests.requesting_user
                 WHERE requested_user = $1`,
                 [user_key.logged_user.id]
             );
@@ -340,8 +340,8 @@ exports.get_notifications = async (req, res) => {
                 users.first_name AS first_name,
                 users.last_name AS last_name,
                 users.profile_picture AS profile_picture,
-                FROM requests
-                INNER JOIN users ON users.id = requests.requested_user
+                FROM friend_requests
+                INNER JOIN users ON users.id = friend_requests.requested_user
                 WHERE requesting_user = $1`,
                 [user_key.logged_user.id]
             );
