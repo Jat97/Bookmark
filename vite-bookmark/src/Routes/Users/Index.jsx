@@ -3,9 +3,9 @@ import {useFetchUsers} from '../Functions/Queries/UserQueries';
 import {useFetchGroups} from '../Functions/Queries/GroupQueries';
 import {useBookStore} from '../../Context/bookStore';
 import UserDisplay from './UserDisplay';
-import GroupDisplay from '../Groups/GroupDisplay';
 import FriendButton from '../Buttons/FriendButton';
 import BlockButton from '../Buttons/BlockButton';
+import PageHeader from '../Miscellaneous/Text/PageHeader';
 
 const Index = () => {
     const {groupid} = useParams();
@@ -21,15 +21,15 @@ const Index = () => {
 
     return (
         <div>
-            <p> {groupData ? 'Members': 'Users'} </p>
+            <PageHeader props={groupData ? 'Members' : 'Users'} />
 
-            <ul>
+            <ul className='flex flex-col items-center'>
                 {user_arr.map(user => {
                     return (
-                        <li>
+                        <li className='flex justify-around items-center'>
                             <UserDisplay props={[user, '']} />
 
-                            <div>
+                            <div className='flex flex-col items-center'>
                                 <FriendButton props={user} />
 
                                 <BlockButton props={user} />
