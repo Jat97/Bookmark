@@ -53,37 +53,44 @@ const Navbar = () => {
     };
 
     return (
-        <div>
+        <div className='flex justify-between items-center'>
             <PageHeader props={'Bookmark'} />
             
             <form method='GET' action='/api/search' encType='application/json'>
-                <input type='search' name='query' placeholder='What are you looking for?' 
-                    onChange={(e) => searchUsersGroups(e)}>
+                <input type='search' name='query' className='bg-slate-100 p-1 max-w-32 focus:bg-white' 
+                    placeholder='What are you looking for?' onChange={(e) => searchUsersGroups(e)}>
                 </input>
 
-                <button type='submit'>
+                <button type='submit' className='border-slate-100 p-1'>
                     <MagnifyingGlassIcon className='h-6' />
                 </button>
             </form>
             
-            <div>
+            <div className='flex justify-around items-center'>
                 <div>
-                    <BellIcon className='h-6' />
+                    <div className='flex flex-row-reverse items-end'>
+                        <BellIcon className='h-6' />
 
+                        <NotificationCount props={alertData.data.alerts.length} />
+                    </div>
+                    
                     <AlertTab props={alertData.data.alerts} />
                 </div>
                 
-                <div>
+                <div className='flex flex-row-reverse items-end'>
                     <div>
                         <ChatBubbleOvalLeftEllipsisIcon className='h-6' />
 
-                        <div> {unreadMessageCount} </div>
+                        <NotificationCount props={unreadMessageCount} />
                     </div>
-                    
                 </div>
 
-                <div>
-                    <UserIcon className='h-6' />
+                <div className='flex flex-row-reverse items-end'>
+                    <div>
+                       <UserIcon className='h-6' /> 
+
+                       <NotificationCount props={alertData.data.requests.length} />
+                    </div>
 
                     <AlertTab props={alertData.data.requests} />
                 </div>
