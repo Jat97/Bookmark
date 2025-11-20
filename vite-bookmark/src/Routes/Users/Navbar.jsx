@@ -77,16 +77,16 @@ const Navbar = () => {
                     <AlertTab props={alertData.data.alerts} />
                 </div>
                 
-                <div className='flex flex-row-reverse items-end'>
-                    <div>
+                <div className=''>
+                    <div className='flex flex-row-reverse items-end'>
                         <ChatBubbleOvalLeftEllipsisIcon className='h-6' />
 
                         <NotificationCount props={unreadMessageCount} />
                     </div>
                 </div>
 
-                <div className='flex flex-row-reverse items-end'>
-                    <div>
+                <div className=''>
+                    <div className='flex flex-row-reverse items-end'>
                        <UserIcon className='h-6' /> 
 
                        <NotificationCount props={alertData.data.requests.length} />
