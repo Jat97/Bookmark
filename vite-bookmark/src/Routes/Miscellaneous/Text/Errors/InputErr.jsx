@@ -2,7 +2,7 @@ const InputErr = (props) => {
     const err = props.props;
 
     return (
-        <p> {err} </p>
+        <p className='text-sm text-red-500'> {err} </p>
     )
 }
 

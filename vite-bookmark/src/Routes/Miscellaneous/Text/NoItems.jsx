@@ -2,7 +2,7 @@ const NoItems = (props) => {
     const text = props.props;
 
     return (
-        <p> {text} </p>
+        <p className='text-lg font-semibold'> {text} </p>
     )
 }
 
