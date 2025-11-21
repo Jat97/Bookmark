@@ -1,7 +1,9 @@
 import {useState} from 'react';
+import {useAcceptRequestMutation, useRejectRequestMutation} from '../../Functions/Mutations/FriendMutations';
 import UserDisplay from '../UserDisplay';
 import GroupDisplay from '../../Groups/GroupDisplay';
-import FriendRequestButtons from '../../Buttons/FriendRequestButtons';
+import AcceptButton from '../../Buttons/AcceptButton';
+import RejectButton from '../../Buttons/RejectButton';
 import {XMarkIcon} from '@heroicons/react/24/solid';
 
 const AlertTab = (props) => {
@@ -9,8 +11,19 @@ const AlertTab = (props) => {
 
     const [alertView, setAlertView] = useState(false);
 
+    const friend_accept_mutation = useAcceptRequestMutation();
+    const reject_friend_mutation = useRejectRequestMutation();
+
     const toggleAlertView = () => {
         setAlertView(alertView ? false : true);
+    }
+
+    const acceptRequest = () => {
+        return friend_accept_mutation.mutate();
+    }
+    
+    const rejectRequest = () => {
+        return reject_friend_mutation.mutate();
     }
 
     return (
@@ -28,7 +41,11 @@ const AlertTab = (props) => {
                             <div>
                                <UserDisplay props={[alert.requesting_user, '']} />
 
-                               <FriendRequestButtons props={alert.requesting_user} />
+                               <div className='flex justify-around items-center'>
+                                    <AcceptButton props={[alert.requesting_user.id, acceptRequest]} />
+
+                                    <RejectButton props={[alert.requesting_user.id, rejectRequest]} /> 
+                               </div>
                             </div>   
                         )
                     }
@@ -41,9 +58,9 @@ const AlertTab = (props) => {
                                     <GroupDisplay props={[alert.alerting_group, '']} />
                                 }
 
-                                <div>
-                                    <p> {alert.text} </p>
-                                    <p> {alert.sent} </p>
+                                <div className='flex justify-between items-center'>
+                                    <p className='text-sm'> {alert.text} </p>
+                                    <p className='text-xs text-gray-200'> {alert.sent} </p>
                                 </div>
                             </div>
                         )
