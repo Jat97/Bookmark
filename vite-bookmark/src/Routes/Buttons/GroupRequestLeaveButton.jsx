@@ -21,7 +21,9 @@ const GroupRequestLeaveButton = (props) => {
     }
 
     return (
-        <button type='button' data-testid={'group_membership_button'} onClick={() => handleGroupMutations()}>
+        <button type='button' data-testid={'group_membership_button'} className={`rounded-full max-w-20 hover:bg-pink-100
+            ${is_member ? 'bg-red-200' : 'bg-violet-200'}`}
+            onClick={() => handleGroupMutations()}>
             {is_member ?
                 'Leave group'
             :

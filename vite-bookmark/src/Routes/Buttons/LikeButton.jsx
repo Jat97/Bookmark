@@ -34,15 +34,15 @@ const LikeButton = (props) => {
     }
 
     return (
-        <button id={post.id} data-testid={`like-${post.id}`} onClick={() => handleLikeMutations()}>
+        <button id={post.id} data-testid={`like-${post.id}`} className='text-orange-300' onClick={() => handleLikeMutations()}>
             {post.likes.some((like) => like.id === loggedData.data.logged_user.id) ?
-                <div>
-                    <HandThumbDownIcon className='h-6' />
+                <div className='flex justify-around items-center'>
+                    <HandThumbDownIcon className='h-6 fill-orange-300' />
                     Unlike
                 </div>
             :       
-                <div>
-                    <HandThumbUpIcon className='h-6' />
+                <div className='flex justify-around items-center'>
+                    <HandThumbUpIcon className='h-6 fill-orange-300' />
                     Like
                 </div>
             }

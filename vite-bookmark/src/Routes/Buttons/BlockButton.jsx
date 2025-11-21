@@ -24,7 +24,10 @@ const BlockButton = (props) => {
     }
 
     return (   
-        <button id={user.id} data-testid={user.id} onClick={() => handleBlockMutations()}>
+        <button id={user.id} data-testid={user.id} className={`rounded-full max-w-20 
+            ${blockData.data.blocked_users.some((blocked) => blocked.id === user.id) ? 
+            'bg-zinc-200 hover:bg-grey-100' : 'bg-violet-200 hover:bg-pink-100'}`}
+            onClick={() => handleBlockMutations()}>
             {blockData.data.blocked_users.some((blocked) => blocked.id === user.id ?
                 'Unblock'
             :

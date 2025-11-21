@@ -25,29 +25,33 @@ const FriendButton = (props) => {
         }
     }
 
-    return (
-        <button id={user.id} data-testid={user.id} onClick={() => 
-            alertData.data.pending.some((pending) => pending.id === user.id) ?
+    if(alertData.data.pending.some((pending) => pending.id === user.id)) {
+        return <p> Pending... </p>
+    }
+    else {
+        return (
+            <button id={user.id} data-testid={user.id} className={`rounded-full p-1 max-w-20
+                ${friendData.data.friendslist.some((friend) => friend.id === user.id) ? 
+                'bg-red-200 hover:bg-pink-100' : 'bg-emerald-200 hover:bg-lime-100'}`}
+            onClick={() => alertData.data.pending.some((pending) => pending.id === user.id) ?
                 null
             :
                 handleFriendMutations()
-        }>
-            {alertData.data.pending.some((pending) => pending.id === user.id) ? 
-                'Pending...'
-            :
-                friendData.data.friendslist.some((friend) => friend.id === user.id) ?
-                    <div>
-                        <UserMinusIcon />
-                        Remove friend
-                    </div>
-                :
-                    <div>
-                        <UserPlusIcon />
-                        Add friend
-                    </div>
-            }
-        </button>
-    );
+            }>
+                {friendData.data.friendslist.some((friend) => friend.id === user.id) ?
+                        <div className='flex justify-around items-center'>
+                            <UserMinusIcon className='h-6 fill-white' />
+                            Remove friend
+                        </div>
+                    :
+                        <div className='flex justify-around items-center'>
+                            <UserPlusIcon className='h-6 fill-white' />
+                            Add friend
+                        </div>
+                }
+            </button>
+        );
+    }
 };
 
 export default FriendButton;
