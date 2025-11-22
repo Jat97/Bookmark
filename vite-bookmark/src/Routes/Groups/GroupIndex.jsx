@@ -21,7 +21,7 @@ const GroupIndex = () => {
                 const is_member = group.members?.some((user) => user.id === loggedData.data?.logged_user.id);
 
                 return (
-                    <div>
+                    <div className='flex justify-around items-center'>
                         <GroupDisplay props={[group.group, '']} />
 
                         <GroupRequestLeaveButton props={[loggedData.data?.logged_user, group.group, is_member]} />

@@ -7,6 +7,7 @@ import GroupDisplay from './GroupDisplay';
 import UserDisplay from '../Users/UserDisplay';
 import GroupRequestLeaveButton from '../Buttons/GroupRequestLeaveButton';
 import GroupAcceptRejectButton from '../Buttons/GroupAcceptRejectButton';
+import NoItems from '../Miscellaneous/Text/NoItems';
 
 const Group = () => {
     const {groupid} = useParams();
@@ -45,13 +46,13 @@ const Group = () => {
                         Requests
 
                         {current_group.requests.length === 0 ?
-                            "No requests"
+                            <NoItems props={'No requests'} />
                         :   
                             <div>
                                 <ul>
                                     {current_group.slice(0, 3).requests.map(request => {
                                         return (
-                                            <li>
+                                            <li className='flex justify-around items-center'>
                                                 <UserDisplay props={[request, '']} />
 
                                                 <GroupAcceptRejectButton props={[current_group, request]} />
@@ -61,9 +62,10 @@ const Group = () => {
                                 </ul>
 
                                 {current_group.requests && 
-                                    <p> View {current_group.requests.length} requests </p>
+                                    <p className='text-blue-600 underline'> 
+                                        View {current_group.requests.length} requests 
+                                    </p>
                                 }
-
                             </div>
                         }
                     </div>
@@ -76,7 +78,7 @@ const Group = () => {
 
                     <ul>
                         {current_group.members.length === 0 ?
-                            "No members yet"
+                            <NoItems props={'No members yet'} />
                         :
                             current_group.members.slice(0, 3).map(member => {
                                 return (
@@ -88,7 +90,7 @@ const Group = () => {
                         }
                     </ul>
 
-                    <Link to={`/api/group/members/${current_group.id}`}>
+                    <Link to={`/api/group/members/${current_group.id}`} className='text-blue-600 underline'>
                         View all members
                     </Link>
                 </div>

@@ -21,7 +21,7 @@ const GroupRequests = () => {
 
             {selected_group.requests.map(request => {
                 return (
-                    <div>
+                    <div className='flex justify-around items-center'>
                         <UserDisplay props={[request, '']} />
 
                         <GroupAcceptRejectButton props={[selected_group, request]} />

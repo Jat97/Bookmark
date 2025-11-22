@@ -97,14 +97,19 @@ const GroupInfoPage = () => {
                     </div>
                 </div>
 
-                <div>
-                    <div>
-                        <button type='button' onClick={() => confirmGroupChanges()}> Save changes </button> 
+                <div className='flex flex-col items-center'>
+                    <div className='flex justify-around items-center'>
+                        <button type='button' className='text-white bg-blue-400 hover:bg-sky-100'
+                            onClick={() => confirmGroupChanges()}> 
+                            Save changes 
+                        </button> 
 
-                        <Link to={`/api/group/${selected_group?.id}`}> Cancel </Link>
+                        <Link to={`/api/group/${selected_group?.id}`} className='text-center bg-slate-200 p-2 max-w-12'> 
+                            Cancel 
+                        </Link>
                     </div>
                    
-                   <button type='button'>
+                   <button type='button' className='text-white bg-red-400 hover:bg-pink-100'>
                         Delete group
                    </button>
                 </div>
