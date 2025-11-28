@@ -6,7 +6,7 @@ const Comment = (props) => {
     const comment = props.props;
 
     return (
-        <div>
+        <div className='flex flex-col items-start'>
             <div>
                 {comment.commenting_user ?
                     <UserDisplay props={[comment.commenting_user, '']} />
@@ -15,7 +15,7 @@ const Comment = (props) => {
                 }
             </div>
             
-            <div>
+            <div className='max-w-3/4'>
                 {comment.text}
             </div>
 

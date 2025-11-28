@@ -22,12 +22,12 @@ const FullPost = () => {
 
             {post_comments.map(comment => {
                 return (
-                    <div>
+                    <div className='border-l-slate-200'>
                         <Comment props={comment} />
 
                         {comment.replies.map(reply => {
                             return (
-                                <div>
+                                <div className='border-l-slate-200'>
                                     <Comment props={reply} />
                                 </div>
                             )
