@@ -1,7 +1,9 @@
 import {useState} from 'React';
-import {ArrowUTurnLeftIcon, ChatBubbleLeftRightIcon, HandThumbUpIcon, HandThumbDownIcon} from "@heroicons/react/24/solid";
+import {Link} from 'react-router-dom';
+import {ArrowUTurnLeftIcon, ChatBubbleLeftRightIcon} from "@heroicons/react/24/solid";
 import {useBookStore} from '../../Context/bookStore';
 import {useFetchLogged} from '../Functions/Queries/UserQueries';
+import {useSharePostMutation} from '../Functions/Mutations/PostMutations';
 import LikeButton from '../Buttons/LikeButton';
 import TextBox from '../Miscellaneous/Inputs/TextBox';
 
@@ -15,9 +17,14 @@ const PostCommentBox = (props) => {
     const setSiteError = useBookStore((state) => state.setSiteError);
 
     const loggedData = useFetchLogged([authorized, setAuthorized, setSiteError]);
+    const shareMutation = useSharePostMutation([post.id, setSiteError]);
 
     const toggleTextBox = () => {
         setDisplayTextBox(displayTextBox ? false : true);
+    }
+
+    const sharePost = () => {
+        shareMutation.mutate();
     }
 
     return (
@@ -25,32 +32,34 @@ const PostCommentBox = (props) => {
             {post.likes.length === 0 ?
                 null
             :
-                <div>
+                <div className='flex justify evenly items-center'>
                     {post.likes.slice(0, 3).map(like => {
                         return (
-                            <p> {`${like.first_name} ${like.last_name}`} </p>
+                            <Link to={`/api/users/${like.id}`} className='text-blue-600 hover:underline'> 
+                                {`${like.first_name} ${like.last_name}`} 
+                            </Link>
                         )
                     })}
 
                     {post.likes.length > 3 &&
-                        <p> and others </p>
+                        <p> and <span className='text-blue-600 hover:underline'> {post.likes.length} others </span> </p>
                     }
 
                     liked this
                 </div>
             }
             
-            <div>
+            <div className='flex justify-evenly items-center border border-orange-200'>
                 <LikeButton props={[loggedData.data.logged_user, post]} />
 
-                <button>
-                    <ArrowUTurnLeftIcon className='h-6' />
+                <button type='button' className='border-l-orange-200 border-r-orange-200' onClick={() => sharePost()}>
+                    <ArrowUTurnLeftIcon className='h-6 fill-orange-200' />
 
                     Share
                 </button>
 
                 <button type='button' onClick={() => toggleTextBox()}>
-                    <ChatBubbleLeftRightIcon className='h-6' />
+                    <ChatBubbleLeftRightIcon className='h-6 fill-orange-200' />
 
                     Comment
                 </button>
