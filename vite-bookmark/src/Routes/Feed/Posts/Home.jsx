@@ -17,8 +17,8 @@ const Home = () => {
     const currently_online = friendData.data.friends.filter(friend => friend.online);
 
     return (
-        <div>
-            <div>
+        <div className='grid grid-cols-2 items-center'>
+            <div className='flex flex-col items-center'>
                 <div>
                     <TextBox props={['', '']}/>
                 </div>
@@ -31,11 +31,11 @@ const Home = () => {
             </div>
 
             <div>
-                <div>
-                    Who's online?
+                <div className='border border-slate-200'>
+                    <p className='font-semibold'> Who's online? </p>
 
                     {currently_online.length === 0 ?
-                        <NoItems props={`No users online.`} />
+                        <NoItems props={'No users online.'} />
                     :
                         currently_online.map(friend => {
                             return <UserDisplay props={friend} />
