@@ -20,16 +20,19 @@ const ChatBox = (props) => {
     }
  
     return (
-        <div>
-            <div>
+        <div className='absolute bottom-0 right-2 grid grid-cols-2 border border-slate-200 shadow-sm 
+            shadow-slate-200 max-h-screen max-w-screen md:max-h-48 md:max-w-32'>
+            <div className='flex flex-col items-start'>
                 {chats.map(chat => {
                     return (
                         <div onClick={() => changeActiveChat()}>
                             <UserDisplay props={[chat.user_2, '']} />
 
-                            <div>
-                                <p> {chat.messages[chat.messages.length - 1].text} </p>
-                                <p> {dayjs.to(chat.messages[chat.messages.length - 1].sent)} </p>
+                            <div className='flex justify-around items-center'>
+                                <p className='text-sm'> {chat.messages[chat.messages.length - 1].text} </p>
+                                <p className='text-xs text-slate-200'> 
+                                    {dayjs.to(chat.messages[chat.messages.length - 1].sent)} 
+                                </p>
                             </div>
                         </div>
                     )
