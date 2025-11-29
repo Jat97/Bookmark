@@ -7,18 +7,17 @@ const Message = (props) => {
     const is_logged = props.props[1];
 
     return (
-        <div>
-            {message.image ?
+        <div className={`flex flex-col ${is_logged ? 'items-start' : 'items-end'}`}>
+            {message.image &&
                 <img src={message.image}></img>
-            :
-                null
             }
 
-            <div>
+            <div className={`rounded-tl-xs rounded-tr-xs 
+                ${is_logged ? 'rounded-br-xl rounded-bl-xs bg-amber-400' : 'rounded-br-xs rounded-bl-xl'}`}>
                 <p> {message.text} </p>
             </div>
 
-            <p> {dayjs.to(message.sent)} </p>
+            <p className='text-xs text-slate-200'> {dayjs.to(message.sent)} </p>
         </div>
     )
 }
