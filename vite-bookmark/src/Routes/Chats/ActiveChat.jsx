@@ -35,7 +35,7 @@ const ActiveChat = (props) => {
 
     return (
         <div>
-            <div>
+            <div className='flex flex-col items-center'>
                 {`${chat.user_2.first_name} ${chat.user_2.last_name}`}
             </div>
 
