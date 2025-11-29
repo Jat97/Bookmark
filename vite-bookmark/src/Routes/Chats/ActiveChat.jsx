@@ -45,22 +45,29 @@ const ActiveChat = (props) => {
 
             <div>
                 {image.reader &&
-                    <div>
-                        <XMarkIcon className='h-6' onClick={() => removeImage()}/>
+                    <div className='border border-slate-200'>
+                        <div className='float-right bg-zinc-400 rounded-full p-1 hover:bg-slate-100'
+                             onClick={() => removeImage()}>
+                            <XMarkIcon className='h-6' />
+                        </div>
+                        
                        <img src={image.reader}></img> 
                     </div>   
                 }
 
                 <div>
+                    <input type='text' className='bg-slate-200 max-w-20 rounded-full md:max-w-28 focus:bg-white'
+                        placeholder='What do you want to say?'>
+                    </input>
+
                     <label>
                         <input type='file' id='file_upload' className='hidden' onChange={() => uploadImage()}></input>
-                        <PaperClipIcon className='h-6' />
+                        <PaperClipIcon className='h-6 fill-orange-200' />
                     </label>
 
-                    <input type='text'></input>
-
-                    <button type='button' onClick={() => sendMessage()}>
-                        <PaperAirplaneIcon className='h-6' />
+                    <button type='button' className='border border-orange-200 rounded-full hover:bg-amber-100' 
+                        onClick={() => sendMessage()}>
+                        <PaperAirplaneIcon className='h-6 fill-orange-200' />
                     </button>
                 </div>
             </div>
