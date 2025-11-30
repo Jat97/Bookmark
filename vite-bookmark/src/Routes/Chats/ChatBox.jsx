@@ -26,7 +26,7 @@ const ChatBox = (props) => {
                 {chats.map(chat => {
                     return (
                         <div onClick={() => changeActiveChat()}>
-                            <UserDisplay props={[chat.user_2, '']} />
+                            <UserDisplay props={[chat.user_2, 'chat']} />
 
                             <div className='flex justify-around items-center'>
                                 <p className='text-sm'> {chat.messages[chat.messages.length - 1].text} </p>
