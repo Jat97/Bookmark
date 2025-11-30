@@ -7,10 +7,13 @@ import {useBookStore} from '../../Context/bookStore';
 import UserDisplay from './UserDisplay';
 import UserMenu from './Tabs/UserMenu';
 import AlertTab from './Tabs/AlertTab';
+import ChatBox from './'
 import PageHeader from '../Miscellaneous/Text/PageHeader';
 
 const Navbar = () => {
+    const selected_chat = useBookStore((state) => state.selected_chat);
     const authorized = useBookStore((state) => state.authorized);
+    const setSelectedChat = useBookStore((state) => state.setSelectedChat);
     const setAuthorized = useBookStore((state) => state.setAuthorized);
     const setSiteError = useBookStore((state) => state.setSiteError);
 
@@ -52,8 +55,12 @@ const Navbar = () => {
         }
     };
 
+    const openNavChat = () => {
+        setSelectedChat(chatData.data.chats[0].chat.user);
+    }
+
     return (
-        <div className='flex justify-between items-center'>
+        <div className='flex justify-between items-center bg-orange-200'>
             <PageHeader props={'Bookmark'} />
             
             <form method='GET' action='/api/search' encType='application/json'>
@@ -61,8 +68,8 @@ const Navbar = () => {
                     placeholder='What are you looking for?' onChange={(e) => searchUsersGroups(e)}>
                 </input>
 
-                <button type='submit' className='border-slate-100 p-1'>
-                    <MagnifyingGlassIcon className='h-6' />
+                <button type='submit' className='border-slate-100 bg-white p-1'>
+                    <MagnifyingGlassIcon className='h-6 fill-orange-200' />
                 </button>
             </form>
             
@@ -77,15 +84,14 @@ const Navbar = () => {
                     <AlertTab props={alertData.data.alerts} />
                 </div>
                 
-                <div className=''>
-                    <div className='flex flex-row-reverse items-end'>
-                        <ChatBubbleOvalLeftEllipsisIcon className='h-6' />
+                
+                <div className='flex flex-row-reverse items-end'>
+                    <ChatBubbleOvalLeftEllipsisIcon className='h-6' onClick={() => openNavChat()} />
 
-                        <NotificationCount props={unreadMessageCount} />
-                    </div>
+                    <NotificationCount props={unreadMessageCount} />
                 </div>
 
-                <div className=''>
+                <div>
                     <div className='flex flex-row-reverse items-end'>
                        <UserIcon className='h-6' /> 
 
