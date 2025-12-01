@@ -35,7 +35,7 @@ const ActiveChat = (props) => {
 
     return (
         <div>
-            {selected_chat !== undefined ? 
+            {selected_chat === undefined ? 
                 <div>
                     <ChatBubbleLeftEllipsisIcon className='max-h-12 fill-slate-200' />
 
