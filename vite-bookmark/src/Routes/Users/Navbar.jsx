@@ -7,7 +7,7 @@ import {useBookStore} from '../../Context/bookStore';
 import UserDisplay from './UserDisplay';
 import UserMenu from './Tabs/UserMenu';
 import AlertTab from './Tabs/AlertTab';
-import ChatBox from './'
+import ChatBox from './Chats/ChatBox';
 import PageHeader from '../Miscellaneous/Text/PageHeader';
 
 const Navbar = () => {
@@ -109,6 +109,10 @@ const Navbar = () => {
                     <UserMenu props={loggedData.data.logged_user} />
                 }
             </div>
+
+            {selected_chat !== null &&
+                <ChatBox props={chatData.data.chats} />
+            }
         </div>
     )
 }
