@@ -37,7 +37,7 @@ const UserDisplay = (props) => {
     return (
         <div>
             <div>
-                <div>
+                <div className='border border-orange-200 rounded-full'>
                     {user.profile_picture ? 
                         <img src={user.profile_picture} className={`${handleUserImageCSS()}`}></img>
                     :
