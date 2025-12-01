@@ -27,18 +27,16 @@ const AlertTab = (props) => {
     }
 
     return (
-        <div>
+        <div className='border border-slate-200 bg-slate-200 max-h-screen max-w-screen md:max-h-60 md:max-w-32'>
             {alertView &&
-                <div onClick={() => toggleAlertView}>
-                   <XMarkIcon className='h-6' /> 
-                </div> 
+                <XMarkIcon className='h-6 fill-slate-400 hover:fill-zinc-100' onClick={() => toggleAlertView()}/> 
             }
 
             <div>
                {alerts.map(alert => {
                     if(alert.requesting_user) {
                         return (
-                            <div>
+                            <div className='flex justify-around items-center'>
                                <UserDisplay props={[alert.requesting_user, '']} />
 
                                <div className='flex justify-around items-center'>
@@ -51,7 +49,7 @@ const AlertTab = (props) => {
                     }
                     else {
                         return (
-                            <div>
+                            <div className='flex flex-col items-start'>
                                 {alert.alerting_user ? 
                                     <UserDisplay props={[alert.alerting_user, '']} />
                                 :
