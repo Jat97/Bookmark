@@ -10,7 +10,6 @@ import BlockButton from '../Buttons/BlockButton';
 const UserPage = () => {
     const {userid} = useParams();
     const authorized = useBookStore((state) => state.authorized);
-    const selected_chat = useBookStore((state) => state.selected_chat);
     const setSelectedChat = useBookStore((state) => state.setSelectedChat);
     const setAuthorized = useBookStore((state) => state.setAuthorized);
     const setSiteError = useBookStore((state) => state.setSiteError);
