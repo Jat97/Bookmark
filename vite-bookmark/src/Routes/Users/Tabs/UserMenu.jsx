@@ -14,28 +14,28 @@ const UserMenu = (props) => {
     }
 
     return (
-        <div>
-            <Link to={`/api/user/${user.id}`}> 
+        <div className='flex flex-col items-center border border-slate-200 bg-slate-200 max-h-40 max-w-32'>
+            <Link to={`/api/user/${user.id}`} className='hover:bg-zinc-100'> 
                 Profile 
             </Link>
 
-            <Link to={`/api/user/friends/${user.id}`}>
+            <Link to={`/api/user/friends/${user.id}`} className='hover:bg-zinc-100'>
                 View friends
             </Link>
 
-            <Link to={`/api/user/groups/${user.id}`}> 
+            <Link to={`/api/user/groups/${user.id}`} className='hover:bg-zinc-100'> 
                 Groups
             </Link>
 
-            <Link to={`/api/users`}>
+            <Link to={`/api/users`} className='hover:bg-zinc-100'>
                 View all users
             </Link>
 
-            <Link to={`/api/groups`}>
+            <Link to={`/api/groups`} className='hover:bg-zinc-100'>
                 View all groups
             </Link>
 
-            <button type='button' onClick={() => endSession()}>
+            <button type='button' className='hover:bg-zinc-100' onClick={() => endSession()}>
                 Logout
             </button>
         </div>
