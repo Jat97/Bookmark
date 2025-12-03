@@ -1,4 +1,5 @@
 import {useBookStore} from '../../Context/bookStore';
+import {XMarkIcon} from '@heroicons/react/24/solid';
 import UserDisplay from '../Users/UserDisplay';
 import ActiveChat from './ActiveChat';
 import dayjs from 'dayjs';
@@ -18,10 +19,17 @@ const ChatBox = (props) => {
             }
         });
     }
+
+    const disableChat = () => {
+        setSelectedChat(null);
+    }
  
     return (
         <div className='absolute bottom-0 right-2 grid grid-cols-2 border border-slate-200 shadow-sm 
             shadow-slate-200 max-h-screen max-w-screen md:max-h-48 md:max-w-32'>
+                
+            <XMarkIcon className='h-6 fill-slate-200 hover:fill-zinc-100' onClick={() => disableChat()} />
+
             <div className='flex flex-col items-start'>
                 {chats.map(chat => {
                     return (
