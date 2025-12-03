@@ -1,6 +1,6 @@
-import {useState} from 'React';
+import {useState} from 'react';
 import {Link} from 'react-router-dom';
-import {ArrowUTurnLeftIcon, ChatBubbleLeftRightIcon} from "@heroicons/react/24/solid";
+import {ArrowUturnLeftIcon, ChatBubbleLeftRightIcon} from "@heroicons/react/24/solid";
 import {useBookStore} from '../../Context/bookStore';
 import {useFetchLogged} from '../Functions/Queries/UserQueries';
 import {useSharePostMutation} from '../Functions/Mutations/PostMutations';
@@ -53,7 +53,7 @@ const PostCommentBox = (props) => {
                 <LikeButton props={[loggedData.data.logged_user, post]} />
 
                 <button type='button' className='border-l-orange-200 border-r-orange-200' onClick={() => sharePost()}>
-                    <ArrowUTurnLeftIcon className='h-6 fill-orange-200' />
+                    <ArrowUturnLeftIcon className='h-6 fill-orange-200' />
 
                     Share
                 </button>
