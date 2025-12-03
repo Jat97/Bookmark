@@ -3,7 +3,7 @@ import {useFetchLogged, useFetchUsers} from '../Functions/Queries/UserQueries';
 import {useFetchPosts} from '../Functions/Queries/PostQueries';
 import {useBookStore} from '../../Context/bookStore';
 import UserDisplay from './UserDisplay';
-import PostCard from '../Posts/PostCard';
+import PostCard from '../Feed/Posts/PostCard';
 import FriendButton from '../Buttons/FriendButton';
 import BlockButton from '../Buttons/BlockButton';
 
@@ -16,6 +16,7 @@ const UserPage = () => {
 
     const loggedData = useFetchLogged([authorized, setAuthorized, setSiteError]);
     const userData = useFetchUsers([authorized, setAuthorized, setSiteError]);
+    const postData = useFetchPosts([authorized, setAuthorized, setSiteError]);
 
     const current_user = userData.data.users.find(user => user.id === userid);
     const user_posts = postData.data.posts.filter(post => post.original_poster.id === current_user.id);
