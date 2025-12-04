@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import {Link} from 'react-router-dom';
 import {useBookStore} from '../../../Context/bookStore';
+import LogSignButton from '../../Buttons/LogSignButton';
 import LogSignInput from '../../Miscellaneous/Inputs/LogSignInput';
 import InputErr from '../../Miscellaneous/Text/Errors/InputErr';
 
@@ -50,14 +51,15 @@ const Signup = () => {
     }
 
     return (
-        <div className='absolute top-1/3 right-1/3'>
-            <div className='flex flex-col items-center border border-slate-200 shadow-sm shadow-slate-200'>
-                Join us at Bookmark!
+        <div className='absolute top-[150px] h-screen w-screen md:left-[250px] md:w-1/2'>
+            <div className='flex flex-col items-center gap-y-[20px] md:border md:border-slate-200 
+                md:shadow-sm md:shadow-slate-200'>
+                <p className='text-lg font-semibold'> Join us at Bookmark! </p>
 
-                <div className='font-semibold grid grid-cols-2 items-center'>
+                <div className='grid grid-cols-2 items-center gap-y-[10px] w-11/12'>
                     <div>
-                        <div className='font-semibold flex flex-col items-start'>
-                            First Name
+                        <div className='flex flex-col items-start'>
+                            <p className='font-semibold'> First Name </p>
 
                             <LogSignInput props='first_name' />
                         </div>
@@ -69,8 +71,8 @@ const Signup = () => {
                     </div>
 
                     <div>
-                        <div className='font-semibold flex flex-col items-start'>
-                            Last Name
+                        <div className='flex flex-col items-start'>
+                            <p> Last Name </p>
 
                             <LogSignInput props='last_name' />
                         </div>
@@ -81,8 +83,8 @@ const Signup = () => {
                     </div>
 
                     <div>
-                        <div className='font-semibold flex flex-col items-start'>
-                            Email
+                        <div className='flex flex-col items-start'>
+                            <p className='font-semibold'> Email </p>
 
                             <LogSignInput props='email' />
                         </div>
@@ -95,7 +97,7 @@ const Signup = () => {
 
                     <div>
                         <div className='font-semibold flex flex-col items-start'>
-                            Password
+                            <p className='font-semibold'> Password </p>
 
                             <LogSignInput props='password' />
                         </div>
@@ -108,9 +110,9 @@ const Signup = () => {
 
                     <div>
                         <div className='flex flex-col items-start'>
-                            Confirm
+                            <p className='font-semibold'> Confirm </p>
 
-                            <LogSignInput props='confirm' />
+                            <LogSignInput props='confirm_password' />
                         </div>
                         
 
@@ -120,12 +122,12 @@ const Signup = () => {
                     </div>
                 </div>
                 
-                <div className='flex flex-col items-center'>
+                <div className='flex flex-col items-center gap-y-[10px] mb-[10px]'>
                     <LogSignButton props={['Create account', signUp]} />
 
-                    Already have an account? <Link to='/api/login' className='text-blue-600 underline'> 
-                        Log in here! 
-                    </Link>
+                    <p> Already have an account? 
+                        <Link to='/api/login' className='text-blue-600 underline'> Log in here! </Link> 
+                    </p>
                 </div>
             </div>
         </div>
