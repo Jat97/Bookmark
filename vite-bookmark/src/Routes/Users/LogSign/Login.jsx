@@ -43,15 +43,15 @@ const Login = () => {
     }
 
     return (
-        <div className='absolute top-1/3 md:left-[350px] md:w-1/2'>
-            <div className='flex flex-col items-center border border-slate-200 shadow-sm shadow-red-200 
-                bg-white gap-y-[20px]'>
+        <div className='absolute top-[200px] h-screen w-screen md:top-1/3 md:left-[350px] md:w-1/2'>
+            <div className='flex flex-col items-center gap-y-[20px] md:border md:border-slate-200 md:shadow-sm md:shadow-red-200 
+                md:bg-white'>
                 <p className='text-lg font-semibold'> Sign in to Bookmark </p>
 
                 <div>
                     <div className='w-1/3'>
-                        <div className='font-semibold flex flex-col items-start'>
-                            Username
+                        <div className='flex flex-col items-start'>
+                            <p className='font-semibold'> Username </p>
 
                             <LogSignInput props={'email'} />
                         </div>
@@ -62,8 +62,8 @@ const Login = () => {
                     </div>
 
                     <div className='w-1/3'>
-                        <div className='font-semibold flex flex-col items-start'>
-                            Password
+                        <div className='flex flex-col items-start'>
+                            <p className='font-semibold'> Password </p>
 
                             <LogSignInput props={'password'} />
                         </div>
