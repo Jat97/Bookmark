@@ -3,10 +3,10 @@ const LogSignInput = (props) => {
 
     return (
         <input data-testid={id} name={id} type={id === 'password' || id === 'confirm' ? 'password' : id === 'email' ? 'email' : 'text'}
-            className='bg-gray-200 rounded-full p-1 w-[200px] focus:bg-white' 
-            minLength={id === 'password' || id === 'confirm' ? '8' : '1'} 
-            maxLength={id === 'password' || id === 'confirm' ? '8' : '1'}
-            placeholder={`${id.replace(id[0], id[0].toUpperCase())}`}>
+            className='bg-gray-200 rounded-full p-1 w-[175px] focus:bg-white' 
+            minLength={id === 'password' || id === 'confirm_password' ? '8' : '1'} 
+            maxLength={20}
+            placeholder={`${id.replace('_', ' ').replace(id[0], id[0].toUpperCase())}`}>
         </input>
     )
 }
