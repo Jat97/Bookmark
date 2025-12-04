@@ -21,8 +21,8 @@ const Login = () => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                user: user,
-                password: password
+                user: document.querySelector('#email').value,
+                password: document.querySelector('#password').value
             })
         })
         .then(res => {
