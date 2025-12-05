@@ -14,7 +14,7 @@ const RemoveMemberButton = (props) => {
     }
 
     return (
-        <button data-testid='terminate_membership_button' type='button' className='bg-red-300' 
+        <button data-testid='terminate_membership_button' type='button' className='bg-red-300 cursor-pointer' 
             onClick={() => removeMember()}>
             Remove from group
         </button>
