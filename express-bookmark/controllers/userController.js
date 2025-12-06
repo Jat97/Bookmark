@@ -2,6 +2,7 @@ const db = require('../database/db');
 const validateToken = require('../database/token');
 const {uploadImage} = require('../database/token');
 const {body, validationResult} = require('express-validator');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 let date = new Date();
@@ -23,7 +24,7 @@ exports.create_account = [
     }),
     body('dob', 'Please enter your date of birth.').custom(() => {
         if(minDate < 18) {
-            return Promise.reject('/You must be at least 18 years of age to register.');
+            return Promise.reject('You must be at least 18 years of age to register.');
         }
     }),
     body('password', 'Please enter a password').isLength({min: 8}).custom(password => {
@@ -41,6 +42,7 @@ exports.create_account = [
         const errors = validationResult(req);
 
         if(!errors.isEmpty()) {
+            console.log(errors)
             return res.status(400).json({errors: errors});
         }
         else {
@@ -66,7 +68,7 @@ exports.create_account = [
                                 secure: false,
                                 httpOnly: true,
                                 path: '/api'
-                            }).redirect(303, '/api/home');
+                            }).sendStatus(200);
                         }
                     });
                 }
@@ -76,7 +78,7 @@ exports.create_account = [
 ];
 
 exports.log_in = async (req, res) => {
-    const user = await db.query(`SELECT * FROM users WHERE email = $1`, [req.body.email]);
+    const user = await db.query(`SELECT * FROM users WHERE email = $1`, [req.body.user]);
 
     if(user.rows.length === 0) {
         return res.status(400).json({email_err: 'This email is not currently in use.'});
@@ -104,7 +106,7 @@ exports.log_in = async (req, res) => {
                                 secure: false,
                                 httpOnly: true,
                                 path: '/api'
-                            }).redirect(303, '/api/home')
+                            }).sendStatus(200)
                         }
                     });
                 }
