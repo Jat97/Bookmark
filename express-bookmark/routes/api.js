@@ -12,7 +12,7 @@ const chatController = require('../controllers/chatController');
 
 router.post('/signup', userController.create_account);
 
-router.put('/login', userController.log_in);
+router.post('/login', userController.log_in);
 
 router.get('/users', userController.get_all_users);
 
