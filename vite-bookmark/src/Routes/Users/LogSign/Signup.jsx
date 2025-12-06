@@ -12,6 +12,7 @@ const Signup = () => {
         first_name: null,
         last_name: null,
         email: null,
+        dob: null,
         password: null,
         confirm: null
     });
@@ -24,11 +25,12 @@ const Signup = () => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                first_name: first_name,
-                last_name: last_name,
-                email: email,
-                password: password,
-                confirm: confirm
+                first_name: document.querySelector('#first_name').value,
+                last_name: document.querySelector('#last_name').value,
+                email: document.querySelector('#email').value,
+                dob: document.querySelector('#dob').value,
+                password: document.querySelector('#password').value,
+                confirm: document.querySelector('#confirm_password').value
             })
         })
         .then(res => {
@@ -51,7 +53,7 @@ const Signup = () => {
     }
 
     return (
-        <div className='absolute top-[150px] h-screen w-screen md:left-[250px] md:w-1/2'>
+        <div className='absolute top-[150px] h-screen w-screen md:left-[250px] md:rounded-full md:w-1/2'>
             <div className='flex flex-col items-center gap-y-[20px] md:border md:border-slate-200 
                 md:shadow-sm md:shadow-slate-200'>
                 <p className='text-lg font-semibold'> Join us at Bookmark! </p>
@@ -92,6 +94,18 @@ const Signup = () => {
 
                         {signErrors.email &&
                             <InputErr props={signErrors.email} />
+                        }
+                    </div>
+
+                    <div>
+                        <div className='flex flex-col items-start'>
+                            <p className='font-semibold'> Date of birth </p>
+
+                            <LogSignInput props='dob' />
+                        </div>
+
+                        {signErrors.dob &&
+                            <InputErr props={signErrors.dob} />
                         }
                     </div>
 
