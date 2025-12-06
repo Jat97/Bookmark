@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import {useBookStore} from '../../../Context/bookStore';
 import LogSignInput from '../../Miscellaneous/Inputs/LogSignInput';
 import InputErr from '../../Miscellaneous/Text/Errors/InputErr';
@@ -7,6 +7,8 @@ import LogSignButton from '../../Buttons/LogSignButton';
 
 const Login = () => {
     const setSiteError = useBookStore((state) => state.setSiteError);
+
+    const navigate = useNavigate();
 
     const [logErrors, setLogErrors] = useState({
         user: null,
@@ -29,6 +31,9 @@ const Login = () => {
             if(!res.ok) {
                 throw Error(`Error ${res.status}: ${res.statusText}`);
             }
+            else if(res.status === 200) {
+                return navigate('/api/home', {rewrite: true});
+            }
             else {
                 return res.json();
             }
@@ -43,7 +48,7 @@ const Login = () => {
     }
 
     return (
-        <div className='absolute top-[200px] h-screen w-screen md:top-1/3 md:left-[350px] md:w-1/2'>
+        <div className='absolute top-[200px] h-screen w-screen md:top-1/3 md:left-[325px] md:rounded-full md:w-1/2'>
             <div className='flex flex-col items-center gap-y-[20px] md:border md:border-slate-200 md:shadow-sm md:shadow-red-200 
                 md:bg-white'>
                 <p className='text-lg font-semibold'> Sign in to Bookmark </p>
