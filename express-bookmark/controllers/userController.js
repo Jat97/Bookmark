@@ -22,19 +22,19 @@ exports.create_account = [
             return Promise.reject('This email address is currently in use.');
         }
     }),
-    body('dob', 'Please enter your date of birth.').custom(() => {
-        if(minDate < 18) {
-            return Promise.reject('You must be at least 18 years of age to register.');
+    body('dob', 'Please enter your date of birth.').custom(async (birth) => {
+        if(birth > minDate) {
+            return await Promise.reject('You must be at least 18 years of age to register.');
         }
     }),
-    body('password', 'Please enter a password').isLength({min: 8}).custom(password => {
+    body('password', 'Please enter a password').trim().isLength({min: 8}).custom(async password => {
         if(password.length < 8) {
-            return Promise.reject('Your password is too short.');
+            return await Promise.reject('Your password is too short.');
         }
     }),
-    body('confirm', 'Please confirm your password').isLength({min: 8}).custom((confirm, {req}) => {
+    body('confirm', 'Please confirm your password').trim().isLength({min: 8}).custom(async (confirm, {req}) => {
         if(confirm !== req.body.password) {
-            return Promise.reject('Your passwords do not match.');
+            return await Promise.reject('Your passwords do not match.');
         }
     }),
 
@@ -42,7 +42,6 @@ exports.create_account = [
         const errors = validationResult(req);
 
         if(!errors.isEmpty()) {
-            console.log(errors)
             return res.status(400).json({errors: errors});
         }
         else {
