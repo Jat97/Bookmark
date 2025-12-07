@@ -60,12 +60,12 @@ const Signup = () => {
     return (
         <div className='absolute top-[150px] h-screen w-screen md:left-[350px] md:rounded-full md:w-1/2'>
             <div className='flex flex-col items-center gap-y-[20px] md:border md:border-slate-200 
-                md:shadow-sm md:shadow-slate-200'>
+                md:shadow-sm md:shadow-slate-200 md:w-full'>
                 <p className='text-lg font-semibold'> Join us at Bookmark! </p>
 
                 <div className='grid grid-cols-2 items-center gap-y-[10px] w-11/12'>
                     <div>
-                        <div className='flex flex-col items-start'>
+                        <div className='flex flex-col items-center'>
                             <p className='font-semibold'> First Name </p>
 
                             <LogSignInput props='first_name' />
@@ -78,7 +78,7 @@ const Signup = () => {
                     </div>
 
                     <div>
-                        <div className='flex flex-col items-start'>
+                        <div className='flex flex-col items-center'>
                             <p> Last Name </p>
 
                             <LogSignInput props='last_name' />
@@ -90,7 +90,7 @@ const Signup = () => {
                     </div>
 
                     <div>
-                        <div className='flex flex-col items-start'>
+                        <div className='flex flex-col items-center'>
                             <p className='font-semibold'> Email </p>
 
                             <LogSignInput props='email' />
@@ -103,7 +103,7 @@ const Signup = () => {
                     </div>
 
                     <div>
-                        <div className='flex flex-col items-start'>
+                        <div className='flex flex-col items-center'>
                             <p className='font-semibold'> Date of birth </p>
 
                             <LogSignInput props='dob' />
@@ -115,7 +115,7 @@ const Signup = () => {
                     </div>
 
                     <div>
-                        <div className='font-semibold flex flex-col items-start'>
+                        <div className='flex flex-col items-center'>
                             <p className='font-semibold'> Password </p>
 
                             <LogSignInput props='password' />
@@ -128,8 +128,8 @@ const Signup = () => {
                     </div>
 
                     <div>
-                        <div className='flex flex-col items-start'>
-                            <p className='font-semibold'> Confirm </p>
+                        <div className='flex flex-col items-center'>
+                            <p className='font-semibold'> Confirm password </p>
 
                             <LogSignInput props='confirm_password' />
                         </div>
