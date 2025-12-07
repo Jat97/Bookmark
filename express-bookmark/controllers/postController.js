@@ -11,8 +11,6 @@ exports.get_post_feed = async (req, res) => {
                 users.first_name AS first_name,
                 users.last_name AS last_name,
                 users.profile_picture AS profile_picture,
-                groups.title AS group_title,
-                groups.group_image AS group_image,
                 posts.text AS text,
                 posts.posted AS posted
                 FROM posts
@@ -24,7 +22,7 @@ exports.get_post_feed = async (req, res) => {
             const group_posts = await db.query(
                 `SELECT posts.id as id,
                 groups.title AS title,
-                groups.group_image AS group_image,
+                groups.group_image AS group_image
                 FROM posts 
                 INNER JOIN groups ON groups.id = posts.original_group
                 WHERE posts.original_poster = $1`,
@@ -34,23 +32,23 @@ exports.get_post_feed = async (req, res) => {
             const all_posts = user_posts.rows.concat(group_posts.rows);
 
             const blocked_users = await db.query(
-                `SELECT * from blocked_users WHERE blocked_by = $1`, 
-                [user_key.logged_user.id]
+                `SELECT * from blocked WHERE blocked_by = $1`, 
+                [user_key.logged_user?.id]
             );
 
             const friends = await db.query(
                 `SELECT * from friends WHERE friend_1 = $1`,
-                [user_key.logged_user.id]
+                [user_key.logged_user?.id]
             );
 
             const groups = await db.query(
                 `SELECT * FROM group_memberships WHERE member = $1`,
-                [user_key.logged_user.id]
+                [user_key.logged_user?.id]
             );
             
             const feed_posts = []; 
             
-            for(let i = 0; i < all_posts.rows.length; i++) {
+            for(let i = 0; i < all_posts.length; i++) {
                 if(blocked_users.rows.some(((block) => block.blocked_user === post.original_poster) === false) 
                     || friends.rows.some((friend) => friend.friend_2 === post.original_poster) ||
                     groups.some((group) => group.member_of === post.original_poster)) {
@@ -58,7 +56,7 @@ exports.get_post_feed = async (req, res) => {
                         `SELECT users.id AS id,
                         users.first_name AS first_name,
                         users.last_name AS last_name,
-                        users.profile_picture AS profile_picture,
+                        users.profile_picture AS profile_picture
                         FROM likes 
                         INNER JOIN users ON users.id = likes.liking_user
                         WHERE likes.liked_post = $1 AND likes.liking_group = $2`, 
@@ -68,7 +66,7 @@ exports.get_post_feed = async (req, res) => {
                     const group_likes = await db.query(
                         `SELECT groups.id AS id,
                         groups.title AS title,
-                        groups.group_image AS group_image,
+                        groups.group_image AS group_image
                         FROM likes
                         INNER JOIN groups ON groups.id = likes.liking_group
                         WHERE likes.liked_post = $1 AND likes.liking_user = $2`,
