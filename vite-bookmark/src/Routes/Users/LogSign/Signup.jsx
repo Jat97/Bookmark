@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import {useBookStore} from '../../../Context/bookStore';
 import LogSignButton from '../../Buttons/LogSignButton';
 import LogSignInput from '../../Miscellaneous/Inputs/LogSignInput';
@@ -7,6 +7,8 @@ import InputErr from '../../Miscellaneous/Text/Errors/InputErr';
 
 const Signup = () => {
     const setSiteError = useBookStore((state) => state.setSiteError);
+
+    const navigate = useNavigate();
 
     const [signErrors, setSignErrors] = useState({
         first_name: null,
@@ -37,6 +39,9 @@ const Signup = () => {
             if(!res.ok) {
                 throw Error(`Error ${res.status}: ${res.statusText}`);
             }
+            else if(res.status === 200) {
+                return navigate('/api/home', {rewrite: true});
+            }
             else {
                 return res.json();
             }
@@ -53,7 +58,7 @@ const Signup = () => {
     }
 
     return (
-        <div className='absolute top-[150px] h-screen w-screen md:left-[250px] md:rounded-full md:w-1/2'>
+        <div className='absolute top-[150px] h-screen w-screen md:left-[350px] md:rounded-full md:w-1/2'>
             <div className='flex flex-col items-center gap-y-[20px] md:border md:border-slate-200 
                 md:shadow-sm md:shadow-slate-200'>
                 <p className='text-lg font-semibold'> Join us at Bookmark! </p>
