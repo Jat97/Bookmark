@@ -1,6 +1,5 @@
 const db = require('../database/db');
-const validateToken = require('../database/token');
-const {uploadImage} = require('../database/token');
+const {uploadImage, validateToken} = require('../database/token');
 const {body, validationResult} = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -259,7 +258,7 @@ exports.get_friends_list = async (req, res) => {
                 FROM friends
                 INNER JOIN users ON users.id = friends.friend_2
                 WHERE friend_1 = $1`,
-                [user_key.logged_user.id]
+                [user_key.logged_user?.id]
             );
 
             const friends = [];
