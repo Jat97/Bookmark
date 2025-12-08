@@ -7,8 +7,9 @@ import {useBookStore} from '../../Context/bookStore';
 import UserDisplay from './UserDisplay';
 import UserMenu from './Tabs/UserMenu';
 import AlertTab from './Tabs/AlertTab';
-import ChatBox from './Chats/ChatBox';
+import ChatBox from '../Chats/ChatBox';
 import PageHeader from '../Miscellaneous/Text/PageHeader';
+import NotificationCount from '../Miscellaneous/Text/NotificationCount';
 
 const Navbar = () => {
     const selected_chat = useBookStore((state) => state.selected_chat);
@@ -78,10 +79,10 @@ const Navbar = () => {
                     <div className='flex flex-row-reverse items-end'>
                         <BellIcon className='h-6' />
 
-                        <NotificationCount props={alertData.data.alerts.length} />
+                        <NotificationCount props={alertData.data?.alerts.length} />
                     </div>
                     
-                    <AlertTab props={alertData.data.alerts} />
+                    <AlertTab props={alertData.data?.alerts} />
                 </div>
                 
                 
@@ -95,23 +96,23 @@ const Navbar = () => {
                     <div className='flex flex-row-reverse items-end'>
                        <UserIcon className='h-6' /> 
 
-                       <NotificationCount props={alertData.data.requests.length} />
+                       <NotificationCount props={alertData.data?.requests.length} />
                     </div>
 
-                    <AlertTab props={alertData.data.requests} />
+                    <AlertTab props={alertData.data?.requests} />
                 </div>
             </div>
 
             <div onClick={() => toggleUserMenu()}>
-                <UserDisplay props={[loggedData.data.logged_user, '']} />
+                <UserDisplay props={[loggedData.data?.logged_user, '']} />
 
                 {userMenu &&
-                    <UserMenu props={loggedData.data.logged_user} />
+                    <UserMenu props={loggedData.data?.logged_user} />
                 }
             </div>
 
             {selected_chat !== null &&
-                <ChatBox props={chatData.data.chats} />
+                <ChatBox props={chatData.data?.chats} />
             }
         </div>
     )
