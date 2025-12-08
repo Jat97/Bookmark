@@ -49,8 +49,8 @@ export const useSendFriendRequestMutation = ([user, setSiteError]) => {
 
 export const useAcceptRequestMutation = ([user, setSiteError]) => {
     const mutation = useMutation({
-        mutationFn: () => {
-            fetch(`http://localhost:9000/api/request/accept/${user.id}`, {
+        mutationFn: async () => {
+            return await fetch(`http://localhost:9000/api/request/accept/${user.id}`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -105,8 +105,8 @@ export const useAcceptRequestMutation = ([user, setSiteError]) => {
 
 export const useRejectRequestMutation = ([userid, setSiteError]) => {
     const mutation = useMutation({
-        mutationFn: () => {
-            fetch(`http://localhost:9000/api/request/reject/${userid}`, {
+        mutationFn: async () => {
+            return await fetch(`http://localhost:9000/api/request/reject/${userid}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
@@ -149,8 +149,8 @@ export const useRejectRequestMutation = ([userid, setSiteError]) => {
 
 export const useRemoveFriendMutation = ([userid, setSiteError]) => {
     const mutation = useMutation({
-        mutationFn: () => {
-            fetch(`http://localhost:9000/api/unfriend/${userid}`, {
+        mutationFn: async () => {
+            return await fetch(`http://localhost:9000/api/unfriend/${userid}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
