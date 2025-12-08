@@ -4,7 +4,7 @@ import {query_client} from '../../../client';
 export const useToggleHiddenMutation = (setSiteError) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch('http://127.0.0.1:9000/api/user/hidden/update', {
+            return await fetch('http://localhost:9000/api/user/hidden/update', {
                 method: 'PATCH',
                 credentials: 'include'
             })
@@ -50,7 +50,7 @@ export const useEditPictureMutation = ([file, setSiteError]) => {
 
             form.append('profilepicture', upload);
 
-            return await fetch('http://127.0.0.1:9000/api/user/picture', {
+            return await fetch('http://localhost:9000/api/user/picture', {
                 method: 'PATCH',
                 credentials: 'include',
                 body: form
@@ -92,7 +92,7 @@ export const useEditPictureMutation = ([file, setSiteError]) => {
 export const useLogInMutation = (setSiteError) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch('http://127.0.0.1:9000/api/login', {
+            return await fetch('http://localhost:9000/api/login', {
                 method: 'PUT',
                 credentials: 'include'
             })
@@ -138,7 +138,7 @@ export const useLogInMutation = (setSiteError) => {
 export const useLogOutMutation = (setSiteError) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch('http://127.0.0.1:9000/api/user/logout', {
+            return await fetch('http://localhost:9000/api/user/logout', {
                 method: 'PATCH',
                 credentials: 'include'
             })
@@ -178,7 +178,7 @@ export const useLogOutMutation = (setSiteError) => {
 export const deleteAccountMutation = (setSiteError) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch('http://127.0.0.1:9000/api/user/delete', {
+            return await fetch('http://localhost:9000/api/user/delete', {
                 method: 'DELETE',
                 credentials: 'include'
             })

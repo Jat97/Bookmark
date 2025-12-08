@@ -4,7 +4,7 @@ import {query_client} from '../../../client';
 export const useSendFriendRequestMutation = ([user, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://127.0.0.1:9000/api/friend/request/${user}`, {
+            return await fetch(`http://localhost:9000/api/friend/request/${user}`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -50,7 +50,7 @@ export const useSendFriendRequestMutation = ([user, setSiteError]) => {
 export const useAcceptRequestMutation = ([user, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: () => {
-            fetch(`http://127.0.0.1:9000/api/request/accept/${user.id}`, {
+            fetch(`http://localhost:9000/api/request/accept/${user.id}`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -106,7 +106,7 @@ export const useAcceptRequestMutation = ([user, setSiteError]) => {
 export const useRejectRequestMutation = ([userid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: () => {
-            fetch(`http://127.0.0.1:9000/api/request/reject/${userid}`, {
+            fetch(`http://localhost:9000/api/request/reject/${userid}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
@@ -150,7 +150,7 @@ export const useRejectRequestMutation = ([userid, setSiteError]) => {
 export const useRemoveFriendMutation = ([userid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: () => {
-            fetch(`http://127.0.0.1:9000/api/unfriend/${userid}`, {
+            fetch(`http://localhost:9000/api/unfriend/${userid}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })

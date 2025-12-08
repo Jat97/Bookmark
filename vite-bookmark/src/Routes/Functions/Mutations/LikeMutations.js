@@ -4,7 +4,7 @@ import {query_client} from '../../../client';
 export const useLikePostMutation = ([logged, postid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://127.0.0.1:9000/api/post/like/${postid}`, {
+            return await fetch(`http://localhost:9000/api/post/like/${postid}`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -58,7 +58,7 @@ export const useLikePostMutation = ([logged, postid, setSiteError]) => {
 export const useUnlikePostMutation = ([logged, postid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://127.0.0.1:9000/api/post/unlike/${postid}`, {
+            return await fetch(`http://localhost:9000/api/post/unlike/${postid}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
@@ -104,7 +104,7 @@ export const useUnlikePostMutation = ([logged, postid, setSiteError]) => {
 export const useLikeCommentMutation = ([logged, commentid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: () => {
-            fetch(`http://127.0.0.1:9000/api/comment/like/${commentid}`, {
+            fetch(`http://localhost:9000/api/comment/like/${commentid}`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -152,7 +152,7 @@ export const useLikeCommentMutation = ([logged, commentid, setSiteError]) => {
 export const useUnlikeCommentMutation = ([logged, commentid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: () => {
-            fetch(`http://127.0.0.1:9000/api/comment/unlike/${commentid}`, {
+            fetch(`http://localhost:9000/api/comment/unlike/${commentid}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })

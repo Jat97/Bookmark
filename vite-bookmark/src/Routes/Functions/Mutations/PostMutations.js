@@ -4,7 +4,7 @@ import {query_client} from '../../../client';
 export const useCreatePostMutation = (setSiteError) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://127.0.0.1:9000/api/post`, () => ({
+            return await fetch(`http://localhost:9000/api/post`, () => ({
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -57,7 +57,7 @@ export const useCreatePostMutation = (setSiteError) => {
 export const useEditPostMutation = ([postid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://127.0.0.1:9000/api/post/${postid}`, {
+            return await fetch(`http://localhost:9000/api/post/${postid}`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
@@ -107,7 +107,7 @@ export const useEditPostMutation = ([postid, setSiteError]) => {
 export const useSharePostMutation = ([postid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://127.0.0.1:9000/api/post/share/${postid}`, {
+            return await fetch(`http://localhost:9000/api/post/share/${postid}`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -158,7 +158,7 @@ export const useSharePostMutation = ([postid, setSiteError]) => {
 export const useDeletePostMutation = ([postid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://127.0.0.1:9000/api/post/${postid}`, {
+            return await fetch(`http://localhost:9000/api/post/${postid}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
@@ -200,7 +200,7 @@ export const useDeletePostMutation = ([postid, setSiteError]) => {
 export const useParentCommentMutation = ([postid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://127.0.0.1:9000/api/post/comment/${postid}`, {
+            return await fetch(`http://localhost:9000/api/post/comment/${postid}`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -253,7 +253,7 @@ export const useParentCommentMutation = ([postid, setSiteError]) => {
 export const useReplyCommentMutation = ([commentid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://127.0.0.1:9000/api/comment/reply/${commentid}`, {
+            return await fetch(`http://localhost:9000/api/comment/reply/${commentid}`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -310,7 +310,7 @@ export const useReplyCommentMutation = ([commentid, setSiteError]) => {
 export const useEditCommentMutation = ([commentid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://127.0.0.1:9000/api/comment/edit/${commentid}`, {
+            return await fetch(`http://localhost:9000/api/comment/edit/${commentid}`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
@@ -359,7 +359,7 @@ export const useEditCommentMutation = ([commentid, setSiteError]) => {
 export const useDeleteCommentMutation = ([commentid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://127.0.0.1:9000/api/comment/${commentid}`, {
+            return await fetch(`http://localhost:9000/api/comment/${commentid}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })

@@ -4,7 +4,7 @@ import {query_client} from '../../../client';
 export const useBlockUserMutation = ([user, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: () => {
-            fetch(`http://127.0.0.1:9000/api/block/${user.id}`, {
+            fetch(`http://localhost:9000/api/block/${user.id}`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -52,7 +52,7 @@ export const useBlockUserMutation = ([user, setSiteError]) => {
 export const useUnblockUserMutation = ([userid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: () => {
-            fetch(`http://127.0.0.1:9000/api/unblock/${userid}`, {
+            fetch(`http://localhost:9000/api/unblock/${userid}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
