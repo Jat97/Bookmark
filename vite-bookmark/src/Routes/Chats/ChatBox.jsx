@@ -3,7 +3,7 @@ import {XMarkIcon} from '@heroicons/react/24/solid';
 import UserDisplay from '../Users/UserDisplay';
 import ActiveChat from './ActiveChat';
 import dayjs from 'dayjs';
-import relativeTime from '/dayjs/plugins/relativeTime';
+import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
 const ChatBox = (props) => {
