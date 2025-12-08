@@ -1,5 +1,4 @@
 import {useState} from 'react';
-import {useAcceptRequestMutation, useRejectRequestMutation} from '../../Functions/Mutations/FriendMutations';
 import UserDisplay from '../UserDisplay';
 import GroupDisplay from '../../Groups/GroupDisplay';
 import AcceptButton from '../../Buttons/AcceptButton';
@@ -11,19 +10,8 @@ const AlertTab = (props) => {
 
     const [alertView, setAlertView] = useState(false);
 
-    const friend_accept_mutation = useAcceptRequestMutation();
-    const reject_friend_mutation = useRejectRequestMutation();
-
     const toggleAlertView = () => {
         setAlertView(alertView ? false : true);
-    }
-
-    const acceptRequest = () => {
-        return friend_accept_mutation.mutate();
-    }
-    
-    const rejectRequest = () => {
-        return reject_friend_mutation.mutate();
     }
 
     return (
@@ -40,9 +28,9 @@ const AlertTab = (props) => {
                                <UserDisplay props={[alert.requesting_user, '']} />
 
                                <div className='flex justify-around items-center'>
-                                    <AcceptButton props={[alert.requesting_user.id, acceptRequest]} />
+                                    <AcceptButton props={alert.requesting_user} />
 
-                                    <RejectButton props={[alert.requesting_user.id, rejectRequest]} /> 
+                                    <RejectButton props={alert.requesting_user} /> 
                                </div>
                             </div>   
                         )
