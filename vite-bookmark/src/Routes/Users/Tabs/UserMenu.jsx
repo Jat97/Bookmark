@@ -1,6 +1,6 @@
 import {Link} from 'react-router-dom';
-import {useLogOutMutation} from '../Functions/Mutations/UserMutations';
-import {useBookStore} from '../../Context/bookStore';
+import {useLogOutMutation} from '../../Functions/Mutations/UserMutations';
+import {useBookStore} from '../../../Context/bookStore';
 
 const UserMenu = (props) => {
     const user = props.props;
