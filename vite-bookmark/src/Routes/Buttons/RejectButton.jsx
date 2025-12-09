@@ -1,10 +1,28 @@
+import {useRejectRequestMutation} from "../Functions/Mutations/FriendMutations";
+import {useGroupRejectMutation} from "../Functions/Mutations/GroupMutations";
+import {useBookStore} from '../../Context/bookStore';
+
 const RejectButton = (props) => {
-    const id = props.props[0];
-    const reject_fn = props.props[1];
+    const user_group = props.props;
+
+    const setSiteError = useBookStore((state) => state.setSiteError);
+
+    const friend_reject_mutation = useRejectRequestMutation([user_group, setSiteError]);
+
+    const group_reject_mutation = useGroupRejectMutation([user_group, setSiteError]);
+
+    const rejectRequest = () => {
+        if(user_group.first_name) {
+            return friend_reject_mutation.mutate();
+        }
+        else {
+            return group_reject_mutation.mutate();
+        }
+    }
 
     return (
         <button id='reject' data-testid={`reject-${id}`} className='bg-red-200 cursor-pointer hover:bg-pink-100'
-            onClick={reject_fn}>
+            onClick={() => rejectRequest()}>
             Reject
         </button>
     )
