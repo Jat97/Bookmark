@@ -124,7 +124,7 @@ export const useFetchAlerts = ([authorized, setAuthorized, setSiteError]) => {
     const result = useQuery({
         queryKey: ['alerts'],
         queryFn: async () => {
-            return await fetch('http://localhost:9000/api/alerts', {
+            return await fetch('http://localhost:9000/api/notifications', {
                 method: 'GET',
                 credentials: 'include'
             })
