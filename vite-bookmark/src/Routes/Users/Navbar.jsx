@@ -21,6 +21,10 @@ const Navbar = () => {
     const [userMenu, setUserMenu] = useState(false);
     const [searchData, setSearchData] = useState([]);
     const [unreadMessageCount, setUnreadMessageCount] = useState(0);
+    const [alertTabs, setAlertTabs] = useState({
+        notifications: false,
+        requests: false
+    });
 
     const loggedData = useFetchLogged([authorized, setAuthorized, setSiteError]);
     const alertData = useFetchAlerts([authorized, setAuthorized, setSiteError]);
@@ -29,9 +33,9 @@ const Navbar = () => {
     const groupData = useFetchGroups([authorized, setAuthorized, setSiteError]);
 
     useEffect(() => {
-        chatData.data.chats.forEach(chat => {
+        chatData.data?.chats.forEach(chat => {
             const unread_messages = chat.messages.filter(message => message.checked === false 
-                && message.sending_user !== loggedData.data.logged_user.id);
+                && message.sending_user !== loggedData.data?.logged_user.id);
 
             setUnreadMessageCount(unreadMessageCount + unread_messages.length);
         });
@@ -60,6 +64,20 @@ const Navbar = () => {
         setSelectedChat(chatData.data.chats[0].chat.user);
     }
 
+    const handleNotificationTab = () => {
+        setAlertTabs({
+            notiifcations: alertTabs.notifications ? false : true,
+            requests: false
+        });
+    }
+
+    const handleRequestsTab = () => {
+        setAlertTabs({
+            notifications: false,
+            requests: alertTabs.requests ? false : true
+        });
+    }
+
     return (
         <div className='flex justify-between items-center bg-orange-200'>
             <PageHeader props={'Bookmark'} />
@@ -76,30 +94,36 @@ const Navbar = () => {
             
             <div className='flex justify-around items-center'>
                 <div>
-                    <div className='flex flex-row-reverse items-end'>
+                    <button type='button' className='flex flex-row-reverse items-end hover:bg-amber-100' 
+                        onClick={() => handleNotificationTab()}>
                         <BellIcon className='h-6' />
 
                         <NotificationCount props={alertData.data?.alerts.length} />
-                    </div>
-                    
-                    <AlertTab props={alertData.data?.alerts} />
+                    </button>
+
+                    {alertTabs.notifications &&
+                        <AlertTab props={alertData.data?.alerts || []} />
+                    }
                 </div>
                 
-                
-                <div className='flex flex-row-reverse items-end'>
-                    <ChatBubbleOvalLeftEllipsisIcon className='h-6' onClick={() => openNavChat()} />
+                <button type='button' className='flex flex-row-reverse items-end hover:bg-amber-100' 
+                    onClick={() => openNavChat()}>
+                    <ChatBubbleOvalLeftEllipsisIcon className='h-6' />
 
                     <NotificationCount props={unreadMessageCount} />
-                </div>
+                </button>
 
                 <div>
-                    <div className='flex flex-row-reverse items-end'>
+                    <button className='flex flex-row-reverse items-end hover:bg-amber-100' 
+                        onClick={() => handleRequestsTab()}>
                        <UserIcon className='h-6' /> 
 
-                       <NotificationCount props={alertData.data?.requests.length} />
-                    </div>
+                       <NotificationCount props={alertData.data.requests?.length} />
+                    </button>
 
-                    <AlertTab props={alertData.data?.requests} />
+                    {alertTabs.requests &&
+                        <AlertTab props={alertData.data?.requests || []} />
+                    }
                 </div>
             </div>
 
