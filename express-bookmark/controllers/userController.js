@@ -157,7 +157,7 @@ exports.get_all_users = async (req, res) => {
 
 exports.get_blocked_list = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const blocked_users = await db.query(
@@ -198,7 +198,7 @@ exports.get_blocked_list = async (req, res) => {
 
 exports.block_user = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const user = await db.query(
@@ -245,7 +245,7 @@ exports.unblock_user = async (req, res) => {
 
 exports.get_friends_list = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const friendslist = await db.query(
@@ -258,7 +258,7 @@ exports.get_friends_list = async (req, res) => {
                 FROM friends
                 INNER JOIN users ON users.id = friends.friend_2
                 WHERE friend_1 = $1`,
-                [user_key.logged_user?.id]
+                [user_key.logged_user.id]
             );
 
             const friends = [];
@@ -287,7 +287,7 @@ exports.get_friends_list = async (req, res) => {
 
 exports.remove_from_friendslist = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             await db.query(
@@ -308,7 +308,7 @@ exports.remove_from_friendslist = async (req, res) => {
 
 exports.get_notifications = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const notifications = await db.query(
@@ -328,22 +328,22 @@ exports.get_notifications = async (req, res) => {
                 `SELECT users.id AS id,
                 users.first_name AS first_name,
                 users.last_name AS last_name,
-                users.profile_picture AS profile_picture,
+                users.profile_picture AS profile_picture
                 FROM friend_requests
                 INNER JOIN users ON users.id = friend_requests.requesting_user
                 WHERE requested_user = $1`,
-                [user_key.logged_user.id]
+                [user_key.logged_user?.id]
             );
 
             const pending_requests = await db.query(
                 `SELECT users.id AS id,
                 users.first_name AS first_name,
                 users.last_name AS last_name,
-                users.profile_picture AS profile_picture,
+                users.profile_picture AS profile_picture
                 FROM friend_requests
                 INNER JOIN users ON users.id = friend_requests.requested_user
                 WHERE requesting_user = $1`,
-                [user_key.logged_user.id]
+                [user_key.logged_user?.id]
             );
 
             const alerts = {
@@ -402,7 +402,7 @@ exports.get_notifications = async (req, res) => {
 
 exports.send_friend_request = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const friend_request = await db.query(
@@ -423,7 +423,7 @@ exports.send_friend_request = async (req, res) => {
 
 exports.accept_friend_request = async (req, res) => {
     try {
-        const user_key = validate(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const logged_friend = await db.query(
@@ -454,7 +454,7 @@ exports.accept_friend_request = async (req, res) => {
 
 exports.reject_friend_request = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             await db.query(
@@ -475,22 +475,10 @@ exports.reject_friend_request = async (req, res) => {
 
 exports.get_logged_information = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
-            const logged_user = await db.query(
-                `SELECT first_name,
-                last_name,
-                profile_picture,
-                email,
-                online,
-                hidden
-                FROM users 
-                WHERE id = $1`,
-                [user_key.logged_user.id]
-            );
-
-            res.status(200).json({logged_user: logged_user.rows[0]});
+            res.status(200).json({logged_user: user_key.logged_user});
         }
         else {
             res.status(401).send();
@@ -503,7 +491,7 @@ exports.get_logged_information = async (req, res) => {
 
 exports.edit_profile_picture = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             if(req.file) {
@@ -531,7 +519,7 @@ exports.edit_profile_picture = async (req, res) => {
 
 exports.update_hidden_status = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const updated_user = await db.query(
@@ -552,7 +540,7 @@ exports.update_hidden_status = async (req, res) => {
 
 exports.log_out = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             await db.query(
@@ -575,7 +563,7 @@ exports.log_out = async (req, res) => {
 
 exports.delete_account = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             await db.query(
