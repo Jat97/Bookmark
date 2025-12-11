@@ -1,10 +1,10 @@
-const {db} = require('../database/db');
+const db = require('../database/db');
 const {validateToken} = require('../database/token');
 const {createCommentTree} = require('../database/misc');
 
 exports.view_post_comments = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const user_comments = await db.query(
@@ -53,7 +53,7 @@ exports.view_post_comments = async (req, res) => {
 
 exports.create_parent_comment = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const group = await db.query(
@@ -87,7 +87,7 @@ exports.create_parent_comment = async (req, res) => {
 
 exports.reply_to_comment = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const group = await db.query(
@@ -126,7 +126,7 @@ exports.reply_to_comment = async (req, res) => {
 
 exports.edit_comment = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
         
         if(user_key) {
             const edited_comment = await db.query(
@@ -147,7 +147,7 @@ exports.edit_comment = async (req, res) => {
 
 exports.like_comment = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const comment_like = await db.query(
@@ -168,7 +168,7 @@ exports.like_comment = async (req, res) => {
 
 exports.unlike_comment = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             await db.query(
@@ -189,7 +189,7 @@ exports.unlike_comment = async (req, res) => {
 
 exports.delete_comment = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             await db.query(`

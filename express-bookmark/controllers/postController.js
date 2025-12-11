@@ -3,7 +3,7 @@ const {validateToken} = require('../database/token');
 
 exports.get_post_feed = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const user_posts = await db.query(
@@ -33,17 +33,17 @@ exports.get_post_feed = async (req, res) => {
 
             const blocked_users = await db.query(
                 `SELECT * from blocked WHERE blocked_by = $1`, 
-                [user_key.logged_user?.id]
+                [user_key.logged_user.id]
             );
 
             const friends = await db.query(
                 `SELECT * from friends WHERE friend_1 = $1`,
-                [user_key.logged_user?.id]
+                [user_key.logged_user.id]
             );
 
             const groups = await db.query(
                 `SELECT * FROM group_memberships WHERE member = $1`,
-                [user_key.logged_user?.id]
+                [user_key.logged_user.id]
             );
             
             const feed_posts = []; 
@@ -108,7 +108,7 @@ exports.get_post_feed = async (req, res) => {
 
 exports.create_post = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const post = await db.query(
@@ -129,7 +129,7 @@ exports.create_post = async (req, res) => {
 
 exports.edit_post = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const edited_post = await db.query(
@@ -150,7 +150,7 @@ exports.edit_post = async (req, res) => {
 
 exports.like_post = async (req, res) => {
     try {
-        const user_key = validateToken();
+        const user_key = await validateToken();
 
         if(user_key) {
             const post_like = await db.query(
@@ -205,7 +205,7 @@ exports.like_post = async (req, res) => {
 
 exports.unlike_post = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             await db.query(
@@ -226,7 +226,7 @@ exports.unlike_post = async (req, res) => {
 
 exports.share_post = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const original_post = await db.query(
@@ -263,7 +263,7 @@ exports.share_post = async (req, res) => {
 
 exports.delete_post = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             await db.query(

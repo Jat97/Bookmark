@@ -5,7 +5,7 @@ const {validateToken} = require('../database/token');
 
 exports.get_all_groups = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const all_groups = await db.query(
@@ -66,7 +66,7 @@ exports.get_all_groups = async (req, res) => {
 
 exports.create_group = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const found_group = findGroup(req);
@@ -98,7 +98,7 @@ exports.create_group = async (req, res) => {
 
 exports.update_group_information = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const found_group = findGroup(req);
@@ -133,7 +133,7 @@ exports.update_group_information = async (req, res) => {
 
 exports.handle_group_privacy = async (req, res) => {
     try {
-        const user_key = validateToken(req);
+        const user_key = await validateToken(req);
 
         if(user_key) {
             const group = await db.query(
@@ -159,7 +159,7 @@ exports.handle_group_privacy = async (req, res) => {
 
 exports.send_group_request = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const updated_group = await db.query(
@@ -180,7 +180,7 @@ exports.send_group_request = async (req, res) => {
 
 exports.accept_group_request = async (req, res) => {
     try {
-        const user_key = validateToken(req);
+        const user_key = await validateToken(req);
 
         if(user_key) {
             const new_member = await db.query(
@@ -206,7 +206,7 @@ exports.accept_group_request = async (req, res) => {
 
 exports.reject_group_request = async (req, res) => {
     try {
-        const user_key = validateToken(req);
+        const user_key = await validateToken(req);
 
         if(user_key) {
             await db.query(
@@ -227,7 +227,7 @@ exports.reject_group_request = async (req, res) => {
 
 exports.terminate_membership = async (req, res) => {
     try {
-        const user_key = validateToken(req);
+        const user_key = await validateToken(req);
 
         if(user_key) {
             await db.query(
@@ -248,7 +248,7 @@ exports.terminate_membership = async (req, res) => {
 
 exports.delete_group = async (req, res) => {
     try {
-        const user_key = validateToken(req);
+        const user_key = await validateToken(req);
 
         if(user_key) {
             await db.query(

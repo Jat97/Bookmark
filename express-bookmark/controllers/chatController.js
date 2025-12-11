@@ -1,10 +1,10 @@
-const {db} = require('../database/db');
+const db = require('../database/db');
 const {validateToken} = require('../database/token');
 const {uploadImage} = require('../database/imageupload');
 
 exports.get_all_chats = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const user_chats = await db.query(
@@ -44,8 +44,8 @@ exports.get_all_chats = async (req, res) => {
                     users.first_name AS first_name,
                     users.last_name AS last_name
                     FROM messages 
-                    INNER JOIN users ON user.id = messages.sending_user
-                    INNER JOIN users ON user.id = messages.receiving_user
+                    INNER JOIN users ON users.id = messages.sending_user
+                    INNER JOIN users ON users.id = messages.receiving_user
                     WHERE (messages.sending_user = $1 AND messages.receiving_user = $2)
                     OR (messages.sending_user = $2 AND messages.receiving_user = $1)`,
                     [user_key.logged_user.id, new_chat.user.id]
@@ -98,7 +98,7 @@ exports.get_all_chats = async (req, res) => {
 
 exports.send_message = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             if(req.file) {
@@ -124,7 +124,7 @@ exports.send_message = async (req, res) => {
 
 exports.delete_chat = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             await db.query(`DELETE FROM chats WHERE id = $1`, [req.params.chatid]);
