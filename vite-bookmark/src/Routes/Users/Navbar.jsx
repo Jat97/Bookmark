@@ -32,6 +32,8 @@ const Navbar = () => {
     const userData = useFetchUsers([authorized, setAuthorized, setSiteError]);
     const groupData = useFetchGroups([authorized, setAuthorized, setSiteError]);
 
+    console.log(loggedData);
+
     useEffect(() => {
         chatData.data?.chats.forEach(chat => {
             const unread_messages = chat.messages.filter(message => message.checked === false 
@@ -79,20 +81,23 @@ const Navbar = () => {
     }
 
     return (
-        <div className='flex justify-between items-center bg-orange-200'>
+        <div className='grid grid-cols-4 items-center bg-orange-200'>
             <PageHeader props={'Bookmark'} />
             
-            <form method='GET' action='/api/search' encType='application/json'>
-                <input type='search' name='query' className='bg-slate-100 p-1 max-w-32 focus:bg-white' 
-                    placeholder='What are you looking for?' onChange={(e) => searchUsersGroups(e)}>
+            <form method='GET' action='/api/search' encType='application/json' className='flex justify-start 
+                items-center w-full'>
+                <input type='search' name='query' className='bg-slate-100 rounded-tl-full rounded-bl-full 
+                    p-1 max-w-[400px] focus:bg-white' placeholder='What are you looking for?' 
+                    onChange={(e) => searchUsersGroups(e)}>
                 </input>
 
-                <button type='submit' className='border-slate-100 bg-white p-1'>
+                <button type='submit' className='flex flex-col items-center border-slate-100 rounded-tr-full 
+                    rounded-br-full bg-white p-1 w-[50px]'>
                     <MagnifyingGlassIcon className='h-6 fill-orange-200' />
                 </button>
             </form>
             
-            <div className='flex justify-around items-center'>
+            <div className='flex justify-around items-center w-1/3'>
                 <div>
                     <button type='button' className='flex flex-row-reverse items-end hover:bg-amber-100' 
                         onClick={() => handleNotificationTab()}>
@@ -118,7 +123,7 @@ const Navbar = () => {
                         onClick={() => handleRequestsTab()}>
                        <UserIcon className='h-6' /> 
 
-                       <NotificationCount props={alertData.data.requests?.length} />
+                       <NotificationCount props={alertData.data?.requests?.length} />
                     </button>
 
                     {alertTabs.requests &&
@@ -127,8 +132,8 @@ const Navbar = () => {
                 </div>
             </div>
 
-            <div onClick={() => toggleUserMenu()}>
-                <UserDisplay props={[loggedData.data?.logged_user, '']} />
+            <div className='relative' onClick={() => toggleUserMenu()}>
+                <UserDisplay props={[loggedData.data?.logged_user, true, 'index']} />
 
                 {userMenu &&
                     <UserMenu props={loggedData.data?.logged_user} />
