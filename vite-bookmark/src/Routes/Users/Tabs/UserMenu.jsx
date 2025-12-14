@@ -14,28 +14,29 @@ const UserMenu = (props) => {
     }
 
     return (
-        <div className='flex flex-col items-center border border-slate-200 bg-slate-200 max-h-40 max-w-32'>
-            <Link to={`/api/user/${user.id}`} className='hover:bg-zinc-100'> 
+        <div className='absolute flex flex-col items-center gap-1 bg-orange-200 
+            max-h-[150px] max-w-[150px] md:left-[115px] md:max-h-52 md:max-w-40'>
+            <Link to={`/api/user/${user?.id}`} className='text-center w-full hover:bg-amber-100'> 
                 Profile 
             </Link>
 
-            <Link to={`/api/user/friends/${user.id}`} className='hover:bg-zinc-100'>
+            <Link to={`/api/user/friends/${user?.id}`} className='text-center w-full hover:bg-amber-100'>
                 View friends
             </Link>
 
-            <Link to={`/api/user/groups/${user.id}`} className='hover:bg-zinc-100'> 
+            <Link to={`/api/user/groups/${user?.id}`} className='text-center w-full hover:bg-amber-100'> 
                 Groups
             </Link>
 
-            <Link to={`/api/users`} className='hover:bg-zinc-100'>
+            <Link to={`/api/users`} className='text-center w-full hover:bg-amber-100'>
                 View all users
             </Link>
 
-            <Link to={`/api/groups`} className='hover:bg-zinc-100'>
+            <Link to={`/api/groups`} className='text-center w-full hover:bg-amber-100'>
                 View all groups
             </Link>
 
-            <button type='button' className='hover:bg-zinc-100' onClick={() => endSession()}>
+            <button type='button' className='w-full hover:bg-amber-100' onClick={() => endSession()}>
                 Logout
             </button>
         </div>
