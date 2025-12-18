@@ -4,7 +4,7 @@ import {query_client} from '../../../client';
 export const useCreatePostMutation = (setSiteError) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/post`, () => ({
+            return await fetch('http://localhost:9000/api/post', {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -16,12 +16,11 @@ export const useCreatePostMutation = (setSiteError) => {
                     throw Error(`Error ${res.status}: ${res.statusText}`);
                 }
                 else {
-                    const data = res.json();
-                    return data;
+                    return res.json();
                 }
             })
             .catch(err => setSiteError(err))
-        )},  
+        },  
         onMutate: async (data) => {
             await query_client.invalidateQueries({queryKey: ['posts']});
 
@@ -30,14 +29,16 @@ export const useCreatePostMutation = (setSiteError) => {
 
             const new_post = {
                 id: post_arr.length + 25,
-                original_poster: data.original_poster ? data.original_poster : null,
+                original_poster: data.poster.first_name ? data.poster : null,
                 text: data.text,
-                posted: data.posted,
-                original_group: data.original_group ? data.original_group : null,
+                posted: Date.now(),
+                original_group: data.poster.title ? poster : null,
                 shared_by: null,
                 edited: null,
                 likes: []
             }
+
+            console.log(new_post);
 
             post_arr.push(new_post);
 
@@ -69,8 +70,7 @@ export const useEditPostMutation = ([postid, setSiteError]) => {
                     throw Error(`Error ${res.status}: ${res.statusText}`);
                 }
                 else {
-                    const data = res.json();
-                    return data;
+                    return res.json();
                 }
             })
             .catch(err => setSiteError(err))
