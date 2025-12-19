@@ -15,8 +15,7 @@ exports.get_post_feed = async (req, res) => {
                 posts.posted AS posted
                 FROM posts
                 INNER JOIN users ON users.id = posts.original_poster
-                WHERE posts.original_group = $1`,
-                [null]
+                WHERE posts.original_group IS NULL`
             );
 
             const group_posts = await db.query(
@@ -25,11 +24,12 @@ exports.get_post_feed = async (req, res) => {
                 groups.group_image AS group_image
                 FROM posts 
                 INNER JOIN groups ON groups.id = posts.original_group
-                WHERE posts.original_poster = $1`,
-                [null]
+                WHERE posts.original_poster IS NULL`
             );
 
             const all_posts = user_posts.rows.concat(group_posts.rows);
+
+            console.log(all_posts);
 
             const blocked_users = await db.query(
                 `SELECT * from blocked WHERE blocked_by = $1`, 
@@ -45,11 +45,13 @@ exports.get_post_feed = async (req, res) => {
                 `SELECT * FROM group_memberships WHERE member = $1`,
                 [user_key.logged_user.id]
             );
+
+            console.log(all_posts);
             
             const feed_posts = []; 
             
             for(let i = 0; i < all_posts.length; i++) {
-                if(blocked_users.rows.some(((block) => block.blocked_user === post.original_poster) === false) 
+                if(!blocked_users.rows.some(((block) => block.blocked_user === post.original_poster)) 
                     || friends.rows.some((friend) => friend.friend_2 === post.original_poster) ||
                     groups.some((group) => group.member_of === post.original_poster)) {
                     const user_likes = await db.query(
@@ -59,8 +61,8 @@ exports.get_post_feed = async (req, res) => {
                         users.profile_picture AS profile_picture
                         FROM likes 
                         INNER JOIN users ON users.id = likes.liking_user
-                        WHERE likes.liked_post = $1 AND likes.liking_group = $2`, 
-                        [all_posts.rows[i].id, null]
+                        WHERE likes.liked_post = $1 AND likes.liking_group IS NULL`, 
+                        [all_posts[i].id]
                     );
 
                     const group_likes = await db.query(
@@ -69,27 +71,27 @@ exports.get_post_feed = async (req, res) => {
                         groups.group_image AS group_image
                         FROM likes
                         INNER JOIN groups ON groups.id = likes.liking_group
-                        WHERE likes.liked_post = $1 AND likes.liking_user = $2`,
-                        [all_posts.rows[i].id, null]
+                        WHERE likes.liked_post = $1 AND likes.liking_user IS NULL`,
+                        [all_posts[i].id]
                     )
 
                     const post_likes = user_likes.rows.concat(group_likes.rows);
 
                     feed_posts.push({
-                        id: all_posts.rows[i],
-                        original_poster: all_posts.rows[i].first_name ? {
-                            first_name: all_posts.rows[i].first_name,
-                            last_name: all_posts.rows[i].last_name,
-                            profile_picture: all_posts.rows[i].profile_picture
+                        id: all_posts[i].id,
+                        original_poster: all_posts[i].first_name ? {
+                            first_name: all_posts[i].first_name,
+                            last_name: all_posts[i].last_name,
+                            profile_picture: all_posts[i].profile_picture
                         } : null,
-                        text: all_posts.rows[i].text,
-                        posted: all_posts.rows[i].posted,
-                        original_group: all_posts.rows[i].title ? {
-                            title: all_posts.rows[i].title,
-                            group_image: all_posts.rows[i].group_image
+                        text: all_posts[i].text,
+                        posted: all_posts[i].posted,
+                        original_group: all_posts[i].title ? {
+                            title: all_posts[i].title,
+                            group_image: all_posts[i].group_image
                         } : null,
-                        edited: all_posts.rows[i].edited,
-                        shared_by: all_posts.rows[i].shared_by,
+                        edited: all_posts[i].edited,
+                        shared_by: all_posts[i].shared_by,
                         likes: post_likes
                     });
                 }
@@ -102,6 +104,7 @@ exports.get_post_feed = async (req, res) => {
         }
     }
     catch (err) {
+        console.log(err);
         res.status(500).json({error: err});
     }
 };
@@ -112,8 +115,8 @@ exports.create_post = async (req, res) => {
 
         if(user_key) {
             const post = await db.query(
-                `INSERT INTO posts (text, original_poster) VALUES ($1, $2) RETURNING *`,
-                [req.body.text, user_key.logged_user.id]
+                `INSERT INTO posts (text, original_poster, posted) VALUES ($1, $2, $3) RETURNING *`,
+                [req.body.text, user_key.logged_user.id, new Date(Date.now())]
             );
 
             res.status(200).json({post: post.rows[0]});
