@@ -18,8 +18,8 @@ exports.view_post_comments = async (req, res) => {
                 comments.posted as posted
                 FROM comments
                 INNER JOIN users ON users.id = comments.commenting_user
-                WHERE post = $1 AND comments.commenting_group = $2`,
-                [req.params.postid, null]
+                WHERE post = $1 AND comments.commenting_group IS NULL`,
+                [req.params.postid]
             );
 
             const group_comments = await db.query(
@@ -32,8 +32,8 @@ exports.view_post_comments = async (req, res) => {
                 comment.posted AS posted
                 FROM comments
                 INNER JOIN groups ON groups.id = comments.commenting_group
-                WHERE post = $1 AND comments.commenting_user = $2`,
-                [req.params.postid, null]
+                WHERE post = $1 AND comments.commenting_user IS NULL`,
+                [req.params.postid]
             );
 
             const comments = user_comments.rows.concat(group_comments.rows);

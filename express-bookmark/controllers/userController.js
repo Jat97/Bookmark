@@ -50,9 +50,9 @@ exports.create_account = [
                 }
                 else {
                     const user = await db.query(`
-                        INSERT INTO users (first_name, last_name, email, password, profile_picture, online, hidden) 
+                        INSERT INTO users (first_name, last_name, email, dob, password, profile_picture, online, hidden) 
                         VALUES ($1, $2, $3, $4, $5, $6, $7)`, 
-                        [req.body.first_name, req.body.last_name, req.body.email, hashWord, null, true, false]
+                        [req.body.first_name, req.body.last_name, req.body.email, req.body.dob, hashWord, null, true, false]
                     );
 
                     jwt.sign({user, expiresIn: new Date(Date.now() + 1000000)}, process.env.TOKEN_KEY, 
