@@ -28,11 +28,11 @@ const PostCommentBox = (props) => {
     }
 
     return (
-        <div>
+        <div className='bg-orange-200 p-2 md:w-full'>
             {post.likes.length === 0 ?
                 null
             :
-                <div className='flex justify evenly items-center'>
+                <div className='flex justify-evenly items-center'>
                     {post.likes.slice(0, 3).map(like => {
                         return (
                             <Link to={`/api/users/${like.id}`} className='text-blue-600 hover:underline'> 
@@ -49,17 +49,21 @@ const PostCommentBox = (props) => {
                 </div>
             }
             
-            <div className='flex justify-evenly items-center border border-orange-200'>
+            <div className='text-orange-300 flex justify-evenly items-center'>
                 <LikeButton props={[loggedData.data.logged_user, post]} />
 
-                <button type='button' className='border-l-orange-200 border-r-orange-200' onClick={() => sharePost()}>
-                    <ArrowUturnLeftIcon className='h-6 fill-orange-200' />
+                <button type='button' className='cursor-pointer flex justify-around items-center 
+                    md:w-[100px] hover:underline' 
+                    onClick={() => sharePost()}>
+                    <ArrowUturnLeftIcon className='h-6' />
 
                     Share
                 </button>
 
-                <button type='button' onClick={() => toggleTextBox()}>
-                    <ChatBubbleLeftRightIcon className='h-6 fill-orange-200' />
+                <button type='button' className='cursor-pointer flex justify-around items-center 
+                    md:w-[125px] hover:underline' 
+                    onClick={() => toggleTextBox()}>
+                    <ChatBubbleLeftRightIcon className='h-6' />
 
                     Comment
                 </button>
