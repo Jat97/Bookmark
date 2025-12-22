@@ -1,7 +1,7 @@
 import {useMutation} from '@tanstack/react-query';
 import {query_client} from '../../../client';
 
-export const useCreatePostMutation = (setSiteError) => {
+export const useCreatePostMutation = ([poster, text, setText, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
             return await fetch('http://localhost:9000/api/post', {
@@ -9,7 +9,10 @@ export const useCreatePostMutation = (setSiteError) => {
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({
+                    text: text
+                })
             })
             .then(res => {
                 if(!res.ok) {
@@ -21,7 +24,7 @@ export const useCreatePostMutation = (setSiteError) => {
             })
             .catch(err => setSiteError(err))
         },  
-        onMutate: async (data) => {
+        onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['posts']});
 
             const post_cache = query_client.getQueryData(['posts']);
@@ -29,16 +32,14 @@ export const useCreatePostMutation = (setSiteError) => {
 
             const new_post = {
                 id: post_arr.length + 25,
-                original_poster: data.poster.first_name ? data.poster : null,
-                text: data.text,
+                original_poster: poster.first_name ? poster : null,
+                text: text,
                 posted: Date.now(),
-                original_group: data.poster.title ? poster : null,
+                original_group: poster.title ? poster : null,
                 shared_by: null,
                 edited: null,
                 likes: []
             }
-
-            console.log(new_post);
 
             post_arr.push(new_post);
 
@@ -49,6 +50,7 @@ export const useCreatePostMutation = (setSiteError) => {
         },
         onSettled: async () => {
             await query_client.invalidateQueries({queryKey: ['posts']});
+            setText('');
         }
     });
 
