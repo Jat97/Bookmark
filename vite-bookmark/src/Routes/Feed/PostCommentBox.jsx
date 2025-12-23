@@ -28,7 +28,7 @@ const PostCommentBox = (props) => {
     }
 
     return (
-        <div className='bg-orange-200 p-2 md:w-full'>
+        <div className='bg-orange-200 p-2 w-full'>
             {post.likes.length === 0 ?
                 null
             :
@@ -53,7 +53,7 @@ const PostCommentBox = (props) => {
                 <LikeButton props={[loggedData.data.logged_user, post]} />
 
                 <button type='button' className='cursor-pointer flex justify-around items-center 
-                    md:w-[100px] hover:underline' 
+                    w-[75px] md:w-[100px] hover:underline' 
                     onClick={() => sharePost()}>
                     <ArrowUturnLeftIcon className='h-6' />
 
@@ -61,7 +61,7 @@ const PostCommentBox = (props) => {
                 </button>
 
                 <button type='button' className='cursor-pointer flex justify-around items-center 
-                    md:w-[125px] hover:underline' 
+                    w-[100px] md:w-[125px] hover:underline' 
                     onClick={() => toggleTextBox()}>
                     <ChatBubbleLeftRightIcon className='h-6' />
 
