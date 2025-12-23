@@ -148,7 +148,7 @@ exports.edit_post = async (req, res) => {
 
 exports.like_post = async (req, res) => {
     try {
-        const user_key = await validateToken();
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
             const post_like = await db.query(
@@ -197,6 +197,7 @@ exports.like_post = async (req, res) => {
         }
     }
     catch (err) {
+        console.log(err);
         res.status(500).json({error: err});
     }
 };
