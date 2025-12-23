@@ -25,9 +25,9 @@ export const useLikePostMutation = ([logged, postid, setSiteError]) => {
             await query_client.cancelQueries({queryKey: ['posts']});
 
             const liked_posts_cache = query_client.getQueryData(['posts']);
-            const liked_posts_arr = liked_posts_cache || [];
+            const liked_posts_arr = liked_posts_cache.posts || [];
 
-            const new_liked_posts = liked_posts_arr.posts.forEach(content => {
+            const new_liked_posts = liked_posts_arr.forEach(content => {
                 if(content.id === postid) {
                     if(content.likes.some((like) => like.liking_user === logged) === false) {
                         content.likes.push({
@@ -56,6 +56,7 @@ export const useLikePostMutation = ([logged, postid, setSiteError]) => {
 };
 
 export const useUnlikePostMutation = ([logged, postid, setSiteError]) => {
+    console.log('efadfgndflkk')
     const mutation = useMutation({
         mutationFn: async () => {
             return await fetch(`http://localhost:9000/api/post/unlike/${postid}`, {
@@ -67,7 +68,7 @@ export const useUnlikePostMutation = ([logged, postid, setSiteError]) => {
                     throw Error(`Error ${res.status}: ${res.sendStatus}`);
                 }
                 else {
-                    res.send();
+                    return res.send();
                 }
             })
             .catch(err => setSiteError(err))
@@ -75,7 +76,7 @@ export const useUnlikePostMutation = ([logged, postid, setSiteError]) => {
         onMutate: async () => {
             await query_client.cancelQueries({queryKey: ['posts']});
 
-            const liked_posts_cache = query_client.setQueryData(['posts']);
+            const liked_posts_cache = query_client.getQueryData(['posts']);
             const liked_posts_arr = liked_posts_cache.posts || [];
 
             const new_liked_posts = liked_posts_arr.forEach(content => {
