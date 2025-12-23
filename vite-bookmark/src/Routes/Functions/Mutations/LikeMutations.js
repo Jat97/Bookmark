@@ -27,8 +27,8 @@ export const useLikePostMutation = ([logged, postid, setSiteError]) => {
             const liked_posts_cache = query_client.getQueryData(['posts']);
             const liked_posts_arr = liked_posts_cache || [];
 
-            const new_liked_posts = liked_posts_arr.forEach(content => {
-                if(content.post.id === postid) {
+            const new_liked_posts = liked_posts_arr.posts.forEach(content => {
+                if(content.id === postid) {
                     if(content.likes.some((like) => like.liking_user === logged) === false) {
                         content.likes.push({
                             id: content.likes.length + 14,
