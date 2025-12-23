@@ -47,7 +47,7 @@ exports.view_post_comments = async (req, res) => {
         }
     }
     catch (err) {
-        res.send(500).json({error: err});
+        res.status(500).json({error: err});
     }
 };
 
@@ -81,7 +81,7 @@ exports.create_parent_comment = async (req, res) => {
         }
     }
     catch (err) {
-        res.send(500).json({error: err});
+        res.status(500).json({error: err});
     }
 };
 
@@ -116,11 +116,11 @@ exports.reply_to_comment = async (req, res) => {
             res.status(200).json({reply: reply.rows[0]});
         }
         else {
-            res.send(401).json({error: err});
+            res.status(401).json({error: err});
         }
     }
     catch (err) {
-        res.send(500).json({error: err});
+        res.status(500).json({error: err});
     }
 };
 
@@ -155,7 +155,7 @@ exports.like_comment = async (req, res) => {
                 [user_key.logged_user.id, null, req.params.commentid]
             );
 
-            res.send(200).status({like: comment_like.rows[0]})
+            res.status(200).json({like: comment_like.rows[0]})
         }
         else {
             res.status(401).send();
