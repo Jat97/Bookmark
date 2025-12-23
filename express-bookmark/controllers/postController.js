@@ -29,8 +29,6 @@ exports.get_post_feed = async (req, res) => {
 
             const all_posts = user_posts.rows.concat(group_posts.rows);
 
-            console.log(all_posts);
-
             const blocked_users = await db.query(
                 `SELECT * from blocked WHERE blocked_by = $1`, 
                 [user_key.logged_user.id]
@@ -45,8 +43,6 @@ exports.get_post_feed = async (req, res) => {
                 `SELECT * FROM group_memberships WHERE member = $1`,
                 [user_key.logged_user.id]
             );
-
-            console.log(all_posts);
             
             const feed_posts = []; 
             
@@ -104,7 +100,6 @@ exports.get_post_feed = async (req, res) => {
         }
     }
     catch (err) {
-        console.log(err);
         res.status(500).json({error: err});
     }
 };
@@ -143,11 +138,11 @@ exports.edit_post = async (req, res) => {
             res.status(200).json({post: edited_post.rows[0]});
         }
         else {
-            res.send(401).send();
+            res.status(401).send();
         }
     }
     catch (err) {
-        res.send(500).json({error: err});
+        res.status(500).json({error: err});
     }
 };
 
@@ -195,14 +190,14 @@ exports.like_post = async (req, res) => {
                 likes: post_like.rows[0]
             }
 
-            res.send(200).json({post: updated_post});
+            res.status(200).json({post: updated_post});
         }
         else {
-            res.send(401).send();
+            res.status(401).send();
         }
     }
     catch (err) {
-        res.send(500).json({error: err});
+        res.status(500).json({error: err});
     }
 };
 
@@ -223,7 +218,7 @@ exports.unlike_post = async (req, res) => {
         }
     }
     catch (err) {
-        res.send(500).json({error: err});
+        res.status(500).json({error: err});
     }
 };
 
@@ -281,6 +276,6 @@ exports.delete_post = async (req, res) => {
         }
     }
     catch (err) {
-        res.send(500).json({error: err});
+        res.status(500).json({error: err});
     }
 }
