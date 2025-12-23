@@ -151,7 +151,7 @@ exports.get_all_users = async (req, res) => {
         }
     }
     catch (err) {
-        res.json({error: err});
+        res.status(500).json({error: err});
     }
 };
 
@@ -410,7 +410,7 @@ exports.send_friend_request = async (req, res) => {
                 [req.params.userid, user_key.logged_user.id]
             );
 
-            res.json({friend_request: friend_request});
+            res.status(200).json({friend_request: friend_request});
         }
         else {
             res.status(401).send();
