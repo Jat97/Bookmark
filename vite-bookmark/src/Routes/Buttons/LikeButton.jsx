@@ -15,6 +15,8 @@ const LikeButton = (props) => {
     const unlike_post_mutation = useUnlikePostMutation([logged, post.id, setSiteError]);
 
     const handleLikeMutations = () => {
+        console.log('eh', post);
+
         if(post.likes.some((like) => like.id === logged.id)) {
             if(post.reply_to) {
                 return unlike_comment_mutation.mutate();
@@ -28,13 +30,15 @@ const LikeButton = (props) => {
                 return like_comment_mutation.mutate();
             }
             else {
+                console.log('e')
                 return like_post_mutation.mutate();
             }
         }
     }
 
     return (
-        <button id={post.id} data-testid={`like-${post.id}`} className='text-orange-300 cursor-pointer' 
+        <button id={post.id} data-testid={`like-${post.id}`} className='text-orange-300 cursor-pointer w-[75px] 
+            hover:underline' 
             onClick={() => handleLikeMutations()}>
             {post.likes.some((like) => like.id === loggedData.data.logged_user.id) ?
                 <div className='flex justify-around items-center'>
