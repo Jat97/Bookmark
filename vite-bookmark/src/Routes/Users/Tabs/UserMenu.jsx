@@ -15,7 +15,7 @@ const UserMenu = (props) => {
 
     return (
         <div className='absolute flex flex-col items-center gap-1 bg-orange-200 
-            max-h-[150px] max-w-[150px] md:left-[115px] md:max-h-52 md:max-w-40'>
+            max-h-[150px] w-[150px] md:left-[-20px] md:max-h-52 md:max-w-40'>
             <Link to={`/api/user/${user?.id}`} className='text-center w-full hover:bg-amber-100'> 
                 Profile 
             </Link>
@@ -36,7 +36,7 @@ const UserMenu = (props) => {
                 View all groups
             </Link>
 
-            <button type='button' className='w-full hover:bg-amber-100' onClick={() => endSession()}>
+            <button type='button' className='cursor-pointer w-full hover:bg-amber-100' onClick={() => endSession()}>
                 Logout
             </button>
         </div>
