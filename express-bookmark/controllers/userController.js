@@ -128,7 +128,9 @@ exports.get_all_users = async (req, res) => {
                 profile_picture,
                 online,
                 hidden
-                FROM users`
+                FROM users 
+                WHERE id <> $1`,
+                [user_key.logged_user.id]
             );
 
             const blocked = await db.query(
