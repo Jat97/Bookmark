@@ -2,7 +2,7 @@ const PageHeader = (props) => {
     const header = props.props;
 
     return (
-        <p className='text-xl font-semibold'> {header} </p>
+        <p className='text-center text-sm font-semibold md:text-xl'> {header} </p>
     )
 }
 
