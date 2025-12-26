@@ -25,27 +25,27 @@ const FriendButton = (props) => {
         }
     }
 
-    if(alertData.data.pending.some((pending) => pending.id === user.id)) {
+    if(alertData.data?.pending?.some((pending) => pending.id === user.id)) {
         return <p> Pending... </p>
     }
     else {
         return (
-            <button id={user.id} data-testid={user.id} className={`cursor-pointer rounded-full p-1 max-w-20
-                ${friendData.data.friendslist.some((friend) => friend.id === user.id) ? 
+            <button id={user.id} data-testid={user.id} className={`cursor-pointer rounded-full p-1 w-[150px]
+                ${friendData.data?.friendslist?.some((friend) => friend.id === user.id) ? 
                 'bg-red-200 hover:bg-pink-100' : 'bg-emerald-200 hover:bg-lime-100'}`}
-            onClick={() => alertData.data.pending.some((pending) => pending.id === user.id) ?
+            onClick={() => alertData.data?.pending.some((pending) => pending.id === user.id) ?
                 null
             :
                 handleFriendMutations()
             }>
-                {friendData.data.friendslist.some((friend) => friend.id === user.id) ?
+                {friendData.data?.friendslist?.some((friend) => friend.id === user.id) ?
                         <div className='flex justify-around items-center'>
-                            <UserMinusIcon className='h-6 fill-white' />
+                            <UserMinusIcon className='h-5 fill-white md:h-6' />
                             Remove friend
                         </div>
                     :
                         <div className='flex justify-around items-center'>
-                            <UserPlusIcon className='h-6 fill-white' />
+                            <UserPlusIcon className='h-5 fill-white md:h-6' />
                             Add friend
                         </div>
                 }
