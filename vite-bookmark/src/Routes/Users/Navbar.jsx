@@ -32,8 +32,6 @@ const Navbar = () => {
     const userData = useFetchUsers([authorized, setAuthorized, setSiteError]);
     const groupData = useFetchGroups([authorized, setAuthorized, setSiteError]);
 
-    console.log(loggedData);
-
     useEffect(() => {
         chatData.data?.chats.forEach(chat => {
             const unread_messages = chat.messages.filter(message => message.checked === false 
@@ -81,23 +79,33 @@ const Navbar = () => {
     }
 
     return (
-        <div className='grid grid-cols-4 items-center bg-orange-200'>
+        <div className='flex justify-evenly items-center bg-orange-300'>
             <PageHeader props={'Bookmark'} />
             
-            <form method='GET' action='/api/search' encType='application/json' className='flex justify-start 
-                items-center w-full'>
-                <input type='search' name='query' className='bg-slate-100 rounded-tl-full rounded-bl-full 
-                    p-1 max-w-[400px] focus:bg-white' placeholder='What are you looking for?' 
-                    onChange={(e) => searchUsersGroups(e)}>
-                </input>
+            <div className='relative'>
+                <form method='GET' action='/api/search' encType='application/json' className='flex justify-start 
+                    items-center'>
+                    <input type='search' name='query' className='bg-slate-100 rounded-tl-full rounded-bl-full 
+                        p-1 w-[350px] focus:bg-white' placeholder='What are you looking for?' 
+                        onChange={(e) => searchUsersGroups(e)}>
+                    </input>
 
-                <button type='submit' className='flex flex-col items-center border-slate-100 rounded-tr-full 
-                    rounded-br-full bg-white p-1 w-[50px]'>
-                    <MagnifyingGlassIcon className='h-6 fill-orange-200' />
-                </button>
-            </form>
+                    <button type='submit' className='flex flex-col items-center border-slate-100 rounded-tr-full 
+                        rounded-br-full bg-white p-1 w-[50px]'>
+                        <MagnifyingGlassIcon className='h-6 fill-orange-300' />
+                    </button>
+                </form>
+
+                {searchData.length > 0 &&
+                    <div className='absolute flex flex-col items-center gap-1 border border-slate-200 bg-orange-300 w-[350px] z-50'>
+                        {searchData.map(user => {
+                            return <UserDisplay props={[user, false, 'search']} />
+                        })}
+                    </div>
+                }
+            </div>
             
-            <div className='flex justify-around items-center w-1/3'>
+            <div className='flex justify-around items-center w-1/6'>
                 <div>
                     <button type='button' className='flex flex-row-reverse items-end hover:bg-amber-100' 
                         onClick={() => handleNotificationTab()}>
