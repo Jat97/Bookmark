@@ -14,8 +14,8 @@ const UserMenu = (props) => {
     }
 
     return (
-        <div className='absolute flex flex-col items-center gap-1 bg-orange-200 
-            max-h-[150px] w-[150px] md:left-[-20px] md:max-h-52 md:max-w-40'>
+        <div className='absolute flex flex-col items-center gap-1 bg-orange-300 
+            max-h-[150px] w-[150px] md:left-[20px] md:max-h-52 md:w-[200px]'>
             <Link to={`/api/user/${user?.id}`} className='text-center w-full hover:bg-amber-100'> 
                 Profile 
             </Link>
@@ -28,11 +28,11 @@ const UserMenu = (props) => {
                 Groups
             </Link>
 
-            <Link to={`/api/users`} className='text-center w-full hover:bg-amber-100'>
+            <Link to={`/api/index/users`} className='text-center w-full hover:bg-amber-100'>
                 View all users
             </Link>
 
-            <Link to={`/api/groups`} className='text-center w-full hover:bg-amber-100'>
+            <Link to={`/api/index/groups`} className='text-center w-full hover:bg-amber-100'>
                 View all groups
             </Link>
 
