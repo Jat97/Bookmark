@@ -44,36 +44,33 @@ export const useToggleHiddenMutation = (setSiteError) => {
 export const useEditPictureMutation = ([file, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            const upload = new File([file], 'upload.jpg');
-
             const form = new FormData();
 
-            form.append('profilepicture', upload);
+            form.append('profilepic', file);
 
             return await fetch('http://localhost:9000/api/user/picture', {
                 method: 'PATCH',
                 credentials: 'include',
                 body: form
             })
-            .then(async (res) => {
+            .then((res) => {
                 if(!res.ok) {
                     throw Error(`Error ${res.status}: ${res.statusText}`);
                 }
                 else {
-                    const data = await res.json();
-                    return data.profile_picture
+                    return res.json();
                 }
             })
             .catch(err => setSiteError(err))
         },
-        onMutate: async (data) => {
+        onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['user']});
 
             const logged = query_client.getQueryData(['user']);
 
             query_client.setQueryData(['logged'], {
                 ...logged,
-                profile_picture: data
+                profile_picture: file
             });
 
             return {logged};
