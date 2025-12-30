@@ -1,3 +1,4 @@
+import {useState} from 'react';
 import {Link} from 'react-router-dom';
 import {useEditPictureMutation} from '../Functions/Mutations/UserMutations';
 import {useBookStore} from '../../Context/bookStore';
@@ -8,55 +9,76 @@ const UserDisplay = (props) => {
     const logged = props.props[1];
     const user_mode = props.props[2];
 
+    const [image, setImage] = useState(null);
+
     const setSiteError = useBookStore((state) => state.setSiteError);
 
-    const picture_mutation = useEditPictureMutation([user, setSiteError]);
+    const picture_mutation = useEditPictureMutation([image, setSiteError]);
 
     const editProfilePicture = () => {
+        setImage(document.querySelector('#profile_picture_picker').files[0]);
         return picture_mutation.mutate();
+    }
+
+    const handleIconDivCSS = () => {
+        if(user_mode === 'post' || user_mode === 'index') {
+            return 'justify-around m-2 md:w-[200px]'
+        }
+        else if(user_mode === 'search') {
+            return 'justify-evenly md:w-[250px]'
+        }
+        else {
+            return 'flex-col gap-1'
+        }
     }
 
     const handleUserImageCSS = () => {
         if(user_mode === 'index') {
-            return 'max-w-16 md:max-w-20';
+            return 'w-[30px] md:w-[45px]';
         }
         else if(user_mode === 'profile') {
-            return 'max-w-20 md:max-w-24';
+            return 'w-[60px] md:w-[100px]';
+        }
+        else if(user_mode === 'post') {
+            return 'w-[40px] md:w-[60px]'
         }
     }
 
     const handleUserIconCSS = () => {
-        if(user_mode === 'index') {
-            return 'max-h-5 md:max-h-6';
+        if(user_mode === 'index' || user_mode === 'post' || user_mode === 'search') {
+            return 'h-6 md:h-8';
         }
         else if(user_mode === 'profile') {
-            return 'max-h-8 md:max-h-10'
+            return 'h-16 md:h-20'
         }
     }
 
     return (
-        <div>
-            <div>
-                <div className='border border-orange-200 rounded-full'>
-                    {user.profile_picture ? 
-                        <img src={user.profile_picture} className={`${handleUserImageCSS()}`}></img>
-                    :
-                        <UserIcon className={`${handleUserIconCSS()}`} />
-                    }
+        <div className={`flex items-center ${handleIconDivCSS()}`}>
+            <div className='relative flex flex-col items-center bg-black border border-orange-300 rounded-full p-1'>
+                {user?.profile_picture ? 
+                    <img src={user?.profile_picture} className={`rounded-full ${handleUserImageCSS()}`}></img>
+                :
+                    <UserIcon className={`${handleUserIconCSS()}`} />
+                }
 
-                    {user.id === logged.id &&
-                        <label onChange={() => editProfilePicture()}>
-                            <input type='file' className='hidden'></input>
-                            <CameraIcon className='h-6 fill-orange-200' />
-                        </label>
-                    }
-                </div>
-                
-                <Link to={`/api/profile/${user.id}`} className={`font-semibold 
-                    ${user_mode === 'index' ? 'text-blue-600 hover:underline' : 'cursor-not-allowed'}`}> 
-                    {`${user.first_name} ${user.last_name}`} 
-                </Link>
+                {logged && user_mode === 'profile' &&
+                    <label onChange={() => editProfilePicture()} 
+                        className='absolute right-[-15px] bottom-[-10px] 
+                        bg-white border border-orange-600 rounded-full p-1 hover:bg-amber-100'>
+                        <input id='profile_picture_picker' type='file' className='hidden'></input>
+                        <CameraIcon className='h-6 md:h-7' />
+                    </label>
+                }
             </div>
+
+            {logged ? 
+                <p className='font-semibold'> {`${user?.first_name} ${user?.last_name}`} </p>
+            :
+                <Link to={`/api/profile/${user?.id}`} className='font-semibold text-sky-400 hover:underline'> 
+                    {`${user?.first_name} ${user?.last_name}`} 
+                </Link>
+            }
         </div>
     )
 };
