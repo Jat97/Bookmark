@@ -1,5 +1,6 @@
 const db = require('../database/db');
-const {uploadImage, validateToken} = require('../database/token');
+const {validateToken} = require('../database/token');
+const {uploadImage} = require('../database/imageupload');
 const {body, validationResult} = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -500,7 +501,7 @@ exports.edit_profile_picture = async (req, res) => {
                 let result = await uploadImage(req);
                 
                 const new_picture = await db.query(
-                    `ALTER TABLE users SET profile_picture = $1 WHERE id = $2 RETURNING *`,
+                    `UPDATE users SET profile_picture = $1 WHERE id = $2 RETURNING *`,
                     [result.secure_url, user_key.logged_user.id]
                 );
 
@@ -515,6 +516,7 @@ exports.edit_profile_picture = async (req, res) => {
         }
     }
     catch (err) {
+        console.log(err);
         res.status(500).json({error: err});
     }
 };
