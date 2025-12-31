@@ -3,7 +3,7 @@ const cloudinary = require('cloudinary');
 const path = require('path');
 
 cloudinary.config({
-    cloud_name: process.env.CLOUD_KEY,
+    cloud_name: process.env.CLOUD_NAME,
     api_key: process.env.CLOUD_KEY,
     api_secret: process.env.CLOUD_SECRET,
     secure: true
@@ -35,7 +35,7 @@ const storage = multer.diskStorage({
 module.exports.upload = multer({storage: storage});
 
 module.exports.uploadImage = async (req) => {
-    let result = await cloudinary.v2.uploader.upload(path.join(`${req.file.destination}/${req.file.fieldname}`));
+    let result = await cloudinary.v2.uploader.upload(path.join(`${req.file.destination}/${req.file.filename}`));
 
     return result;
 }
