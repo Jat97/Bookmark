@@ -1,9 +1,10 @@
 import {useFetchLogged} from '../Functions/Queries/UserQueries';
 import {useFetchGroups} from '../Functions/Queries/GroupQueries';
 import {useBookStore} from '../../Context/bookStore';
-import GroupDisplay from './GroupDisplay';
 import GroupRequestLeaveButton from '../Buttons/GroupRequestLeaveButton'
 import PageHeader from '../Miscellaneous/Text/PageHeader';
+import ProfileDisplay from '../Miscellaneous/Images/ProfileDisplay';
+import Navbar from '../Users/Navbar';
 
 const GroupIndex = () => {
     const authorized = useBookStore((state) => state.authorized);
@@ -15,6 +16,8 @@ const GroupIndex = () => {
 
     return (
         <div>
+            <Navbar />
+
             <PageHeader props={'All groups'} />
 
             {groupData.data?.groups?.map(group => {
@@ -22,7 +25,7 @@ const GroupIndex = () => {
 
                 return (
                     <div className='flex justify-around items-center'>
-                        <GroupDisplay props={[group.group, '']} />
+                        <ProfileDisplay props={[group.group, '']} />
 
                         <GroupRequestLeaveButton props={[loggedData.data?.logged_user, group.group, is_member]} />
                     </div>
