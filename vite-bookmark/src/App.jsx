@@ -2,19 +2,18 @@ import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 import {useBookStore} from './Context/bookStore';
 import Login from './Routes/Users/LogSign/Login';
 import Signup from './Routes/Users/LogSign/Signup';
-import Home from './Routes/Feed/Home';
+import Home from './Routes/Feed/Posts/Home';
 import Index from './Routes/Users/Index';
 import GroupIndex from './Routes/Groups/GroupIndex';
-import UserPage from './Routes/Users/UserPage';
-import GroupInfoPage from './Routes/Groups/GroupInfoPage';
-import FullPost from './Routes/Feed/Posts/FullPosts';
+import ProfilePage from './Routes/Pages/ProfilePage';
+import FullPost from './Routes/Feed/Posts/FullPost';
 import SiteErr from './Routes/Miscellaneous/Text/Errors/SiteErr';
 
 function App() {
     const error = useBookStore((state) => state.error);
     
     return (
-        <div>
+        <div className='bg-amber-400/25 h-full'>
             <BrowserRouter>
                 <Routes>
                     <Route path='/api/login' element={<Login />}></Route>
@@ -22,8 +21,8 @@ function App() {
                     <Route path='/api/home' element={<Home />}></Route>
                     <Route path='/api/index/users' element={<Index />}></Route>
                     <Route path='/api/index/groups' element={<GroupIndex />}></Route>
-                    <Route path='/api/user/:userid' element={<UserPage />}></Route>
-                    <Route path='/api/group/:groupid' element={<GroupInfoPage />}></Route>
+                    <Route path='/api/profile/:profileid' element={<ProfilePage />}></Route>
+                    <Route path='/api/group/:profileid' element={<ProfilePage />}></Route>
                     <Route path='/api/post/:postid/comments' element={<FullPost />}></Route>
                     <Route path='*' element={<Navigate to='/api/login' />}></Route>
                 </Routes>
