@@ -30,7 +30,7 @@ const FriendButton = (props) => {
     }
     else {
         return (
-            <button id={user.id} data-testid={user.id} className={`cursor-pointer rounded-full p-1 w-[150px]
+            <button id={user?.id} data-testid={user?.id} className={`cursor-pointer font-semibold rounded-full p-1 w-[125px]
                 ${friendData.data?.friendslist?.some((friend) => friend.id === user.id) ? 
                 'bg-red-200 hover:bg-pink-100' : 'bg-emerald-200 hover:bg-lime-100'}`}
             onClick={() => alertData.data?.pending.some((pending) => pending.id === user.id) ?
@@ -38,7 +38,7 @@ const FriendButton = (props) => {
             :
                 handleFriendMutations()
             }>
-                {friendData.data?.friendslist?.some((friend) => friend.id === user.id) ?
+                {friendData.data?.friendslist?.some((friend) => friend?.id === user?.id) ?
                         <div className='flex justify-around items-center'>
                             <UserMinusIcon className='h-5 fill-white md:h-6' />
                             Remove friend
