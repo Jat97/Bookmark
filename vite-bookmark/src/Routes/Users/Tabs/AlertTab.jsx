@@ -1,8 +1,7 @@
 import {useState} from 'react';
-import UserDisplay from '../UserDisplay';
-import GroupDisplay from '../../Groups/GroupDisplay';
 import AcceptButton from '../../Buttons/AcceptButton';
 import RejectButton from '../../Buttons/RejectButton';
+import ProfileDisplay from '../../Miscellaneous/Images/ProfileDisplay';
 import {XMarkIcon} from '@heroicons/react/24/solid';
 
 const AlertTab = (props) => {
@@ -26,7 +25,7 @@ const AlertTab = (props) => {
                     if(alert.requesting_user) {
                         return (
                             <div className='flex justify-around items-center'>
-                               <UserDisplay props={[alert.requesting_user, '']} />
+                               <ProfileDisplay props={[alert.requesting_user, false, 'index']} />
 
                                <div className='flex justify-around items-center'>
                                     <AcceptButton props={alert.requesting_user} />
@@ -39,11 +38,11 @@ const AlertTab = (props) => {
                     else {
                         return (
                             <div className='flex flex-col items-start'>
-                                {alert?.alerting_user ? 
-                                    <UserDisplay props={[alert?.alerting_user, 'index']} />
-                                :
-                                    <GroupDisplay props={[alert?.alerting_group, 'index']} />
-                                }
+                                <ProfileDisplay props={[
+                                    alert.alerting_user ? alert.alerting_user : alert.alerting_group,
+                                    false,
+                                    'index'
+                                    ]} />
 
                                 <div className='flex justify-between items-center'>
                                     <p className='text-sm'> {alert?.text} </p>
