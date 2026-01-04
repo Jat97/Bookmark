@@ -63,13 +63,13 @@ const Signup = () => {
                 md:shadow-sm md:shadow-slate-200 md:w-full'>
                 <p className='text-lg font-semibold'> Join us at Bookmark! </p>
 
-                <div className='grid grid-cols-2 items-center gap-y-[10px] w-11/12'>
+                <div className='grid grid-cols-2 items-center font-semibold gap-y-[10px] w-11/12'>
                     <div>
-                        <div className='flex flex-col items-center'>
-                            <p className='font-semibold'> First Name </p>
+                        <label for='first_name' className='flex flex-col items-center'>
+                            First Name
 
                             <LogSignInput props='first_name' />
-                        </div>
+                        </label>
                         
 
                         {signErrors.first_name &&
@@ -78,11 +78,11 @@ const Signup = () => {
                     </div>
 
                     <div>
-                        <div className='flex flex-col items-center'>
-                            <p> Last Name </p>
+                        <label for='last_name' className='flex flex-col items-center'>
+                            Last Name
 
                             <LogSignInput props='last_name' />
-                        </div>
+                        </label>
 
                         {signErrors.last_name && 
                             <InputErr props={signErrors.last_name} />
@@ -90,11 +90,11 @@ const Signup = () => {
                     </div>
 
                     <div>
-                        <div className='flex flex-col items-center'>
-                            <p className='font-semibold'> Email </p>
+                        <label for='email' className='flex flex-col items-center'>
+                            Email
 
                             <LogSignInput props='email' />
-                        </div>
+                        </label>
                        
 
                         {signErrors.email &&
@@ -103,11 +103,11 @@ const Signup = () => {
                     </div>
 
                     <div>
-                        <div className='flex flex-col items-center'>
-                            <p className='font-semibold'> Date of birth </p>
+                        <label for='dob' className='flex flex-col items-center'>
+                            Date of birth
 
                             <LogSignInput props='dob' />
-                        </div>
+                        </label>
 
                         {signErrors.dob &&
                             <InputErr props={signErrors.dob} />
@@ -115,11 +115,11 @@ const Signup = () => {
                     </div>
 
                     <div>
-                        <div className='flex flex-col items-center'>
-                            <p className='font-semibold'> Password </p>
+                        <label for='password' className='flex flex-col items-center'>
+                            Password
 
                             <LogSignInput props='password' />
-                        </div>
+                        </label>
                         
 
                         {signErrors.password &&
@@ -128,11 +128,11 @@ const Signup = () => {
                     </div>
 
                     <div>
-                        <div className='flex flex-col items-center'>
-                            <p className='font-semibold'> Confirm password </p>
+                        <label for='confirm_password' className='flex flex-col items-center'>
+                            Confirm password
 
                             <LogSignInput props='confirm_password' />
-                        </div>
+                        </label>
                         
 
                         {signErrors.confirm &&

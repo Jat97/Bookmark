@@ -53,13 +53,13 @@ const Login = () => {
                 md:bg-white'>
                 <p className='text-lg font-semibold'> Sign in to Bookmark </p>
 
-                <div>
+                <div className='font-semibold'>
                     <div className='w-1/3'>
-                        <div className='flex flex-col items-start'>
-                            <p className='font-semibold'> Username </p>
+                        <label for='email' className='flex flex-col items-start'>
+                            Username
 
                             <LogSignInput props={'email'} />
-                        </div>
+                        </label>
                             
                         {logErrors.username &&
                             <InputErr props={logErrors.username} />
@@ -67,11 +67,11 @@ const Login = () => {
                     </div>
 
                     <div className='w-1/3'>
-                        <div className='flex flex-col items-start'>
-                            <p className='font-semibold'> Password </p>
+                        <label for='password' className='flex flex-col items-start'>
+                            Password
 
                             <LogSignInput props={'password'} />
-                        </div>
+                        </label>
                         
                         {logErrors.password &&
                             <InputErr props={logErrors.password} />
