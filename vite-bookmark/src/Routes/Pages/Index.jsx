@@ -6,7 +6,7 @@ import FriendButton from '../Buttons/FriendButton';
 import BlockButton from '../Buttons/BlockButton';
 import GroupRequestLeaveButton from '../Buttons/GroupRequestLeaveButton';
 import PageHeader from '../Miscellaneous/Text/PageHeader';
-import ProfileDisplay from '../Miscellaneous/Image/ProfileDisplay';
+import ProfileDisplay from '../Miscellaneous/Images/ProfileDisplay';
 import Navbar from '../Users/Navbar';
 
 const Index = () => {
@@ -18,7 +18,7 @@ const Index = () => {
 
     const groupData = useFetchGroups([authorized, setAuthorized, setSiteError]);
     const userData = useFetchUsers([authorized, setAuthorized, setSiteError]);
-    const loggedData = location.pathname.includes('groups') && useFetchLogged([authorized, setAuthorized, setSiteError])
+    const loggedData = useFetchLogged([authorized, setAuthorized, setSiteError])
 
     const index_arr = location.pathname.includes('groups') ? groupData.data.groups : userData.data.users;
 
@@ -26,7 +26,7 @@ const Index = () => {
         <div>
             <Navbar />
             
-            <PageHeader props={groupData ? 'Members' : 'Users'} />
+            <PageHeader props={location.pathname.includes('groups') ? 'Groups' : 'Users'} />
 
             <ul className='flex flex-col items-center'>
                 {index_arr?.map((item) => {
