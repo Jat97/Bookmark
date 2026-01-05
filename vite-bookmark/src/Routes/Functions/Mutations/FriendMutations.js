@@ -19,7 +19,7 @@ export const useSendFriendRequestMutation = ([user, setSiteError]) => {
                     return res.json();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['alerts']});
@@ -65,7 +65,7 @@ export const useAcceptRequestMutation = ([user, setSiteError]) => {
                     return res.json();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['alerts']});
@@ -118,7 +118,7 @@ export const useRejectRequestMutation = ([userid, setSiteError]) => {
                     return res.send();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['alerts']});
@@ -162,7 +162,7 @@ export const useRemoveFriendMutation = ([userid, setSiteError]) => {
                     return res.send();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['friends']});

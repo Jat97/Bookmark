@@ -16,7 +16,7 @@ export const useToggleHiddenMutation = (setSiteError) => {
                     return res.send();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['logged']});
@@ -61,7 +61,7 @@ export const useEditPictureMutation = ([file, setSiteError]) => {
                     return res.json();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['user']});
@@ -86,52 +86,6 @@ export const useEditPictureMutation = ([file, setSiteError]) => {
     return mutation;
 };
 
-export const useLogInMutation = (setSiteError) => {
-    const mutation = useMutation({
-        mutationFn: async () => {
-            return await fetch('http://localhost:9000/api/login', {
-                method: 'PUT',
-                credentials: 'include'
-            })
-            .then(res => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
-                } 
-                else {
-                    const data = res.json();
-                    return data;
-                }
-            })
-            .catch(err => setSiteError(err))
-        },
-        onMutate: async (data) => {
-            await query_client.invalidateQueries({queryKey: ['users']});
-
-            const user_cache = query_client.getQueryData(['comments']);
-            const user_arr = user_cache.users || [];
-
-            user_arr.forEach(user => {
-                if(user.email === data.email) {
-                    user = {
-                        ...user,
-                        online: true
-                    }
-                }
-            });
-
-            return {user_arr}
-        },
-        onError: (err, data, context) => {
-            query_client.setQueryData(['users'], context.user_arr);
-        },
-        onSettled: async () => {
-            return query_client.invalidateQueries({queryKey: ['users']});
-        }
-    });
-
-    return mutation;
-};
-
 export const useLogOutMutation = (setSiteError) => {
     const mutation = useMutation({
         mutationFn: async () => {
@@ -147,7 +101,7 @@ export const useLogOutMutation = (setSiteError) => {
                     return res.json();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['logged']});
@@ -187,7 +141,7 @@ export const deleteAccountMutation = (setSiteError) => {
                     return res.send();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onSettled: async () => {
             await query_client.invalidateQueries({queryKey: ['logged']});

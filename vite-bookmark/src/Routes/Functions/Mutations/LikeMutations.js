@@ -19,7 +19,7 @@ export const useLikePostMutation = ([logged, postid, setSiteError]) => {
                     return res.json();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.cancelQueries({queryKey: ['posts']});
@@ -56,7 +56,6 @@ export const useLikePostMutation = ([logged, postid, setSiteError]) => {
 };
 
 export const useUnlikePostMutation = ([logged, postid, setSiteError]) => {
-    console.log('efadfgndflkk')
     const mutation = useMutation({
         mutationFn: async () => {
             return await fetch(`http://localhost:9000/api/post/unlike/${postid}`, {
@@ -71,7 +70,7 @@ export const useUnlikePostMutation = ([logged, postid, setSiteError]) => {
                     return res.send();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.cancelQueries({queryKey: ['posts']});
@@ -120,7 +119,7 @@ export const useLikeCommentMutation = ([logged, commentid, setSiteError]) => {
                     return res.json();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['comments']});
@@ -165,7 +164,7 @@ export const useUnlikeCommentMutation = ([logged, commentid, setSiteError]) => {
                     res.send();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['comments']});

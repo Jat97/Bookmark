@@ -19,7 +19,7 @@ export const useBlockUserMutation = ([user, setSiteError]) => {
                     return res.json();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['blocked']});
@@ -64,7 +64,7 @@ export const useUnblockUserMutation = ([userid, setSiteError]) => {
                     res.send();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['blocked']});

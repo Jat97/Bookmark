@@ -23,7 +23,7 @@ export const useSendMessageMutation = ([user, file, setSiteError]) => {
                     return data;
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async (data) => {
             await query_client.invalidateQueries({queryKey: ['chats']});
@@ -65,7 +65,7 @@ export const deleteChatMutation = ([chatid, setSiteError]) => {
                     throw Error(`Error ${res.status}: ${res.statusText}`);
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['chats']});
