@@ -66,11 +66,10 @@ const Signup = () => {
                 <div className='grid grid-cols-2 items-center font-semibold gap-y-[10px] w-11/12'>
                     <div>
                         <label for='first_name' className='flex flex-col items-center'>
-                            First Name
+                            <span className='font-semibold'> First Name </span>
 
                             <UserGroupInput props='first_name' />
                         </label>
-                        
 
                         {signErrors.first_name &&
                             <InputErr props={signErrors.first_name} />
@@ -79,7 +78,7 @@ const Signup = () => {
 
                     <div>
                         <label for='last_name' className='flex flex-col items-center'>
-                            Last Name
+                            <span className='font-semibold'> Last Name </span>
 
                             <UserGroupInput props='last_name' />
                         </label>
@@ -91,12 +90,11 @@ const Signup = () => {
 
                     <div>
                         <label for='email' className='flex flex-col items-center'>
-                            Email
+                            <span className='font-semibold'> Email </span>
 
                             <UserGroupInput props='email' />
                         </label>
                        
-
                         {signErrors.email &&
                             <InputErr props={signErrors.email} />
                         }
@@ -104,7 +102,7 @@ const Signup = () => {
 
                     <div>
                         <label for='dob' className='flex flex-col items-center'>
-                            Date of birth
+                            <span className='font-semibold'> Date of birth </span>
 
                             <UserGroupInput props='dob' />
                         </label>
@@ -116,12 +114,11 @@ const Signup = () => {
 
                     <div>
                         <label for='password' className='flex flex-col items-center'>
-                            Password
+                            <span className='font-semibold'> Password </span> 
 
                             <UserGroupInput props='password' />
                         </label>
                         
-
                         {signErrors.password &&
                             <InputErr props={signErrors.password} />
                         }
@@ -129,12 +126,11 @@ const Signup = () => {
 
                     <div>
                         <label for='confirm_password' className='flex flex-col items-center'>
-                            Confirm password
+                            <span className='font-semibold'> Confirm password </span> 
 
                             <UserGroupInput props='confirm_password' />
                         </label>
                         
-
                         {signErrors.confirm &&
                             <InputErr props={signErrors.confirm} />
                         }

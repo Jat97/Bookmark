@@ -53,10 +53,10 @@ const Login = () => {
                 md:bg-white'>
                 <p className='text-lg font-semibold'> Sign in to Bookmark </p>
 
-                <div className='font-semibold'>
+                <div>
                     <div className='w-1/3'>
                         <label for='email' className='flex flex-col items-start'>
-                            Username
+                            <span className='font-semibold'> Username </span>
 
                             <UserGroupInput props={'email'} />
                         </label>
@@ -68,7 +68,7 @@ const Login = () => {
 
                     <div className='w-1/3'>
                         <label for='password' className='flex flex-col items-start'>
-                            Password
+                            <span className='font-semibold'> Password </span>
 
                             <UserGroupInput props={'password'} />
                         </label>
