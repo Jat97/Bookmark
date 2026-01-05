@@ -22,7 +22,7 @@ export const useCreatePostMutation = ([poster, text, setText, setSiteError]) => 
                     return res.json();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },  
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['posts']});
@@ -75,7 +75,7 @@ export const useEditPostMutation = ([postid, setSiteError]) => {
                     return res.json();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async (data) => {
             await query_client.invalidateQueries({queryKey: ['posts']});
@@ -106,7 +106,7 @@ export const useEditPostMutation = ([postid, setSiteError]) => {
     return mutation;
 };
 
-export const useSharePostMutation = ([postid, setSiteError]) => {
+export const useSharePostMutation = ([user, postid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
             return await fetch(`http://localhost:9000/api/post/share/${postid}`, {
@@ -121,27 +121,27 @@ export const useSharePostMutation = ([postid, setSiteError]) => {
                     throw Error(`Error ${res.status}: ${res.statusText}`);
                 } 
                 else {
-                    const data = res.json();
-                    
-                    return data;
+                    return res.json();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
-        onMutate: async (data) => {
+        onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['posts']});
 
             const post_cache = query_client.getQueryData(['posts']);
             const post_arr = post_cache.posts || [];
 
+            const shared_post = post_arr.find(post => post.id === postid);
+
             post_arr.push({
                 id: post_arr.length + 25,
-                original_poster: data.original_poster,
-                text: data.text,
-                posted: data.posted,
-                original_group: data.original_group,
-                shared_by: data.shared_by,
-                edited: data.edited
+                original_poster: shared_post.original_poster,
+                text: shared_post.text,
+                posted: shared_post.posted,
+                original_group: shared_post.original_group,
+                shared_by: user,
+                edited: shared_post.edited
             });
 
             return {post_arr};
@@ -172,7 +172,7 @@ export const useDeletePostMutation = ([postid, setSiteError]) => {
                     return res.json();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['posts']});
@@ -214,13 +214,12 @@ export const useParentCommentMutation = ([postid, setSiteError]) => {
                     throw Error(`Error ${res.status}: ${res.statusText}`);
                 }
                 else {
-                    const data = res.json();
-                    return data;
+                    return res.json();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
-        onMutate: async (data) => {
+        onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['comments']});
 
             const comment_cache = query_client.getQueryData(['comments']);
@@ -252,7 +251,7 @@ export const useParentCommentMutation = ([postid, setSiteError]) => {
     return mutation;
 };
 
-export const useReplyCommentMutation = ([commentid, setSiteError]) => {
+export const useReplyCommentMutation = ([commentid, text, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
             return await fetch(`http://localhost:9000/api/comment/reply/${commentid}`, {
@@ -267,13 +266,12 @@ export const useReplyCommentMutation = ([commentid, setSiteError]) => {
                     throw Error(`Error ${res.status}: ${res.statusText}`);
                 }
                 else {
-                    const data = res.json();
-                    return data;
-                }
+                    return res.json();
+                } 
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
-        onMutate: async (data) => {
+        onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['comments']});
 
             const comment_cache = query_client.getQueryData(['comments']);
@@ -282,14 +280,14 @@ export const useReplyCommentMutation = ([commentid, setSiteError]) => {
             comment_arr.forEach(comment => {
                 if(comment.id === commentid) {  
                     const reply = {
-                        id: comment_arr + 75,
-                        commenting_user: data.commenting_user,
-                        commenting_group: data.commenting_group,
-                        text: data.text,
-                        posted: data.posted,
+                        id: comment_arr.length * 7.5,
+                        commenting_user: comment.commenting_user,
+                        commenting_group: comment.commenting_group,
+                        text: text,
+                        posted: Date.now(),
                         reply_to: commentid,
-                        likes: data.likes,
-                        replies: data.replies
+                        likes: [],
+                        replies: []
                     }   
 
                     comment.replies.push(reply);
@@ -309,7 +307,7 @@ export const useReplyCommentMutation = ([commentid, setSiteError]) => {
     return mutation;
 };
 
-export const useEditCommentMutation = ([commentid, setSiteError]) => {
+export const useEditCommentMutation = ([commentid, text, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
             return await fetch(`http://localhost:9000/api/comment/edit/${commentid}`, {
@@ -324,13 +322,12 @@ export const useEditCommentMutation = ([commentid, setSiteError]) => {
                     throw Error(`Error ${res.status}: ${res.statusText}`);
                 }
                 else {
-                    const data = res.json();
-                    return data;
+                    return res.json();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
-        onMutate: async (data) => {
+        onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['comments']});
 
             const comment_cache = query_client.getQueryData(['comments']);
@@ -340,7 +337,7 @@ export const useEditCommentMutation = ([commentid, setSiteError]) => {
                 if(comment.id === commentid) {
                     comment = {
                         ...comment,
-                        text: data.text
+                        text: text
                     }
                 }
             });
@@ -373,7 +370,7 @@ export const useDeleteCommentMutation = ([commentid, setSiteError]) => {
                     return res.json();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['comments']});
