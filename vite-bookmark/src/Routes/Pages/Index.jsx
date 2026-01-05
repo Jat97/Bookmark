@@ -18,7 +18,7 @@ const Index = () => {
 
     const groupData = useFetchGroups([authorized, setAuthorized, setSiteError]);
     const userData = useFetchUsers([authorized, setAuthorized, setSiteError]);
-    const loggedData = useFetchLogged([authorized, setAuthorized, setSiteError])
+    const loggedData = useFetchLogged([authorized, setAuthorized, setSiteError]);
 
     const index_arr = location.pathname.includes('groups') ? groupData.data.groups : userData.data.users;
 
