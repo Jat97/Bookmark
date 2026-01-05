@@ -1,3 +1,4 @@
+import {Link} from 'react-router-dom';
 import PostCommentBox from '../PostCommentBox';
 import ProfileDisplay from '../../Miscellaneous/Images/ProfileDisplay';
 
@@ -13,7 +14,9 @@ const PostCard = (props) => {
                     'post'
                 ]}/>
             
-                <p className='m-2 max-w-3/4' dangerouslySetInnerHTML={{__html: post.text}}></p>
+                <Link to={`/api/post/${post.id}/comments`} className='m-2 max-w-3/4' 
+                    dangerouslySetInnerHTML={{__html: post.text}}>
+                </Link>
             </div>
             
             <PostCommentBox props={post} />
