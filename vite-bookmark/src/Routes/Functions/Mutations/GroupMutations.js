@@ -1,28 +1,34 @@
 import {useMutation} from '@tanstack/react-query';
 import {query_client} from '../../../client';
 
-export const useEditGroupMutation = ([group, setSiteError]) => {
+export const useEditGroupMutation = ([title, description, file, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
+            const form = new FormData();
+
+            form.append('groupimage', file);
+            form.append('title', title);
+            form.append('description', description);
+
             return await fetch(`http://localhost:9000/api/group/edit/${group}`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: form
             })
-            .then(async (res) => {
+            .then(res => {
                 if(!res.ok) {
                     throw Error(`Error ${res.status}: ${res.statusText}`);
                 }
                 else {
-                    const data = await res.json();
-                    return data;
+                    return res.json();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
-        onMutate: async (data) => {
+        onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['groups']});
 
             const group = query_client.getQueryData(['groups']);
@@ -65,7 +71,7 @@ export const useGroupRequestMutation = ([logged, group, setSiteError]) => {
                     return res.json();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
        },
        onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['group_requests']});
@@ -113,7 +119,7 @@ export const useGroupAcceptMutation = ([user, group, setSiteError]) => {
                     return res.json();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['group']});
@@ -169,10 +175,10 @@ export const useGroupRejectMutation = ([user, group, setSiteError]) => {
                     return res.send();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
-            await query_client.invalidateQuery({queryKey: ['groups']});
+            await query_client.invalidateQueries({queryKey: ['groups']});
 
             const request_cache = query_client.getQueryData(['groups']);
             const request_arr = request_cache.groups.requests || [];
@@ -213,7 +219,7 @@ export const useTerminateMembershipMutation = ([logged, group, setSiteError]) =>
                     return res.send();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['groups']});
@@ -261,7 +267,7 @@ export const useGroupPrivacyMutation = ([group, setSiteError]) => {
                     return res.json();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['groups']});
@@ -308,7 +314,7 @@ export const useDeleteGroupMutation = ([group, setSiteError]) => {
                     return res.send();
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['groups']});
