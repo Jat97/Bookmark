@@ -2,7 +2,7 @@ import {useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import {useBookStore} from '../../../Context/bookStore';
 import LogSignButton from '../../Buttons/LogSignButton';
-import LogSignInput from '../../Miscellaneous/Inputs/LogSignInput';
+import UserGroupInput from '../../Miscellaneous/Inputs/UserGroupInput';
 import InputErr from '../../Miscellaneous/Text/Errors/InputErr';
 
 const Signup = () => {
@@ -68,7 +68,7 @@ const Signup = () => {
                         <label for='first_name' className='flex flex-col items-center'>
                             First Name
 
-                            <LogSignInput props='first_name' />
+                            <UserGroupInput props='first_name' />
                         </label>
                         
 
@@ -81,7 +81,7 @@ const Signup = () => {
                         <label for='last_name' className='flex flex-col items-center'>
                             Last Name
 
-                            <LogSignInput props='last_name' />
+                            <UserGroupInput props='last_name' />
                         </label>
 
                         {signErrors.last_name && 
@@ -93,7 +93,7 @@ const Signup = () => {
                         <label for='email' className='flex flex-col items-center'>
                             Email
 
-                            <LogSignInput props='email' />
+                            <UserGroupInput props='email' />
                         </label>
                        
 
@@ -106,7 +106,7 @@ const Signup = () => {
                         <label for='dob' className='flex flex-col items-center'>
                             Date of birth
 
-                            <LogSignInput props='dob' />
+                            <UserGroupInput props='dob' />
                         </label>
 
                         {signErrors.dob &&
@@ -118,7 +118,7 @@ const Signup = () => {
                         <label for='password' className='flex flex-col items-center'>
                             Password
 
-                            <LogSignInput props='password' />
+                            <UserGroupInput props='password' />
                         </label>
                         
 
@@ -131,7 +131,7 @@ const Signup = () => {
                         <label for='confirm_password' className='flex flex-col items-center'>
                             Confirm password
 
-                            <LogSignInput props='confirm_password' />
+                            <UserGroupInput props='confirm_password' />
                         </label>
                         
 

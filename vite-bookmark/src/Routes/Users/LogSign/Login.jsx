@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import {useBookStore} from '../../../Context/bookStore';
-import LogSignInput from '../../Miscellaneous/Inputs/LogSignInput';
+import UserGroupInput from '../../Miscellaneous/Inputs/UserGroupInput';
 import InputErr from '../../Miscellaneous/Text/Errors/InputErr';
 import LogSignButton from '../../Buttons/LogSignButton';
 
@@ -58,7 +58,7 @@ const Login = () => {
                         <label for='email' className='flex flex-col items-start'>
                             Username
 
-                            <LogSignInput props={'email'} />
+                            <UserGroupInput props={'email'} />
                         </label>
                             
                         {logErrors.username &&
@@ -70,7 +70,7 @@ const Login = () => {
                         <label for='password' className='flex flex-col items-start'>
                             Password
 
-                            <LogSignInput props={'password'} />
+                            <UserGroupInput props={'password'} />
                         </label>
                         
                         {logErrors.password &&
