@@ -46,11 +46,13 @@ exports.get_all_groups = async (req, res) => {
                     );
                 }
 
-                return groups_members_requests.push({
-                    group: group, 
-                    members: group_memberships.rows, 
-                    requests: group_requests ? group_requests.rows : null
-                });   
+                const group_data = {
+                    ...group,
+                    members: group_memberships.rows,
+                    requests: group_requests.rows.length > 0 && group_requests.rows
+                }
+
+                return groups_members_requests.push(group_data);   
             });
 
             res.status(200).json({groups: groups_members_requests});
@@ -75,8 +77,8 @@ exports.create_group = async (req, res) => {
                 res.status(400).json({title_error: 'A group by this name already exists.'});
             }
             else {
-                if(req.file) {
-                    var result = uploadImage(req);
+                if(!req.body.description) {
+                    res.status(400).json({description_error: 'Please include a description for this group.'});
                 }
                 
                 const new_group = await db.query(
@@ -225,11 +227,15 @@ exports.reject_group_request = async (req, res) => {
     }
 };
 
-exports.terminate_membership = async (req, res) => {
+exports.ban_user = async (req, res) => {
     try {
         const user_key = await validateToken(req);
 
         if(user_key) {
+            await db.query(`INSERT INTO banned_users ($1, $2)`, 
+                [req.params.userid, req.params.groupid]
+            );
+
             await db.query(
                 `DELETE FROM group_membership WHERE member = $1 AND member_of = $2`, 
                 [req.params.userid, req.params.groupid]
@@ -239,6 +245,25 @@ exports.terminate_membership = async (req, res) => {
         }
         else {
             res.status(401).send();
+        }
+    }
+    catch (err) {
+        res.status(500).json({error: err});
+    }
+};
+
+exports.unban_user = async (req, res) => {
+    try {
+        const user_key = await validateToken(req);
+
+        if(user_key) {
+            await db.query(
+                `DELETE FROM banned_users WHERE banned_user = $1 AND banning_group = $2`,
+                [req.params.userid, req.params.groupid]
+            );
+        }
+        else {
+            res.send(401).send();
         }
     }
     catch (err) {
