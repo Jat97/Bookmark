@@ -32,6 +32,17 @@ exports.get_all_groups = async (req, res) => {
                     WHERE group_memberships.member_of = $1`, 
                     [group.id]
                 ); 
+
+                const banned_users = await db.query(
+                    `SELECT users.id AS id,
+                    users.first_name AS first_name,
+                    users.last_name AS last_name,
+                    users.profile_picture AS profile_picture 
+                    FROM banned_users
+                    INNER JOIN users ON users.id = banned_users.banned_user
+                    WHERE banning_group = $1`,
+                    [group.id]
+                );
                         
                 if(group.moderator === user_key.logged_user.id) {
                     group_requests = await db.query(
@@ -49,7 +60,8 @@ exports.get_all_groups = async (req, res) => {
                 const group_data = {
                     ...group,
                     members: group_memberships.rows,
-                    requests: group_requests.rows.length > 0 && group_requests.rows
+                    requests: group_requests.rows.length > 0 && group_requests.rows,
+                    banned_users: banned_users
                 }
 
                 return groups_members_requests.push(group_data);   
