@@ -60,7 +60,9 @@ router.post('/group/:groupid/request/accept/:userid', groupController.accept_gro
 
 router.delete('/group/:groupid/request/reject/:userid', groupController.reject_group_request);
 
-router.delete('/group/:groupid/membership/:userid', groupController.terminate_membership);
+router.post('/group/:groupid/ban/:userid', groupController.ban_user);
+
+router.delete('/group/:groupid/unban/:userid', groupController.unban_user);
 
 router.delete('/group/:groupid', groupController.delete_group);
 
