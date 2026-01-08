@@ -1,4 +1,4 @@
-import {useMutation} from '@tanstack/react-query';
+import {QueryErrorResetBoundary, useMutation} from '@tanstack/react-query';
 import {query_client} from '../../../client';
 
 export const useEditGroupMutation = ([title, description, file, setSiteError]) => {
@@ -204,10 +204,60 @@ export const useGroupRejectMutation = ([user, group, setSiteError]) => {
     return mutation;
 };
 
-export const useTerminateMembershipMutation = ([logged, group, setSiteError]) => {
+export const useBanUserMutation = ([user, group, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/group/${group}/membership/${logged}`, {
+            return await fetch(`http://localhost:9000/api/group/${group.id}/user/${user.id}`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => {
+                if(!res.ok) {
+                    throw Error(`Error ${res.status}: ${res.statusText}`);
+                }
+                else {
+                    return res.json();
+                }
+            })
+            .catch(err => setSiteError(err))
+        },
+        onMutate: async () => {
+            await query_client.invalidateQueries({queryKey: ['groups']});
+
+            const group_cache = query_client.getQueryData(['groups']);
+            const group_arr = group_cache || [];
+
+            const banning_group = group_arr.find((page) => page.id === group.id);
+
+            const updated_group = banning_group.banned_users.push({
+                banned_user: user.id,
+                banning_group: group.id
+            });
+
+            updated_group.members.filter(member => member.id !== user.id);
+
+            query_client.setQueryData(['groups'], updated_group);
+
+            return {banning_group}
+        },
+        onError: () => {
+            query_client.setQueryData(['groups'], context.banning_group);
+        },
+        onSettled: async () => {
+            await query_client.invalidateQueries({queryKey: ['groups']});
+        }
+    });
+
+    return mutation;
+};
+
+export const useUnbanUserMutation = ([user, group, setSiteError]) => {
+    const mutation = useMutation({
+        mutationFn: async () => {
+            return await fetch(`http://localhost:9000/api/group/${group.id}/user/${user.id}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
@@ -216,33 +266,27 @@ export const useTerminateMembershipMutation = ([logged, group, setSiteError]) =>
                     throw Error(`Error ${res.status}: ${res.statusText}`);
                 }
                 else {
-                    return res.send();
+                    return res.json();
                 }
             })
-            .catch(err => setSiteError(err.message))
+            .catch(err => setSiteError(err))
         },
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['groups']});
 
-            const member_cache = query_client.getQueryData(['groups']);
-            const member_arr = member_cache.groups || [];
+            const group_cache = query_client.getQueryData(['groups']);
+            const group_arr = group_cache || [];
 
-            member_arr.forEach(page => {
-                if(page.id === group) {
-                    page.membership.forEach((member, index) => {
-                        if(member.id === logged) {
-                            page.membership.splice(index, 1);
-                        } 
-                    });
-                }
-            });
+            const unbanning_group = group_arr.find((page) => page.id === group.id);
 
-            query_client.setQueryData(['groups'], member_arr);
+            const updated_group = unbanning_group.banned_users.filter(banned => banned.id !== user.id);
 
-            return {member_arr};
+            query_client.setQueryData(['groups'], updated_group);
+
+            return {unbanning_group};
         },
-        onError: (err, data, context) => {
-            query_client.setQueryData(['groups'], context.member_arr);
+        onError: () => {
+            query_client.setQueryData(['groups'], context.unbanning_group);
         },
         onSettled: async () => {
             await query_client.invalidateQueries({queryKey: ['groups']});
