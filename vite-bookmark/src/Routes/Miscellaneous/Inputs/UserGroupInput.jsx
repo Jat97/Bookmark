@@ -5,7 +5,7 @@ const LogSignInput = (props) => {
         <input data-testid={id} id={id} name={id} 
             type={id === 'password' || id === 'confirm_password' ? 'password' : id === 'email' ? 'email' :
                 id === 'dob' ? 'date' : 'text'}
-            className='bg-gray-200 rounded-full p-1 w-[175px] focus:bg-white' 
+            className={`bg-gray-200 rounded-full p-1 focus:bg-white ${id === 'title' ? 'w-[225px]' : 'w-[175px]'}`} 
             minLength={id === 'password' || id === 'confirm_password' ? '8' : '1'} 
             maxLength={id === 'password' || id === 'confirm_password' ? '15' : '30'}
             placeholder={`${id.replace('_', ' ').replace(id[0], id[0].toUpperCase())}`}>
