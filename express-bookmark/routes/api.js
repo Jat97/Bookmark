@@ -38,6 +38,8 @@ router.get('/user', userController.get_logged_information);
 
 router.patch('/user/picture', upload.single('profilepic'), userController.edit_profile_picture);
 
+router.put('/user/profile/edit', userController.edit_profile_information);
+
 router.patch('/user/hidden', userController.update_hidden_status);
 
 router.patch('/logout', userController.log_out);
@@ -101,8 +103,6 @@ router.delete('/comment/unlike/:commentid', commentController.unlike_comment);
 // Chat routes
 
 router.get('/chats', chatController.get_all_chats);
-
-// router.get('/chat/:userid', chatController.get_chat_messages);
 
 router.get('/message/:userid', upload.single('chatimage'), chatController.send_message);
 
