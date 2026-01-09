@@ -51,9 +51,10 @@ exports.create_account = [
                 }
                 else {
                     const user = await db.query(`
-                        INSERT INTO users (first_name, last_name, email, dob, password, profile_picture, online, hidden) 
-                        VALUES ($1, $2, $3, $4, $5, $6, $7)`, 
-                        [req.body.first_name, req.body.last_name, req.body.email, req.body.dob, hashWord, null, true, false]
+                        INSERT INTO users (first_name, last_name, email, dob, description, password, 
+                        profile_picture, online, hidden) 
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`, 
+                        [req.body.first_name, req.body.last_name, req.body.email, req.body.dob, '', hashWord, null, true, false]
                     );
 
                     jwt.sign({user, expiresIn: new Date(Date.now() + 1000000)}, process.env.TOKEN_KEY, 
@@ -481,7 +482,20 @@ exports.get_logged_information = async (req, res) => {
         const user_key = await validateToken(req, res);
 
         if(user_key) {
-            res.status(200).json({logged_user: user_key.logged_user});
+            const user = await db.query(
+                `SELECT id AS id,
+                first_name AS first_name,
+                last_name AS last_name,
+                dob AS dob,
+                profile_picture AS profile_picture,
+                description AS description
+                FROM users
+                WHERE id = $1`
+                [user_key.logged_user.id],
+
+            );
+
+            res.status(200).json({logged_user: user});
         }
         else {
             res.status(401).send();
@@ -520,6 +534,27 @@ exports.edit_profile_picture = async (req, res) => {
         res.status(500).json({error: err});
     }
 };
+
+exports.edit_profile_information = async (req, res) => {
+    try {
+        const user_key = validateToken(req, res);
+
+        if(user_key) {
+            const updated_user_data = await db.query(
+                `UPDATE users SET first_name = $1 last_name = $2 dob = $3 description = $4 WHERE id = $5 RETURNING *`,
+                [req.body.first_name, req.body.last_name, req.body.dob, req.body.description, user_key.logged_user.id]
+            );
+
+            res.status(200).json({logged_user: updated_user_data});
+        }
+        else {
+            res.status(400).send();
+        }
+    }
+    catch (err) {
+        res.send(500).json({error: err});
+    }
+}
 
 exports.update_hidden_status = async (req, res) => {
     try {
