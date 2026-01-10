@@ -1,7 +1,7 @@
 import {useState} from 'react';
-import AcceptButton from '../../Buttons/AcceptButton';
-import RejectButton from '../../Buttons/RejectButton';
-import ProfileDisplay from '../../Miscellaneous/Images/ProfileDisplay';
+import AcceptButton from '../../../Buttons/AcceptButton';
+import RejectButton from '../../../Buttons/RejectButton';
+import ProfileDisplay from '../../ProfileInformation/ProfileDisplay';
 import {XMarkIcon} from '@heroicons/react/24/solid';
 
 const AlertTab = (props) => {

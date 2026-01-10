@@ -3,7 +3,7 @@ import {PhotoIcon} from '@heroicons/react/24/solid';
 import {useEditGroupMutation} from '../../Functions/Mutations/GroupMutations';
 import {useDeleteGroupMutation} from '../../Functions/Mutations/GroupMutations';
 import {useBookStore} from '../../../Context/bookStore';
-import ProfileDisplay from '../../Miscellaneous/Images/ProfileDisplay';
+import ProfileDisplay from '../ProfileInformation/ProfileDisplay';
 import PageHeader from '../../Miscellaneous/Text/PageHeader';
 import DescriptionBox from '../../Miscellaneous/Inputs/DescriptionBox';
 import GroupBanUnbanButton from '../../Buttons/GroupBanUnbanButton';
@@ -12,15 +12,15 @@ import EditButton from '../../Buttons/EditButton';
 const EditGroup = (props) => {
     const group = props.props;
 
-    const description_value = useBookStore((state) => state.description);
-    const setDescriptionValue = useBookStore((state) => state.setDescriptionValue);
+    const description_input = useBookStore((state) => state.description_input);
+    const setDescriptionInput = useBookStore((state) => state.setDescriptionInput);
     const setSiteError = useBookStore((state) => state.setSiteError);
 
     useEffect(() => {
-        if(!description_value) {
-            setDescriptionValue(group.description);
+        if(!description_input) {
+            setDescriptionInput(group.description);
         }
-    }, [description_value, group]);
+    }, [description_input, group]);
 
     const [groupImage, setGroupImage] = useState(group?.group_image);
 

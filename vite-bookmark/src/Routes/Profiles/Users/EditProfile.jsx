@@ -1,25 +1,25 @@
 import {useState, useEffect} from 'react';
-import {useBookStore} from '../../Context/bookStore';
-import {useEditProfileMutation} from '../Functions/Mutations/userMutations';
-import UserGroupInput from '../Miscellaneous/Inputs/UserGroupInput';
-import DescriptionBox from '../Miscellaneous/Inputs/DescriptionBox';
-import ProfileDisplay from '../Miscellaneous/Images/ProfileDisplay';
-import InputErr from '../Miscellaneous/Text/Errors/InputErr'
-import BlockButton from '../Buttons/BlockButton';
-import EditButton from '../Buttons/EditButton';
+import {useBookStore} from '../../../Context/bookStore';
+import {useEditProfileMutation} from '../../Functions/Mutations/UserMutations';
+import UserGroupInput from '../../Miscellaneous/Inputs/UserGroupInput';
+import DescriptionBox from '../../Miscellaneous/Inputs/DescriptionBox';
+import ProfileDisplay from '../ProfileInformation/ProfileDisplay';
+import InputErr from '../../Miscellaneous/Text/Errors/InputErr'
+import BlockButton from '../../Buttons/BlockButton';
+import EditButton from '../../Buttons/EditButton';
 
 const EditProfile = (props) => {
     const user = props.props;
 
-    const description_value = useBookStore((state) => state.description_value);
-    const setDescriptionValue = useBookStore((state) => state.setDescriptionValue);
+    const description_input = useBookStore((state) => state.description_input);
+    const setDescriptionInput = useBookStore((state) => state.setDescriptionInput);
     const setSiteError = useBookStore((state) => state.setSiteError);
 
     useEffect(() => {
-        if(!description_value) {
-            setDescriptionValue(user.description);
+        if(!description_input) {
+            setDescriptionInput(user.description);
         }
-    }, [description_value, user]);
+    }, [description_input, user]);
 
     const [editErrors, setEditErrors] = useState({
         first_name: null,
@@ -35,7 +35,7 @@ const EditProfile = (props) => {
 
     const profile_mutation = useEditProfileMutation([
         user, 
-        {...profileData, description: description_value}, 
+        {...profileData, description: description_input}, 
         setDescription, 
         setEditErrors, 
         setSiteError

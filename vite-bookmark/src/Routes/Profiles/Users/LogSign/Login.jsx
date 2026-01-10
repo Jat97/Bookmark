@@ -1,9 +1,9 @@
 import {useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
-import {useBookStore} from '../../../Context/bookStore';
-import UserGroupInput from '../../Miscellaneous/Inputs/UserGroupInput';
-import InputErr from '../../Miscellaneous/Text/Errors/InputErr';
-import LogSignButton from '../../Buttons/LogSignButton';
+import {useBookStore} from '../../../../Context/bookStore';
+import UserGroupInput from '../../../Miscellaneous/Inputs/UserGroupInput';
+import InputErr from '../../../Miscellaneous/Text/Errors/InputErr';
+import LogSignButton from '../../../Buttons/LogSignButton';
 
 const Login = () => {
     const setSiteError = useBookStore((state) => state.setSiteError);

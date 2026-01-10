@@ -1,15 +1,15 @@
 import {useState, useEffect} from 'react';
 import {BellIcon, ChatBubbleOvalLeftEllipsisIcon, MagnifyingGlassIcon, UserIcon} from '@heroicons/react/24/solid';
-import {useFetchLogged, useFetchAlerts, useFetchUsers} from '../Functions/Queries/UserQueries';
-import {useFetchGroups} from '../Functions/Queries/GroupQueries';
-import {useFetchChats} from '../Functions/Queries/ChatQueries';
-import {useBookStore} from '../../Context/bookStore';
+import {useFetchLogged, useFetchAlerts, useFetchUsers} from '../../Functions/Queries/UserQueries';
+import {useFetchGroups} from '../../Functions/Queries/GroupQueries';
+import {useFetchChats} from '../../Functions/Queries/ChatQueries';
+import {useBookStore} from '../../../Context/bookStore';
 import UserMenu from './Tabs/UserMenu';
 import AlertTab from './Tabs/AlertTab';
-import ChatBox from '../Chats/ChatBox';
-import PageHeader from '../Miscellaneous/Text/PageHeader';
-import NotificationCount from '../Miscellaneous/Text/NotificationCount';
-import ProfileDisplay from '../Miscellaneous/Images/ProfileDisplay';
+import ChatBox from '../../Chats/ChatBox';
+import PageHeader from '../../Miscellaneous/Text/PageHeader';
+import NotificationCount from '../../Miscellaneous/Text/NotificationCount';
+import ProfileDisplay from '../ProfileInformation/ProfileDisplay';
 
 const Navbar = () => {
     const selected_chat = useBookStore((state) => state.selected_chat);

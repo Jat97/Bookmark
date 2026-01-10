@@ -9,8 +9,8 @@ import PostCard from '../../Feed/Posts/PostCard';
 import FriendButton from '../../Buttons/FriendButton';
 import BlockButton from '../../Buttons/BlockButton';
 import GroupRequestLeaveButton from '../../Buttons/GroupRequestLeaveButton';
-import EditGroup from '../Profiles/Groups/EditGroup';
-import EditProfile from '../Profile/Users/EditProfile';
+import EditGroup from '../Groups/EditGroup';
+import EditProfile from '../Users/EditProfile';
 import ProfileDescription from './ProfileDescription';
 
 const ProfilePage = () => {

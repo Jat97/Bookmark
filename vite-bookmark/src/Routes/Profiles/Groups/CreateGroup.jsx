@@ -1,10 +1,10 @@
 import {useState} from 'react';
 import {XMarkIcon} from '@heroicons/react/24/solid';
-import {useBookStore} from '../../Context/bookStore';
-import UserGroupInput from '../Miscellaneous/Inputs/UserGroupInput';
-import GroupDescriptionBox from '../Miscellaneous/Inputs/GroupDescriptionBox';
-import InputErr from '../Miscellaneous/Text/Errors/InputErr';
-import PageHeader from '../Miscellaneous/Text/PageHeader';
+import {useBookStore} from '../../../Context/bookStore';
+import UserGroupInput from '../../Miscellaneous/Inputs/UserGroupInput';
+import DescriptionBox from '../../Miscellaneous/Inputs/DescriptionBox';
+import InputErr from '../../Miscellaneous/Text/Errors/InputErr';
+import PageHeader from '../../Miscellaneous/Text/PageHeader';
 
 const CreateGroup = () => {
     const [groupErrors, setGroupErrors] = useState({
@@ -74,7 +74,7 @@ const CreateGroup = () => {
                     </div>
                     
                     <div className='flex flex-col items-start mb-[10px]'>
-                        <GroupDescriptionBox />
+                        <DescriptionBox props={['', false]} />
 
                         {groupErrors.description &&
                             <InputErr props={groupErrors.description} />
