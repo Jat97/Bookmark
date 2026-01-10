@@ -1,4 +1,4 @@
-import {QueryErrorResetBoundary, useMutation} from '@tanstack/react-query';
+import {useMutation} from '@tanstack/react-query';
 import {query_client} from '../../../client';
 
 export const useEditGroupMutation = ([title, description, file, setSiteError]) => {
@@ -243,7 +243,7 @@ export const useBanUserMutation = ([user, group, setSiteError]) => {
 
             return {banning_group}
         },
-        onError: () => {
+        onError: (err, data, context) => {
             query_client.setQueryData(['groups'], context.banning_group);
         },
         onSettled: async () => {
@@ -285,7 +285,7 @@ export const useUnbanUserMutation = ([user, group, setSiteError]) => {
 
             return {unbanning_group};
         },
-        onError: () => {
+        onError: (err, data, context) => {
             query_client.setQueryData(['groups'], context.unbanning_group);
         },
         onSettled: async () => {
