@@ -4,7 +4,7 @@ import {ChatBubbleLeftIcon} from '@heroicons/react/24/solid';
 import {useFetchLogged, useFetchUsers} from '../../Functions/Queries/UserQueries';
 import {useFetchPosts} from '../../Functions/Queries/PostQueries';
 import {useBookStore} from '../../../Context/bookStore';
-import ProfileDisplay from '../../Miscellaneous/Images/ProfileDisplay';
+import ProfileDisplay from './ProfileDisplay';
 import PostCard from '../../Feed/Posts/PostCard';
 import FriendButton from '../../Buttons/FriendButton';
 import BlockButton from '../../Buttons/BlockButton';
