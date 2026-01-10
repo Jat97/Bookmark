@@ -1,4 +1,4 @@
-import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
+import {BrowserRouter, Routes, Route, Navigate, useLocation} from 'react-router-dom';
 import {useBookStore} from './Context/bookStore';
 import Login from './Routes/Users/LogSign/Login';
 import Signup from './Routes/Users/LogSign/Signup';
@@ -10,11 +10,16 @@ import CreateGroup from './Routes/Groups/CreateGroup';
 import SiteErr from './Routes/Miscellaneous/Text/Errors/SiteErr';
 
 function App() {
+    const location = useLocation();
     const create_group_tab = useBookStore((state) => state.create_group_tab);
     const error = useBookStore((state) => state.error);
     
     return (
         <div className='bg-amber-400/25 h-full'>
+            {!location.pathname.includes('login') || !location.pathname.includes('signup') && 
+                <Navbar />
+            }
+
             <BrowserRouter>
                 <Routes>
                     <Route path='/api/login' element={<Login />}></Route>
