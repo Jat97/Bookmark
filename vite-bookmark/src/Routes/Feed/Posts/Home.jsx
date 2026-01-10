@@ -4,7 +4,7 @@ import {useBookStore} from '../../../Context/bookStore';
 import PostCard from './PostCard';
 import TextBox from '../../Miscellaneous/Inputs/TextBox';
 import NoItems from '../../Miscellaneous/Text/NoItems';
-import ProfileDisplay from '../../Miscellaneous/Images/ProfileDisplay';
+import ProfileDisplay from '../../Profiles/ProfileInformation/ProfileDisplay';
 import Navbar from '../../Users/Navbar';
 
 const Home = () => {
@@ -39,7 +39,7 @@ const Home = () => {
                             <NoItems props={'No users online.'} />
                         :
                             currently_online?.map(friend => {
-                                return <ProfileDisplay props={friend} />
+                                return <ProfileDisplay props={[friend, false, 'index']} />
                             })
                         }
                     </div>
