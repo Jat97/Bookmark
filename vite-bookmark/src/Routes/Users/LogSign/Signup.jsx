@@ -68,7 +68,7 @@ const Signup = () => {
                         <label for='first_name' className='flex flex-col items-center'>
                             <span className='font-semibold'> First Name </span>
 
-                            <UserGroupInput props='first_name' />
+                            <UserGroupInput props={['first_name', null]} />
                         </label>
 
                         {signErrors.first_name &&
@@ -80,7 +80,7 @@ const Signup = () => {
                         <label for='last_name' className='flex flex-col items-center'>
                             <span className='font-semibold'> Last Name </span>
 
-                            <UserGroupInput props='last_name' />
+                            <UserGroupInput props={['last_name', null]} />
                         </label>
 
                         {signErrors.last_name && 
@@ -92,7 +92,7 @@ const Signup = () => {
                         <label for='email' className='flex flex-col items-center'>
                             <span className='font-semibold'> Email </span>
 
-                            <UserGroupInput props='email' />
+                            <UserGroupInput props={['email', null]} />
                         </label>
                        
                         {signErrors.email &&
@@ -104,7 +104,7 @@ const Signup = () => {
                         <label for='dob' className='flex flex-col items-center'>
                             <span className='font-semibold'> Date of birth </span>
 
-                            <UserGroupInput props='dob' />
+                            <UserGroupInput props={['dob', null]} />
                         </label>
 
                         {signErrors.dob &&
@@ -116,7 +116,7 @@ const Signup = () => {
                         <label for='password' className='flex flex-col items-center'>
                             <span className='font-semibold'> Password </span> 
 
-                            <UserGroupInput props='password' />
+                            <UserGroupInput props={['password', null]} />
                         </label>
                         
                         {signErrors.password &&
@@ -128,7 +128,7 @@ const Signup = () => {
                         <label for='confirm_password' className='flex flex-col items-center'>
                             <span className='font-semibold'> Confirm password </span> 
 
-                            <UserGroupInput props='confirm_password' />
+                            <UserGroupInput props={['confirm_password', null]} />
                         </label>
                         
                         {signErrors.confirm &&
