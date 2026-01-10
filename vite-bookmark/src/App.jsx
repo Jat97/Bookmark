@@ -1,15 +1,15 @@
 import {BrowserRouter, Routes, Route, Navigate, useLocation} from 'react-router-dom';
 import {useBookStore} from './Context/bookStore';
-import Login from './Routes/Users/LogSign/Login';
-import Signup from './Routes/Users/LogSign/Signup';
+import Login from './Routes/Profiles/Users/LogSign/Login';
+import Signup from './Routes/Profiles/Users/LogSign/Signup';
 import Home from './Routes/Feed/Posts/Home';
-import Index from './Routes/Pages/Index';
-import ProfilePage from './Routes/Pages/ProfilePage';
+import Index from './Routes/Profiles/ProfileInformation/Index';
+import ProfilePage from './Routes/Profiles/ProfileInformation/ProfilePage';
 import FullPost from './Routes/Feed/Posts/FullPost';
-import CreateGroup from './Routes/Groups/CreateGroup';
+import CreateGroup from './Routes/Profiles/Groups/CreateGroup';
 import SiteErr from './Routes/Miscellaneous/Text/Errors/SiteErr';
 
-function App() {
+const App = () => {
     const location = useLocation();
     const create_group_tab = useBookStore((state) => state.create_group_tab);
     const error = useBookStore((state) => state.error);
