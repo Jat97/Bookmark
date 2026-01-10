@@ -58,6 +58,8 @@ router.patch('/group/private/:groupid', groupController.handle_group_privacy);
 
 router.post('/group/request/:groupid', groupController.send_group_request);
 
+router.delete('/group/leave/:groupid', groupController.leave_group);
+
 router.post('/group/:groupid/request/accept/:userid', groupController.accept_group_request);
 
 router.delete('/group/:groupid/request/reject/:userid', groupController.reject_group_request);
