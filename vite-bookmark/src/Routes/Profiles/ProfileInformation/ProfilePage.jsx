@@ -9,7 +9,9 @@ import PostCard from '../../Feed/Posts/PostCard';
 import FriendButton from '../../Buttons/FriendButton';
 import BlockButton from '../../Buttons/BlockButton';
 import GroupRequestLeaveButton from '../../Buttons/GroupRequestLeaveButton';
-import GroupInfoPage from '../Profiles/Groups/GroupInfoPage';
+import EditGroup from '../Profiles/Groups/EditGroup';
+import EditProfile from '../Profile/Users/EditProfile';
+import ProfileDescription from './ProfileDescription';
 
 const ProfilePage = () => {
     const {profileid} = useParams();
@@ -114,19 +116,22 @@ const ProfilePage = () => {
                     </div>
                 :
                     pageMode === 'edit_group' ?
-                        <GroupInfoPage props={groupData.data.groups.find((group) => group.id === profileid)} />
+                        <EditGroup props={groupData.data.groups.find((group) => group.id === profileid)} />
                     :
                         pageMode === 'edit_profile' ?
-                            ''
+                            <EditProfile props={current_profile} />
                         :
-                            <Index props={[
-                                pageMode === 'groups' && loggedData.data.logged_user,
-                                pageMode === 'friends' ? current_profile.friends : 
-                                pageMode === 'requests' ? current_profile.requests :
-                                pageMode === 'members' ? current_profile.members : 
-                                pageMode === 'groups' && 
-                                groupData.data.groups.filter(group => group.members.some((member) => member.id === current_profile.id))
-                            ]} />
+                            pageMode === 'about_group' || pageMode === 'about_user' ?
+                                <ProfileDescription props={current_profile.description} />
+                            :
+                                <Index props={[
+                                    pageMode === 'groups' && loggedData.data.logged_user,
+                                    pageMode === 'friends' ? current_profile.friends : 
+                                    pageMode === 'requests' ? current_profile.requests :
+                                    pageMode === 'members' ? current_profile.members : 
+                                    pageMode === 'groups' && 
+                                    groupData.data.groups.filter(group => group.members.some((member) => member.id === current_profile.id))
+                                ]} />
                 }                               
             </div>
         </div>
