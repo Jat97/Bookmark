@@ -192,6 +192,25 @@ exports.send_group_request = async (req, res) => {
     }
 };
 
+exports.leave_group = async (req, res) => {
+    try {
+        const user_key = await validateToken(req, res);
+
+        if(user_key) {
+            await db.query(
+                `DELETE * FROM group_membership WHERE member = $1 AND member_of = $2`,
+                [user_key.logged_user.id, req.params.groupid]
+            );
+        }
+        else {
+            res.status(400).send();
+        }
+    }
+    catch (err) {
+        res.status(500).send({error: err});
+    }   
+};
+
 exports.accept_group_request = async (req, res) => {
     try {
         const user_key = await validateToken(req);
