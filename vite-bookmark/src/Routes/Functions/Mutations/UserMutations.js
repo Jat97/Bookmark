@@ -126,6 +126,67 @@ export const useLogOutMutation = (setSiteError) => {
     return mutation;
 };
 
+export const useEditProfileMutation = ([user, data, setDescription, setEditErrors, setSiteError]) => {
+    const mutation = useMutation({
+        mutationFn: async () => {
+            return await fetch('http://localhost:9000/api/user/profile/edit', {
+                method: 'PUT',
+                credentials: 'include',
+                body: JSON.stringify({
+                    first_name: data.first_name,
+                    last_name: data.last_name,
+                    dob: data.dob,
+                    description: data.description
+                })
+            })
+            .then(res => {
+                if(!res.ok) {
+                    throw Error(`Error ${res.status}: ${res.status}`);
+                }
+                else {
+                    return res.json();
+                }
+            })
+            .then(json => {
+            if(json.errors) {
+                json.errors.errors.forEach(error => {
+                    setEditErrors((prevState) => ({
+                        ...prevState,
+                        [error.params] : error.message
+                    }));
+                })
+            }
+            })
+            .catch(err => setSiteError(err))
+        },
+        onMutate: async () => {
+            await query_client.invalidateQueries({queryKey: ['logged']});
+
+            const updated_user  = {
+                ...user,
+                first_name: data.first_name,
+                last_name: data.last_name,
+                dob: data.dob,
+                description: data.description
+            }
+
+            query_client.setQueryData(['logged'], updated_user);
+
+            setDescription('');
+
+            return {user}
+        },
+        onError: (err, data, context) => {
+            query_client.setQueryData(['logged'], context.user);
+        },
+        onSettled: async () => {
+            await query_client.invalidateQueries({queryKey: ['logged']});
+        }
+    });
+
+    return mutation;
+}
+
 export const deleteAccountMutation = (setSiteError) => {
     const mutation = useMutation({
         mutationFn: async () => {
