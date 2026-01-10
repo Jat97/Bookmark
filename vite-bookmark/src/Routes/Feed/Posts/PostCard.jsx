@@ -1,6 +1,6 @@
 import {Link} from 'react-router-dom';
 import PostCommentBox from '../PostCommentBox';
-import ProfileDisplay from '../../Miscellaneous/Images/ProfileDisplay';
+import ProfileDisplay from '../../Profiles/ProfileInformation/ProfileDisplay';
 
 const PostCard = (props) => {
     const post = props.props;
