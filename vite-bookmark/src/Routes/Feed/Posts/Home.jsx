@@ -5,7 +5,7 @@ import PostCard from './PostCard';
 import TextBox from '../../Miscellaneous/Inputs/TextBox';
 import NoItems from '../../Miscellaneous/Text/NoItems';
 import ProfileDisplay from '../../Profiles/ProfileInformation/ProfileDisplay';
-import Navbar from '../../Users/Navbar';
+import Navbar from '../../Profiles/Users/Navbar';
 
 const Home = () => {
     const authorized = useBookStore((state) => state.authorized);
