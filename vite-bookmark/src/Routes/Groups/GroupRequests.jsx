@@ -1,30 +1,22 @@
-import {useParams} from 'react-router-dom';
 import {useFetchGroups} from '../Functions/Queries/GroupQueries';
 import {useBookStore} from '../../Context/bookStore';
-import UserDisplay from '../Users/UserDisplay';
+import ProfileDisplay from '../Miscellaneous/Images/ProfileDisplay';
 import PageHeader from '../Miscellaneous/Text/PageHeader';
 import GroupAcceptRejectButton from '../Buttons/GroupAcceptRejectButton';
 
-const GroupRequests = () => {
-    const {groupid} = useParams();
-
-    const authorized = useBookStore((state) => state.authorized);
-    const setAuthorized = useBookStore((state) => state.setAuthorized);
-    const setSiteError = useBookStore((state) => state.setSiteError);
-
-    const groupData = useFetchGroups([authorized, setAuthorized, setSiteError]);
-    const selected_group = groupData.data.find(group => group.group.id === groupid);
+const GroupRequests = (props) => {
+    const group = props.props;
 
     return (
         <div>
-            <PageHeader props={`${selected_group.requests.length} requests`} />
+            <PageHeader props={`${group.requests.length} requests`} />
 
-            {selected_group.requests.map(request => {
+            {group.requests.map(request => {
                 return (
                     <div className='flex justify-around items-center'>
-                        <UserDisplay props={[request, '']} />
+                        <ProfileDisplay props={[request, false, 'index']} />
 
-                        <GroupAcceptRejectButton props={[selected_group, request]} />
+                        <GroupAcceptRejectButton props={[group, request]} />
                     </div>
                 )
             })}
