@@ -4,12 +4,12 @@ import {useFetchLogged, useFetchAlerts, useFetchUsers} from '../Functions/Querie
 import {useFetchGroups} from '../Functions/Queries/GroupQueries';
 import {useFetchChats} from '../Functions/Queries/ChatQueries';
 import {useBookStore} from '../../Context/bookStore';
-import UserDisplay from './UserDisplay';
 import UserMenu from './Tabs/UserMenu';
 import AlertTab from './Tabs/AlertTab';
 import ChatBox from '../Chats/ChatBox';
 import PageHeader from '../Miscellaneous/Text/PageHeader';
 import NotificationCount from '../Miscellaneous/Text/NotificationCount';
+import ProfileDisplay from '../Miscellaneous/Images/ProfileDisplay';
 
 const Navbar = () => {
     const selected_chat = useBookStore((state) => state.selected_chat);
@@ -79,7 +79,7 @@ const Navbar = () => {
     }
 
     return (
-        <div className='flex justify-evenly items-center bg-orange-300'>
+        <div className='fixed top-0 flex justify-evenly items-center bg-orange-300'>
             <PageHeader props={'Bookmark'} />
             
             <div className='relative'>
@@ -141,7 +141,7 @@ const Navbar = () => {
             </div>
 
             <div className='relative' onClick={() => toggleUserMenu()}>
-                <UserDisplay props={[loggedData.data?.logged_user, true, 'index']} />
+                <ProfileDisplay props={[loggedData.data?.logged_user, true, 'navbar']} />
 
                 {userMenu &&
                     <UserMenu props={loggedData.data?.logged_user} />
