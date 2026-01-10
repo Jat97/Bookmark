@@ -4,7 +4,7 @@ import GroupRequestLeaveButton from '../../Buttons/GroupRequestLeaveButton';
 import AcceptButton from '../../Buttons/AcceptButton';
 import RejectButton from '../../Buttons/RejectButton';
 import PageHeader from '../../Miscellaneous/Text/PageHeader';
-import ProfileDisplay from '../../Miscellaneous/Images/ProfileDisplay';
+import ProfileDisplay from './ProfileDisplay';
 
 const Index = (props) => {
     const logged = props.props[0];
@@ -23,9 +23,9 @@ const Index = (props) => {
 
                             {item.title && logged ?
                                 <GroupRequestLeaveButton props={[
-                                    loggedData.data.logged_user, 
+                                    logged, 
                                     item,
-                                    item.members.some((member) => member.id === loggedData.data.logged_user.id)
+                                    item.members.some((member) => member.id === logged.id)
                                 ]} />
                             :
                                 item.title && moderator ?
