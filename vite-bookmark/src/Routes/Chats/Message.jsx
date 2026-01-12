@@ -2,10 +2,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
-const Message = (props) => {
-    const message = props.props[0];
-    const is_logged = props.props[1];
-
+const Message = ({message, is_logged}) => {
     return (
         <div className={`flex flex-col ${is_logged ? 'items-start' : 'items-end'}`}>
             {message.image &&

@@ -6,9 +6,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
-const ChatBox = (props) => {
-    const chats = props.props;
-
+const ChatBox = ({chats}) => {
     const selected_chat = useBookStore((state) => state.selected_chat);
     const setSelectedChat = useBookStore((state) => state.setSelectedChat);
 
@@ -34,7 +32,7 @@ const ChatBox = (props) => {
                 {chats.map(chat => {
                     return (
                         <div onClick={() => changeActiveChat()}>
-                            <ProfileDisplay props={[chat.user_2, false, 'chat']} />
+                            <ProfileDisplay profile={chat.user_2} is_logged={false} profile_mode={'mode'} />
 
                             <div className='flex justify-around items-center'>
                                 <p className='text-sm'> {chat.messages[chat.messages.length - 1].text} </p>
@@ -48,7 +46,7 @@ const ChatBox = (props) => {
             </div>
 
             {selected_chat && 
-                <ActiveChat props={selected_chat} />
+                <ActiveChat chat={selected_chat} />
             }
         </div>
     )

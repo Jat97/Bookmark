@@ -8,9 +8,7 @@ import InputErr from '../../Miscellaneous/Text/Errors/InputErr'
 import BlockButton from '../../Buttons/BlockButton';
 import EditButton from '../../Buttons/EditButton';
 
-const EditProfile = (props) => {
-    const user = props.props;
-
+const EditProfile = ({user}) => {
     const description_input = useBookStore((state) => state.description_input);
     const setDescriptionInput = useBookStore((state) => state.setDescriptionInput);
     const setSiteError = useBookStore((state) => state.setSiteError);
@@ -59,11 +57,11 @@ const EditProfile = (props) => {
                     <label for='first_name'>
                         <span className='font-semibold'> First name </span>
 
-                        <UserGroupInput props={['first_name', user.first_name, editInformation]} />
+                        <UserGroupInput id={'first_name'} input_value={user.first_name} input_fn={editInformation} props={['first_name', user.first_name, editInformation]} />
                     </label>
 
                     {editErrors.first_name && 
-                        <InputErr props={editErrors.first_name} />
+                        <InputErr error={editErrors.first_name} />
                     }
                 </div> 
 
@@ -71,11 +69,11 @@ const EditProfile = (props) => {
                     <label for='last_name'>
                         <span className='font-semibold'> Last name </span>
 
-                        <UserGroupInput props={['last_name', user.last_name, editInformation]} />
+                        <UserGroupInput id={'ast_name'} input_value={user.last_name} input_fn={editInformation} />
                     </label>
 
                     {editErrors.last_name &&
-                        <InputErr props={editErrors.last_name} />
+                        <InputErr error={editErrors.last_name} />
                     }
                 </div>
 
@@ -83,17 +81,17 @@ const EditProfile = (props) => {
                     <label for='dob'>
                         <span className='font-semibold'> Date of birth </span>
 
-                        <UserGroupInput props={['dob', user.dob, editInformation]} />
+                        <UserGroupInput id={'dob'} input_value={user.dob} input_fn={editInformation} />
                     </label>
 
                     {editErrors.dob &&
-                        <InputErr props={editErrors.dob} />
+                        <InputErr error={editErrors.dob} />
                     }
                 </div>
 
-                <DescriptionBox props={[description_value, true]} />
+                <DescriptionBox description={description_value} is_user={true} />
 
-                <EditButton props={editProfile} />
+                <EditButton save_fn={editProfile} />
             </div>
             
             <div>
@@ -102,9 +100,9 @@ const EditProfile = (props) => {
                 <ul>
                     {user.blocked_users.map(blocked => {
                         <div>
-                            <ProfileDisplay props={[blocked, false, 'index']} />
+                            <ProfileDisplay profile={blocked} is_logged={false} profile_mode={'index'} />
 
-                            <BlockButton props={blocked} />
+                            <BlockButton user={blocked} />
                         </div>
                     })}
                 </ul>

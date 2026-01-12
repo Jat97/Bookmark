@@ -4,11 +4,7 @@ import {useBookStore} from '../../../Context/bookStore';
 import {useEditPictureMutation} from '../../Functions/Mutations/UserMutations';
 import {CameraIcon, UserIcon} from '@heroicons/react/24/solid';
 
-const ProfileDisplay = (props) => {
-    const profile = props.props[0];
-    const is_logged = props.props[1];
-    const profile_mode = props.props[2];
-
+const ProfileDisplay = ({profile, is_logged, profile_mode}) => {
     const [image, setImage] = useState(null);
 
     const setSiteError = useBookStore((state) => state.setSiteError);

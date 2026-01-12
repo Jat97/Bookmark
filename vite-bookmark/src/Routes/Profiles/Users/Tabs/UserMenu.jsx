@@ -2,9 +2,7 @@ import {Link} from 'react-router-dom';
 import {useLogOutMutation} from '../../../Functions/Mutations/UserMutations';
 import {useBookStore} from '../../../../Context/bookStore';
 
-const UserMenu = (props) => {
-    const user = props.props;
-
+const UserMenu = ({user}) => {
     const setCreateGroupTab = useBookStore((state) => state.setCreateGroupTab);
     const setSiteError = useBookStore((state) => state.setSiteError);
 

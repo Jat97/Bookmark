@@ -1,6 +1,4 @@
-const ProfileDescription = (props) => {
-    const description = props.props;
-
+const ProfileDescription = ({description}) => {
     return (
         <p> {description} </p>
     )

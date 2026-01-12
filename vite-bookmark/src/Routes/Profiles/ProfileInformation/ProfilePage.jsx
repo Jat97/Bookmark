@@ -49,25 +49,20 @@ const ProfilePage = () => {
         <div>
             <div className='grid grid-cols-2 items-center'>
                 <div className='flex flex-col items-center gap-2 bg-orange-300 p-2 h-screen w-1/3'>
-                    <ProfileDisplay props={[
-                        !current_profile ? loggedData.data?.logged_user : current_profile, 
-                        !current_profile && true, 
-                        'profile'
-                    ]} />
+                    <ProfileDisplay profile={!current_profile ? loggedData.data?.logged_user : current_profile} 
+                        is_logged={!current_profile && true} profile_mode={'profile'} />
 
                     <div>
                         {location.pathname.includes('group') ?
-                            <GroupRequestLeaveButton props={[
-                                loggedData.data.logged_user, 
-                                current_profile,
-                                current_profile.members.some((member) => member.id === loggedData.data.logged_user.id)
-                            ]} />
+                            <GroupRequestLeaveButton logged={loggedData.data.logged_user} group={current_profile}
+                                is_member={current_profile.members.some((member) => member.id === loggedData.data.logged_user.id)}
+                             />
                         :
                             current_profile.id === loggedData.data.logged_user.id &&
                                 <div className='flex flex-col items-center gap-1'>
-                                    <FriendButton props={current_user} />
+                                    <FriendButton user={current_user} />
 
-                                    <BlockButton props={current_user} />
+                                    <BlockButton user={current_user} />
                                     
                                     <button type='button' className='cursor-pointer flex justify-around items-center 
                                         font-semibold bg-zinc-300 rounded-full p-1 w-[125px] hover:bg-slate-100' 
@@ -111,27 +106,29 @@ const ProfilePage = () => {
                 {pageMode === 'posts' ?
                     <div className='flex flex-col items-center md:w-2/3'>
                         {profile_posts?.map(post => {
-                            return <PostCard props={post} />
+                            return <PostCard post={post} />
                         })}
                     </div>
                 :
                     pageMode === 'edit_group' ?
-                        <EditGroup props={groupData.data.groups.find((group) => group.id === profileid)} />
+                        <EditGroup group={groupData.data.groups.find((group) => group.id === profileid)} />
                     :
                         pageMode === 'edit_profile' ?
-                            <EditProfile props={current_profile} />
+                            <EditProfile user={current_profile} />
                         :
                             pageMode === 'about_group' || pageMode === 'about_user' ?
-                                <ProfileDescription props={current_profile.description} />
+                                <ProfileDescription description={current_profile.description} />
                             :
-                                <Index props={[
-                                    pageMode === 'groups' && loggedData.data.logged_user,
-                                    pageMode === 'friends' ? current_profile.friends : 
+                                <Index logged={pageMode === 'groups' && loggedData.data.logged_user} 
+                                    moderator={pageMode === 'groups' && groupData.data.groups
+                                        .filter(group => group.members.some((member) => member.id === current_profile.id))}
+                                    items={pageMode === 'friends' ? current_profile.friends : 
                                     pageMode === 'requests' ? current_profile.requests :
-                                    pageMode === 'members' ? current_profile.members : 
-                                    pageMode === 'groups' && 
-                                    groupData.data.groups.filter(group => group.members.some((member) => member.id === current_profile.id))
-                                ]} />
+                                    pageMode === 'members' && current_profile.members }
+                                />
+                                     
+                                    
+                                    
                 }                               
             </div>
         </div>

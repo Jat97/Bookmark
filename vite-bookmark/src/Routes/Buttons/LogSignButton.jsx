@@ -1,7 +1,4 @@
-const LogSignButton = (props) => {
-    const log_sign_text = props.props[0];
-    const log_sign_fn = props.props[1];
-
+const LogSignButton = ({log_sign_text, log_sign_fn}) => {
     return (
         <button type='button' className='text-white font-semibold cursor-pointer bg-sky-400 rounded-full p-1 w-[150px] 
             hover:bg-cyan-100' 

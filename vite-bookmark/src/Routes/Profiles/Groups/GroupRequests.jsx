@@ -1,22 +1,23 @@
-import {useFetchGroups} from '../../Functions/Queries/GroupQueries';
-import {useBookStore} from '../../../Context/bookStore';
 import ProfileDisplay from '../../Miscellaneous/Images/ProfileDisplay';
 import PageHeader from '../../Miscellaneous/Text/PageHeader';
-import GroupAcceptRejectButton from '../Buttons/GroupAcceptRejectButton';
+import AcceptButton from '../Buttons/AcceptButton';
+import RejectButton from '../Buttons/RejectButton';
 
-const GroupRequests = (props) => {
-    const group = props.props;
-
-    return (
+const GroupRequests = ({group}) => { 
+   return (
         <div>
-            <PageHeader props={`${group.requests.length} requests`} />
+            <PageHeader headers={`${group.requests.length} requests`} />
 
             {group.requests.map(request => {
                 return (
                     <div className='flex justify-around items-center'>
-                        <ProfileDisplay props={[request, false, 'index']} />
+                        <ProfileDisplay profile={request} is_logged={false} profile_mode={'index'} />
 
-                        <GroupAcceptRejectButton props={[group, request]} />
+                        <div className='flex justify-around items-center'>
+                            <AcceptButton user_group={request} />
+
+                            <RejectButton user_group={request} />
+                        </div>
                     </div>
                 )
             })}

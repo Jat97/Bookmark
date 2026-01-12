@@ -4,9 +4,7 @@ import RejectButton from '../../../Buttons/RejectButton';
 import ProfileDisplay from '../../ProfileInformation/ProfileDisplay';
 import {XMarkIcon} from '@heroicons/react/24/solid';
 
-const AlertTab = (props) => {
-    const alerts = props.props;
-
+const AlertTab = ({alerts}) => {
     const [alertView, setAlertView] = useState(false);
 
     const toggleAlertView = () => {

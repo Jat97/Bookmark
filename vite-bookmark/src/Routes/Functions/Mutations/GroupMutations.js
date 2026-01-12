@@ -296,6 +296,50 @@ export const useUnbanUserMutation = ([user, group, setSiteError]) => {
     return mutation;
 };
 
+export const useLeaveGroupMutation = ([user, group, setSiteError]) => {
+    const mutation = useMutation({
+        mutationFn: async () => {
+            return await fetch(`http://localhost:9000/api/group/leave/${group.id}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            })
+            .then(res => {
+                if(!res.ok) {
+                    throw Error(`Error ${res.status}: ${res.statusText}`);
+                }
+                else {
+                    return res.json();
+                }
+            })
+            .catch(err => setSiteError(err))
+        },
+        onMutate: async () => {
+            await query_client.invalidateQueries({queryKey: ['groups']});
+
+            const group_cache = query_client.getQueryData(['groups']);
+            const group_arr = group_cache || [];
+          
+            const updated_group = group_arr.forEach(page => {
+                if(page.id === group.id) {
+                    return group.members.filter(member => member.id !== user.id);
+                }
+            });
+
+            query_client.setQueryData(['groups'], updated_group);
+
+            return {group_arr};
+        },
+        onError: (err, data, context) => {
+            query_client.setQueryData(['groups'], context.group_arr);
+        },
+        onSettled: async () => {
+            await query_client.invalidateQueries({queryKey: ['groups']});
+        }
+    });
+
+    return mutation;
+};
+
 export const useGroupPrivacyMutation = ([group, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {

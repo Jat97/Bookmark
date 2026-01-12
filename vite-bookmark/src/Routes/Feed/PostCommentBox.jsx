@@ -7,9 +7,7 @@ import {useSharePostMutation} from '../Functions/Mutations/PostMutations';
 import LikeButton from '../Buttons/LikeButton';
 import TextBox from '../Miscellaneous/Inputs/TextBox';
 
-const PostCommentBox = (props) => {
-    const post = props.props;
-
+const PostCommentBox = ({post}) => {
     const [displayTextBox, setDisplayTextBox] = useState(false);
 
     const authorized = useBookStore((state) => state.authorized);
@@ -50,7 +48,7 @@ const PostCommentBox = (props) => {
             }
             
             <div className='text-orange-300 flex justify-evenly items-center'>
-                <LikeButton props={[loggedData.data.logged_user, post]} />
+                <LikeButton logged={loggedData.data?.logged_user} post={post} />
 
                 <button type='button' className='cursor-pointer flex justify-around items-center 
                     w-[75px] md:w-[100px] hover:underline' 

@@ -19,15 +19,13 @@ const Home = () => {
     const currently_online = friendData.data?.friends?.filter(friend => friend.online);
 
     return (
-        <div>
-            <Navbar />
-            
+        <div> 
             <div className='flex flex-col items-center md:flex-row md:justify-between'>
                 <div className='flex flex-col items-center gap-2 m-4 md:w-2/5'>
-                    <TextBox props={[null, loggedData.data?.logged_user, null]} />
+                    <TextBox postid={null} poster={loggedData.data?.logged_user} cancelFn={null} />
 
                     {postData.data?.posts.map(post => {
-                        return <PostCard props={post} />
+                        return <PostCard post={post} />
                     })}
                 </div>            
                 
@@ -36,10 +34,10 @@ const Home = () => {
                         <p className='font-semibold'> Who's online? </p>
 
                         {currently_online?.length === 0 ?
-                            <NoItems props={'No users online.'} />
+                            <NoItems text={'No users online.'} />
                         :
                             currently_online?.map(friend => {
-                                return <ProfileDisplay props={[friend, false, 'index']} />
+                                return <ProfileDisplay profile={friend} is_logged={false} profile_mode={'index'} />
                             })
                         }
                     </div>

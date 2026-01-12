@@ -79,8 +79,8 @@ const Navbar = () => {
     }
 
     return (
-        <div className='fixed top-0 flex justify-evenly items-center bg-orange-300'>
-            <PageHeader props={'Bookmark'} />
+        <div className='flex justify-evenly items-center bg-orange-300'>
+            <PageHeader header={'Bookmark'} />
             
             <div className='relative'>
                 <form method='GET' action='/api/search' encType='application/json' className='flex justify-start 
@@ -99,7 +99,7 @@ const Navbar = () => {
                 {searchData.length > 0 &&
                     <div className='absolute flex flex-col items-center gap-1 border border-slate-200 bg-orange-300 w-[350px] z-50'>
                         {searchData.map(user => {
-                            return <UserDisplay props={[user, false, 'search']} />
+                            return <ProfileDisplay profile={user} is_logged={false} profile_mode={'search'} />
                         })}
                     </div>
                 }
@@ -111,11 +111,11 @@ const Navbar = () => {
                         onClick={() => handleNotificationTab()}>
                         <BellIcon className='h-6' />
 
-                        <NotificationCount props={alertData.data?.alerts.length} />
+                        <NotificationCount count={alertData.data?.alerts.length} />
                     </button>
 
                     {alertTabs.notifications &&
-                        <AlertTab props={alertData.data?.alerts || []} />
+                        <AlertTab alerts={alertData.data?.alerts || []} />
                     }
                 </div>
                 
@@ -123,7 +123,7 @@ const Navbar = () => {
                     onClick={() => openNavChat()}>
                     <ChatBubbleOvalLeftEllipsisIcon className='h-6' />
 
-                    <NotificationCount props={unreadMessageCount} />
+                    <NotificationCount count={unreadMessageCount} />
                 </button>
 
                 <div>
@@ -131,25 +131,25 @@ const Navbar = () => {
                         onClick={() => handleRequestsTab()}>
                        <UserIcon className='h-6' /> 
 
-                       <NotificationCount props={alertData.data?.requests?.length} />
+                       <NotificationCount count={alertData.data?.requests.length} />
                     </button>
 
                     {alertTabs.requests &&
-                        <AlertTab props={alertData.data?.requests || []} />
+                        <AlertTab alerts={alertData.data?.requests || []} />
                     }
                 </div>
             </div>
 
             <div className='relative' onClick={() => toggleUserMenu()}>
-                <ProfileDisplay props={[loggedData.data?.logged_user, true, 'navbar']} />
+                <ProfileDisplay logged={loggedData.data?.logged_user} is_logged={true} profile_mode={'navbar'} />
 
                 {userMenu &&
-                    <UserMenu props={loggedData.data?.logged_user} />
+                    <UserMenu user={loggedData.data?.logged_user} />
                 }
             </div>
 
             {selected_chat !== null &&
-                <ChatBox props={chatData.data?.chats} />
+                <ChatBox chats={chatData.data?.chats} />
             }
         </div>
     )

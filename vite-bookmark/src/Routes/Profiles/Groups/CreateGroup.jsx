@@ -58,26 +58,26 @@ const CreateGroup = () => {
             />
 
             <div className='relative top-[100px] left-[350px] flex flex-col items-center gap-[20px] bg-white border-slate-200 w-1/2'> 
-                <PageHeader props={'Start a new group!'} />
+                <PageHeader header={'Start a new group!'} />
 
                 <div>
                     <div className='flex flex-col items-start mb-[20px]'>
                         <label for='title' className='flex flex-col items-start'>
                             <span className='font-semibold'> Title </span>
 
-                            <UserGroupInput props={'title'} />
+                            <UserGroupInput id={'title'} input_value={''} input_fn={null} />
                         </label>  
 
                         {groupErrors.title &&
-                            <InputErr props={groupErrors.title} />
+                            <InputErr error={groupErrors.title} />
                         }
                     </div>
                     
                     <div className='flex flex-col items-start mb-[10px]'>
-                        <DescriptionBox props={['', false]} />
+                        <DescriptionBox description={''} is_user={false} />
 
                         {groupErrors.description &&
-                            <InputErr props={groupErrors.description} />
+                            <InputErr error={groupErrors.description} />
                         }
                     </div>
                 </div> 

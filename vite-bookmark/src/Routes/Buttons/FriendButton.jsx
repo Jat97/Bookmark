@@ -3,9 +3,7 @@ import {useFetchAlerts, useFetchFriends} from '../Functions/Queries/UserQueries'
 import {useSendFriendRequestMutation, useRemoveFriendMutation} from '../Functions/Mutations/FriendMutations';
 import {useBookStore} from '../../Context/bookStore';
 
-const FriendButton = (props) => {
-    const user = props.props;
-
+const FriendButton = ({user}) => {
     const authorized = useBookStore((state) => state.authorized);
     const setAuthorized = useBookStore((state) => state.setAuthorized);
     const setSiteError = useBookStore((state) => state.setSiteError);

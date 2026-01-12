@@ -2,9 +2,7 @@ import {useFetchBlocked} from '../Functions/Queries/UserQueries';
 import {useBlockUserMutation, useUnblockUserMutation} from '../Functions/Mutations/BlockMutations';
 import {useBookStore} from '../../Context/bookStore';
 
-const BlockButton = (props) => {
-    const user = props.props;
-
+const BlockButton = ({user}) => {
     const authorized = useBookStore((state) => state.authorized);
     const setAuthorized = useBookStore((state) => state.setAuthorized);
     const setSiteError = useBookStore((state) => state.setSiteError);

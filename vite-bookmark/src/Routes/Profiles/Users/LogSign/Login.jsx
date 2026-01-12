@@ -58,7 +58,7 @@ const Login = () => {
                         <label for='email' className='flex flex-col items-start'>
                             <span className='font-semibold'> Username </span>
 
-                            <UserGroupInput props={'email'} />
+                            <UserGroupInput id={'email'} input_value={''} input_fn={null} />
                         </label>
                             
                         {logErrors.username &&
@@ -70,7 +70,7 @@ const Login = () => {
                         <label for='password' className='flex flex-col items-start'>
                             <span className='font-semibold'> Password </span>
 
-                            <UserGroupInput props={'password'} />
+                            <UserGroupInput id={'password'} input_value={''} input_fn={null} />
                         </label>
                         
                         {logErrors.password &&
@@ -80,7 +80,7 @@ const Login = () => {
                 </div>
 
                 <div className='flex flex-col items-center gap-y-[10px] mb-[10px]'>
-                    <LogSignButton props={['Log in', logIn]} />
+                    <LogSignButton log_sign_text={'Log in'} log_sign_fn={logIn} />
 
                     <p> Don't have an account? 
                         <Link to='/api/signup' className='text-blue-600 underline'> Create one! </Link> 

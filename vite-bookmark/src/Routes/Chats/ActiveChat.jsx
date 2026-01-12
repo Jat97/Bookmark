@@ -4,9 +4,7 @@ import {useBookStore} from '../../Context/bookStore';
 import {useSendMessageMutation} from '../Functions/Mutations/ChatMutations';
 import Message from './Message';
 
-const ActiveChat = (props) => {
-    const chat = props.props;
-
+const ActiveChat = ({chat}) => {
     const [image, setImage] = useState({file: null, reader: null});
 
     const setSiteError = useBookStore((state) => state.setSiteError);
@@ -48,7 +46,8 @@ const ActiveChat = (props) => {
                     </div>
 
                     {chat.messages.map(message => {
-                        return <Message props={message} />
+                        return <Message message={message} 
+                            is_logged={message.sending_user.id === selected_chat.user_1 ? true : false} />
                     })}
 
                     <div>

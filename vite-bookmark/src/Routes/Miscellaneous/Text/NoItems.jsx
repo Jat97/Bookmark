@@ -1,6 +1,4 @@
-const NoItems = (props) => {
-    const text = props.props;
-
+const NoItems = ({text}) => {
     return (
         <p className='text-lg font-semibold'> {text} </p>
     )

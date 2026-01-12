@@ -4,11 +4,7 @@ import {PencilIcon} from '@heroicons/react/24/solid';
 import {useCreatePostMutation, useEditPostMutation} from '../../Functions/Mutations/PostMutations';
 import {useBookStore} from '../../../Context/bookStore';
 
-const TextBox = (props) => {
-    const postid = props.props[0];
-    const poster = props.props[1];
-    const cancelFn = props.props[2];
-
+const TextBox = ({postid, poster, cancelFn}) => {
     const [text, setText] = useState('');
 
     const textRef = useBookStore((state) => state.textRef);
@@ -84,14 +80,14 @@ const TextBox = (props) => {
 
             <div className='font-semibold flex justify-around items-center w-full'>
                 <button type='button' className='flex justify-evenly items-center bg-cyan-200 rounded-full 
-                    md:w-[150px] hover:bg-sky-100' 
+                    w-[100px] md:w-[150px] hover:bg-sky-100' 
                     onClick={() => postid ? editPost() : createPost()}>
-                    <PencilIcon className='h-6' />
+                    <PencilIcon className='h-4 md:h-6' />
 
                     Submit
                 </button>
 
-                <button type='button' className={`bg-slate-200 rounded-full md:w-[150px]
+                <button type='button' className={`bg-slate-200 rounded-full w-[100px] md:w-[150px]
                     ${!cancelFn ? 'cursor-not-allowed' : 'hover:bg-zinc-100'}`} 
                     disabled={`${cancelFn && false}`} onClick={cancelFn}>
                     Cancel

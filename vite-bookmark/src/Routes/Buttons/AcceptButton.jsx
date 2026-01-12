@@ -2,9 +2,7 @@ import {useAcceptRequestMutation} from "../Functions/Mutations/FriendMutations";
 import {useGroupAcceptMutation} from '../Functions/Mutations/GroupMutations';
 import {useBookStore} from '../../Context/bookStore';
 
-const AcceptButton = (props) => {
-    const user_group = props.props;
-
+const AcceptButton = ({user_group}) => {
     const setSiteError = useBookStore((state) => state.setSiteError);
 
     const friend_accept_mutation = useAcceptRequestMutation([user_group.id, setSiteError]);

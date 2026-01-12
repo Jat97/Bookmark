@@ -18,17 +18,17 @@ const FullPost = () => {
 
     return (
         <div>
-            <PostCard props={current_post} />
+            <PostCard post={current_post} />
 
             {post_comments.map(comment => {
                 return (
                     <div className='border-l-slate-200'>
-                        <Comment props={comment} />
+                        <Comment comments={comment} />
 
                         {comment.replies.map(reply => {
                             return (
                                 <div className='border-l-slate-200'>
-                                    <Comment props={reply} />
+                                    <Comment comments={reply} />
                                 </div>
                             )
                         })}

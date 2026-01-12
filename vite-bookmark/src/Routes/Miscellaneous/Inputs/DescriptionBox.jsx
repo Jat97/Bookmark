@@ -1,9 +1,6 @@
-import {useBookStore} from '../../Context/bookStore';
+import {useBookStore} from '../../../Context/bookStore';
 
-const DescriptionBox = (props) => {
-    const description = props.props[0];
-    const is_user = props.props[1];
-
+const DescriptionBox = ({description, is_user}) => {
     const setDescriptionValue = useBookStore((state) => state.setDescriptionValue);
 
     const updateDescription = (e) => {

@@ -3,10 +3,7 @@ import {useLikeCommentMutation, useUnlikeCommentMutation,
     useLikePostMutation, useUnlikePostMutation} from '../Functions/Mutations/LikeMutations';
 import {useBookStore} from '../../Context/bookStore';
 
-const LikeButton = (props) => {
-    const logged = props.props[0];
-    const post = props.props[1];
-
+const LikeButton = ({logged, post}) => {
     const setSiteError = useBookStore((state) => state.setSiteError);
 
     const like_comment_mutation = useLikeCommentMutation([logged, post.id, setSiteError]);

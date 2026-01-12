@@ -1,18 +1,13 @@
-import UserDisplay from '../../Users/UserDisplay';
-import GroupDisplay from '../../Groups/GroupDisplay';
+import ProfileDisplay from '../../Profiles/ProfileInformation/ProfileDisplay';
 import PostCommentBox from '../Posts/PostCommentBox';
 
-const Comment = (props) => {
-    const comment = props.props;
-
+const Comment = ({comment}) => {
     return (
         <div className='flex flex-col items-start'>
             <div>
-                {comment.commenting_user ?
-                    <UserDisplay props={[comment.commenting_user, '']} />
-                :
-                    <GroupDisplay props={[comment.commenting_group, '']} />
-                }
+                <ProfileDisplay profile={comment.commenting_user ? comment.commenting_user : comment.commenting_group} 
+                    is_logged={false} profile_mode={'post'}
+                />
             </div>
             
             <div className='max-w-3/4'>
@@ -20,7 +15,7 @@ const Comment = (props) => {
             </div>
 
             <div>
-                <PostCommentBox props={comment} />
+                <PostCommentBox post={comment} />
             </div>
         </div>
     )

@@ -2,9 +2,7 @@ import {useRejectRequestMutation} from "../Functions/Mutations/FriendMutations";
 import {useGroupRejectMutation} from "../Functions/Mutations/GroupMutations";
 import {useBookStore} from '../../Context/bookStore';
 
-const RejectButton = (props) => {
-    const user_group = props.props;
-
+const RejectButton = ({user_group}) => {
     const setSiteError = useBookStore((state) => state.setSiteError);
 
     const friend_reject_mutation = useRejectRequestMutation([user_group, setSiteError]);

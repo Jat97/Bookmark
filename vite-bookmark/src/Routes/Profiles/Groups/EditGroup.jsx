@@ -9,9 +9,7 @@ import DescriptionBox from '../../Miscellaneous/Inputs/DescriptionBox';
 import GroupBanUnbanButton from '../../Buttons/GroupBanUnbanButton';
 import EditButton from '../../Buttons/EditButton';
 
-const EditGroup = (props) => {
-    const group = props.props;
-
+const EditGroup = ({group}) => {
     const description_input = useBookStore((state) => state.description_input);
     const setDescriptionInput = useBookStore((state) => state.setDescriptionInput);
     const setSiteError = useBookStore((state) => state.setSiteError);
@@ -71,7 +69,7 @@ const EditGroup = (props) => {
                 </label>
             </div>
 
-            <DescriptionBox props={[description_value, false]} />
+            <DescriptionBox description={description_value} is_user={false} />
 
             <div>
                 <span className='font-semibold'> Banned users </span>
@@ -80,9 +78,9 @@ const EditGroup = (props) => {
                     {group?.banned_users?.map(user => {
                         return (
                             <div>
-                                <ProfileDisplay props={[user, false, 'index']} />
+                                <ProfileDisplay profile={user} is_logged={false} profile_mode={'index'} />
 
-                                <GroupBanUnbanButton props={[group, member]} />
+                                <GroupBanUnbanButton group={group} member={member} />
                             </div>
                         )
                     })}
@@ -91,7 +89,7 @@ const EditGroup = (props) => {
 
             <div className='flex flex-col items-center'>
                 <div className='flex justify-around items-center'>
-                    <EditButton props={confirmGroupChanges} />
+                    <EditButton save_fn={confirmGroupChanges} />
 
                     <Link to={`/api/group/${group?.id}`} className='text-center bg-slate-200 p-2 max-w-12'> 
                         Cancel 

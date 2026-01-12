@@ -6,39 +6,33 @@ import RejectButton from '../../Buttons/RejectButton';
 import PageHeader from '../../Miscellaneous/Text/PageHeader';
 import ProfileDisplay from './ProfileDisplay';
 
-const Index = (props) => {
-    const logged = props.props[0];
-    const moderator = props.props[1];
-    const items = props.props[2];
-
+const Index = ({logged, moderator, items}) => {
     return (
         <div>            
-            <PageHeader props={location.pathname.includes('groups') ? 'Groups' : 'Users'} />
+            <PageHeader header={location.pathname.includes('groups') ? 'Groups' : 'Users'} />
 
             <ul className='flex flex-col items-center'>
                 {items?.map((item) => {
                     return (
                         <li className='flex justify-around items-center w-2/3'>
-                            <ProfileDisplay props={[item, false, 'index']} />
+                            <ProfileDisplay profile={item} is_logged={false} profile_mode={'index'} />
 
                             {item.title && logged ?
-                                <GroupRequestLeaveButton props={[
-                                    logged, 
-                                    item,
-                                    item.members.some((member) => member.id === logged.id)
-                                ]} />
+                                <GroupRequestLeaveButton logged={logged} group={item} 
+                                    is_member={item.members.some((member) => member.id === logged.id)}
+                                />
                             :
                                 item.title && moderator ?
                                     <div>
-                                        <AcceptButton props={item} />
+                                        <AcceptButton user_group={item} />
 
-                                        <RejectButton props={item} />
+                                        <RejectButton user_group={item} />
                                     </div>
                                 :
                                     <div className='flex flex-col items-center'>
-                                        <FriendButton props={item} />
+                                        <FriendButton user={item} />
 
-                                        <BlockButton props={item} />
+                                        <BlockButton user={item} />
                                     </div>
                             }
                         </li>
