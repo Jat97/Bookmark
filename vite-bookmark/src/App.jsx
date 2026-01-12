@@ -1,4 +1,4 @@
-import {BrowserRouter, Routes, Route, Navigate, useLocation} from 'react-router-dom';
+import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 import {useBookStore} from './Context/bookStore';
 import Login from './Routes/Profiles/Users/LogSign/Login';
 import Signup from './Routes/Profiles/Users/LogSign/Signup';
@@ -8,18 +8,16 @@ import ProfilePage from './Routes/Profiles/ProfileInformation/ProfilePage';
 import FullPost from './Routes/Feed/Posts/FullPost';
 import CreateGroup from './Routes/Profiles/Groups/CreateGroup';
 import SiteErr from './Routes/Miscellaneous/Text/Errors/SiteErr';
+import Navbar from './Routes/Profiles/Users/Navbar';
 
 const App = () => {
-    const location = useLocation();
     const create_group_tab = useBookStore((state) => state.create_group_tab);
     const error = useBookStore((state) => state.error);
     
     return (
         <div className='bg-amber-400/25 h-full'>
-            {!location.pathname.includes('login') || !location.pathname.includes('signup') && 
-                <Navbar />
-            }
-
+            <Navbar />
+            
             <BrowserRouter>
                 <Routes>
                     <Route path='/api/login' element={<Login />}></Route>
@@ -39,7 +37,7 @@ const App = () => {
             }
 
             {error &&
-                <SiteErr props={error} />
+                <SiteErr error={error} />
             }
         </div>
     )
