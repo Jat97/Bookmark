@@ -31,9 +31,11 @@ const ActiveChat = ({chat}) => {
         send_message_mutation.mutate();
     }
 
+    console.log(chat);
+
     return (
         <div>
-            {selected_chat === undefined ? 
+            {chat === undefined ? 
                 <div>
                     <ChatBubbleLeftEllipsisIcon className='max-h-12 fill-slate-200' />
 
@@ -41,13 +43,13 @@ const ActiveChat = ({chat}) => {
                 </div>
             :
                 <div>
-                    <div className='flex flex-col items-center'>
-                        {`${chat.user_2.first_name} ${chat.user_2.last_name}`}
+                    <div className='flex flex-col items-center md:absolute md:left-[200px]'>
+                        <span className='font-semibold'> {`${chat.first_name} ${chat.last_name}`} </span>
                     </div>
 
-                    {chat.messages.map(message => {
+                    {chat.messages?.map(message => {
                         return <Message message={message} 
-                            is_logged={message.sending_user.id === selected_chat.user_1 ? true : false} />
+                            is_logged={message.sending_user.id === chat.user_1 ? true : false} />
                     })}
 
                     <div>
@@ -62,20 +64,23 @@ const ActiveChat = ({chat}) => {
                             </div>   
                         }
 
-                        <div>
-                            <input type='text' className='bg-slate-200 max-w-20 rounded-full md:max-w-28 focus:bg-white'
+                        <div className='absolute bottom-0 left-0 flex justify-between items-center bg-orange-200 w-full'>
+                            <input type='text' className='bg-slate-200 rounded-full p-1 md:w-[500px] focus:bg-white'
                                 placeholder='What do you want to say?'>
                             </input>
 
-                            <label>
-                                <input type='file' id='file_upload' className='hidden' onChange={() => uploadImage()}></input>
-                                <PaperClipIcon className='h-6 fill-orange-200' />
-                            </label>
+                            <div className='flex justify-around items-center w-1/3'>
+                                <label htmlFor='file_upload'>
+                                    <input type='file' id='file_upload' className='hidden' onChange={() => uploadImage()}></input>
+                                    <PaperClipIcon className='h-6 fill-orange-200' />
+                                </label>
 
-                            <button type='button' className='border border-orange-200 rounded-full hover:bg-amber-100' 
-                                onClick={() => sendMessage()}>
-                                <PaperAirplaneIcon className='h-6 fill-orange-200' />
-                            </button>
+                                <button type='button' className='flex flex-col items-center border border-orange-200 
+                                    rounded-full w-[75px] hover:bg-amber-100' 
+                                    onClick={() => sendMessage()}>
+                                    <PaperAirplaneIcon className='h-6 fill-orange-200' />
+                                </button>
+                            </div>                            
                         </div>
                     </div>
                 </div>
