@@ -26,7 +26,7 @@ const PostCommentBox = ({post}) => {
     }
 
     return (
-        <div className='bg-orange-200 p-2 w-full'>
+        <div className='bg-amber-300/50 p-2 w-full'>
             {post.likes.length === 0 ?
                 null
             :
@@ -47,8 +47,8 @@ const PostCommentBox = ({post}) => {
                 </div>
             }
             
-            <div className='text-orange-300 flex justify-evenly items-center'>
-                <LikeButton logged={loggedData.data?.logged_user} post={post} />
+            <div className='text-amber-300 flex justify-evenly items-center'>
+                <LikeButton logged={loggedData.data?.logged_user?.profile} post={post} />
 
                 <button type='button' className='cursor-pointer flex justify-around items-center 
                     w-[75px] md:w-[100px] hover:underline' 
