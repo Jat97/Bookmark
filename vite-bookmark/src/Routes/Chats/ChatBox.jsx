@@ -23,13 +23,13 @@ const ChatBox = ({chats}) => {
     }
  
     return (
-        <div className='absolute bottom-0 right-2 grid grid-cols-2 border border-slate-200 shadow-sm 
-            shadow-slate-200 max-h-screen max-w-screen md:max-h-48 md:max-w-32'>
+        <div className='fixed bottom-0 right-2 grid grid-cols-2 border border-slate-200 rounded-tr-xl rounded-tl-xl 
+            bg-white shadow-sm shadow-slate-200 h-screen w-screen md:h-[300px] md:w-[500px]'>
                 
-            <XMarkIcon className='h-6 fill-slate-200 hover:fill-zinc-100' onClick={() => disableChat()} />
+            <XMarkIcon className='absolute right-0 fill-slate-200 h-6 hover:fill-zinc-100' onClick={() => disableChat()} />
 
             <div className='flex flex-col items-start'>
-                {chats.map(chat => {
+                {chats?.map(chat => {
                     return (
                         <div onClick={() => changeActiveChat()}>
                             <ProfileDisplay profile={chat.user_2} is_logged={false} profile_mode={'mode'} />
