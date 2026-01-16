@@ -31,8 +31,6 @@ const ActiveChat = ({chat}) => {
         send_message_mutation.mutate();
     }
 
-    console.log(chat);
-
     return (
         <div>
             {chat === undefined ? 
