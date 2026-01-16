@@ -5,7 +5,6 @@ import PostCard from './PostCard';
 import TextBox from '../../Miscellaneous/Inputs/TextBox';
 import NoItems from '../../Miscellaneous/Text/NoItems';
 import ProfileDisplay from '../../Profiles/ProfileInformation/ProfileDisplay';
-import Navbar from '../../Profiles/Users/Navbar';
 
 const Home = () => {
     const authorized = useBookStore((state) => state.authorized);
@@ -22,7 +21,7 @@ const Home = () => {
         <div> 
             <div className='flex flex-col items-center md:flex-row md:justify-between'>
                 <div className='flex flex-col items-center gap-2 m-4 md:w-2/5'>
-                    <TextBox postid={null} poster={loggedData.data?.logged_user} cancelFn={null} />
+                    <TextBox postid={null} poster={loggedData.data?.logged_user.profile} cancelFn={null} />
 
                     {postData.data?.posts.map(post => {
                         return <PostCard post={post} />
