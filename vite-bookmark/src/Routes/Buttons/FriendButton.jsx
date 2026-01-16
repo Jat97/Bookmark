@@ -23,7 +23,7 @@ const FriendButton = ({user}) => {
         }
     }
 
-    if(alertData.data?.pending?.some((pending) => pending.id === user.id)) {
+    if(alertData.data?.alerts.pending?.some((pending) => pending.id === user.id)) {
         return <p> Pending... </p>
     }
     else {
@@ -31,10 +31,10 @@ const FriendButton = ({user}) => {
             <button id={user?.id} data-testid={user?.id} className={`cursor-pointer font-semibold rounded-full p-1 w-[125px]
                 ${friendData.data?.friendslist?.some((friend) => friend.id === user.id) ? 
                 'bg-red-200 hover:bg-pink-100' : 'bg-emerald-200 hover:bg-lime-100'}`}
-            onClick={() => alertData.data?.pending.some((pending) => pending.id === user.id) ?
-                null
-            :
-                handleFriendMutations()
+                onClick={() => alertData.data?.pending?.some((pending) => pending.id === user.id) ?
+                    null
+                :
+                    handleFriendMutations()
             }>
                 {friendData.data?.friendslist?.some((friend) => friend?.id === user?.id) ?
                         <div className='flex justify-around items-center'>
