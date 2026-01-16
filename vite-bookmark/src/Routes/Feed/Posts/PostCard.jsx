@@ -13,9 +13,9 @@ const PostCard = ({post}) => {
                 </span>
             }
 
-            <div className='flex flex-col items-start border border-slate-200 shadow-sm-slate-200 w-11/12 md:w-full'>
+            <div className='flex flex-col items-start border border-slate-200 shadow-sm-slate-200 w-11/12 md:w-[500px]'>
                 <div className='flex flex-col items-start bg-white w-full'>
-                    <ProfileDisplay logged={post.original_poster ? post.orignal_poster : post.original_group} 
+                    <ProfileDisplay profile={post.original_poster ? post.original_poster : post.original_group} 
                         is_logged={false} profile_mode={'post'}
                     />
                 
