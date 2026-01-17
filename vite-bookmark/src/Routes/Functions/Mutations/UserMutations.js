@@ -4,7 +4,7 @@ import {query_client} from '../../../client';
 export const useToggleHiddenMutation = (setSiteError) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch('http://localhost:9000/api/user/hidden/update', {
+            return await fetch('http://localhost:9000/api/user/hidden', {
                 method: 'PATCH',
                 credentials: 'include'
             })
@@ -126,16 +126,20 @@ export const useLogOutMutation = (setSiteError) => {
     return mutation;
 };
 
-export const useEditProfileMutation = ([user, data, setDescription, setEditErrors, setSiteError]) => {
+export const useEditProfileMutation = ([user, data, setEditErrors, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
             return await fetch('http://localhost:9000/api/user/profile/edit', {
                 method: 'PUT',
                 credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
                     first_name: data.first_name,
                     last_name: data.last_name,
-                    dob: data.dob,
+                    alma_mater: data.alma_mater,
+                    degree: data.degree,
                     description: data.description
                 })
             })
@@ -166,13 +170,12 @@ export const useEditProfileMutation = ([user, data, setDescription, setEditError
                 ...user,
                 first_name: data.first_name,
                 last_name: data.last_name,
-                dob: data.dob,
+                alma_mater: data.alma_mater,
+                degree: data.degree,
                 description: data.description
             }
 
             query_client.setQueryData(['logged'], updated_user);
-
-            setDescription('');
 
             return {user}
         },
