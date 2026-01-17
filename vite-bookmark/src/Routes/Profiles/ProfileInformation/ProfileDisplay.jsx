@@ -30,13 +30,13 @@ const ProfileDisplay = ({profile, is_logged, profile_mode}) => {
 
     const handleUserImageCSS = () => {
         if(profile_mode === 'index' || profile_mode === 'navbar') {
-            return 'w-[30px] md:w-[45px]';
+            return 'rounded-full w-[35px]';
         }
         else if(profile_mode === 'profile') {
-            return 'w-[60px] md:w-[100px]';
+            return 'w-[60px] md:w-[140px]';
         }
         else if(profile_mode === 'post') {
-            return 'w-[40px] md:w-[60px]'
+            return 'rounded-full w-[40px] md:w-[60px]'
         }
     }
 
@@ -52,10 +52,11 @@ const ProfileDisplay = ({profile, is_logged, profile_mode}) => {
 
     return (
         <div className={`flex items-center ${handleIconDivCSS()}`}>
-            <div className='relative flex flex-col items-center bg-black border border-orange-300 rounded-full p-1'>
+            <div className={`relative flex flex-col items-center bg-black border border-orange-300
+                    ${profile_mode !== 'profile' && 'rounded-full'}`}>
                 {profile?.profile_picture || profile?.group_image ? 
                     <img src={profile.profile_picture ? profile?.profile_picture : profile?.group_image} 
-                        className={`rounded-full ${handleUserImageCSS()}`}>
+                        className={`${handleUserImageCSS()}`}>
                     </img>
                 :
                     <UserIcon className={`${handleUserIconCSS()}`} />
@@ -74,7 +75,7 @@ const ProfileDisplay = ({profile, is_logged, profile_mode}) => {
             {profile_mode === 'navbar' ? 
                 <p className='font-semibold'> {`${profile?.first_name} ${profile?.last_name}`} </p>
             :
-                <Link to={`/api/profile/${profile.id}`} className='font-semibold text-sky-400 hover:underline'>
+                <Link to={`/api/profile/${profile?.id}`} className='font-semibold text-sky-400 hover:underline'>
                     {profile?.title ?
                         profile?.title
                     :
