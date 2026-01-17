@@ -9,12 +9,18 @@ exports.get_all_groups = async (req, res) => {
 
         if(user_key) {
             const all_groups = await db.query(
-                `SELECT id,
-                title, 
-                description, 
-                group_image, 
-                private 
-                FROM groups`
+                `SELECT groups.id AS id,
+                groups.title AS title, 
+                groups.description AS description, 
+                groups.group_image AS group_image, 
+                groups.private AS private,
+                users.id AS userid,
+                users.first_name AS first_name,
+                users.last_name AS last_name,
+                users.profile_picture AS profile_picture,
+                TO_CHAR(created, 'MM/DD/YYYY') AS created
+                FROM groups
+                INNER JOIN users ON users.id = groups.moderator`
             );
             
             const groups_members_requests = []
@@ -44,7 +50,7 @@ exports.get_all_groups = async (req, res) => {
                     [group.id]
                 );
                         
-                if(group.moderator === user_key.logged_user.id) {
+                if(group.userid.toString() === user_key.logged_user.id.toString()) {
                     group_requests = await db.query(
                         `SELECT users.id AS id, 
                         users.first_name AS first_name,
@@ -58,7 +64,17 @@ exports.get_all_groups = async (req, res) => {
                 }
 
                 const group_data = {
-                    ...group,
+                    title: group.title,
+                    description: group.description,
+                    group_image: group.group_image,
+                    moderator: {
+                        id: group.userid,
+                        first_name: group.first_name,
+                        last_name: group.last_name,
+                        profile_picture: group.profile_picture
+                    },
+                    private: group.private,
+                    created: group.created,
                     members: group_memberships.rows,
                     requests: group_requests.rows.length > 0 && group_requests.rows,
                     banned_users: banned_users
@@ -83,7 +99,9 @@ exports.create_group = async (req, res) => {
         const user_key = await validateToken(req, res);
 
         if(user_key) {
-            const found_group = findGroup(req);
+            const found_group = await findGroup(req);
+
+            console.log(req.body);
 
             if(found_group) {
                 res.status(400).json({title_error: 'A group by this name already exists.'});
@@ -94,8 +112,17 @@ exports.create_group = async (req, res) => {
                 }
                 
                 const new_group = await db.query(
-                    `INSERT INTO groups (title, description, group_image) VALUES ($1, $2, $3) RETURNING *`, 
-                    [req.body.title, req.body.description ? req.body.description : '', result ? result.secure_url : null]
+                    `INSERT INTO groups (title, description, moderator, group_image, private, created) 
+                    VALUES ($1, $2, $3, $4, $5, $6) 
+                    RETURNING *`, 
+                    [
+                        req.body.title, 
+                        req.body.description ? req.body.description : '', 
+                        user_key.logged_user.id, 
+                        null,
+                        false,
+                        new Date(Date.now())
+                    ]
                 );
 
                 res.status(200).json({group: new_group});
@@ -106,6 +133,7 @@ exports.create_group = async (req, res) => {
         }
     }
     catch (err) {
+        console.log(err);
         res.status(500).json({error: err});
     }
 };
@@ -132,7 +160,11 @@ exports.update_group_information = async (req, res) => {
 
                 await db.query(
                     `ALTER TABLE groups SET title = $1, description = $2, group_image = $3 RETURNING *`, 
-                    [req.body.title, req.body.description, result ? result.secure_url : group_to_update.rows[0].group_image]
+                    [
+                        req.body.title, 
+                        req.body.description, 
+                        result ? result.secure_url : group_to_update.rows[0].group_image
+                    ]
                 );
             }
         }
