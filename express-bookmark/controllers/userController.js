@@ -52,9 +52,22 @@ exports.create_account = [
                 else {
                     const user = await db.query(`
                         INSERT INTO users (first_name, last_name, email, dob, description, password, 
-                        profile_picture, online, hidden) 
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`, 
-                        [req.body.first_name, req.body.last_name, req.body.email, req.body.dob, '', hashWord, null, true, false]
+                        profile_picture, alma_mater, degree, status, country, online, hidden) 
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`, 
+                        [
+                            req.body.first_name, 
+                            req.body.last_name, 
+                            req.body.email, 
+                            req.body.dob, 
+                            '', 
+                            hashWord, 
+                            null,
+                            null,
+                            null, 
+                            req.body.status,
+                            true, 
+                            false
+                        ]
                     );
 
                     jwt.sign({user, expiresIn: new Date(Date.now() + 1000000)}, process.env.TOKEN_KEY, 
@@ -127,7 +140,12 @@ exports.get_all_users = async (req, res) => {
                 `SELECT id,
                 first_name,
                 last_name,
+                TO_CHAR(date_of_birth, 'MM/DD/YYYY') AS date_of_birth,
                 profile_picture,
+                alma_mater,
+                degree,
+                description,
+                status,
                 online,
                 hidden
                 FROM users 
@@ -140,13 +158,30 @@ exports.get_all_users = async (req, res) => {
                 [user_key.logged_user.id]
             );
 
-            users.rows.forEach((user, index) => {
+            for(var user of users.rows) {
                 blocked.rows.forEach(block => {
-                    if(user.id === block.blocked_user) {
-                        user.splice(index, 1);
-                    }
+                    users.rows.filter(user => user.id === block.blocked_user.id);
                 });
-            });
+
+                const friends = await db.query(
+                    `SELECT users.id AS id,
+                    users.first_name AS first_name,
+                    users.last_name AS last_name,
+                    users.profile_picture AS profile_picture,
+                    users.hidden AS hidden,
+                    users.online AS online
+                    FROM friends
+                    INNER JOIN users ON users.id = friends.friend_1
+                    WHERE users.id = $1
+                    `,
+                    [user.id]
+                );
+
+                user = {
+                    ...user, 
+                    friends: friends.rows
+                }
+            }
 
             res.status(200).json({users: users.rows});
         }
@@ -155,6 +190,7 @@ exports.get_all_users = async (req, res) => {
         }
     }
     catch (err) {
+        console.log(err)
         res.status(500).json({error: err});
     }
 };
@@ -414,7 +450,7 @@ exports.send_friend_request = async (req, res) => {
                 [req.params.userid, user_key.logged_user.id]
             );
 
-            res.status(200).json({friend_request: friend_request});
+            res.status(200).json({friend_request: friend_request.rows[0]});
         }
         else {
             res.status(401).send();
@@ -483,25 +519,62 @@ exports.get_logged_information = async (req, res) => {
 
         if(user_key) {
             const user = await db.query(
-                `SELECT id AS id,
-                first_name AS first_name,
-                last_name AS last_name,
-                dob AS dob,
-                profile_picture AS profile_picture,
-                description AS description
+                `SELECT id,
+                first_name,
+                last_name,
+                TO_CHAR(date_of_birth, 'MM/DD/YYYY') AS date_of_birth,
+                profile_picture,
+                alma_mater,
+                degree
+                description,
+                status,
+                online,
+                hidden
                 FROM users
-                WHERE id = $1`
+                WHERE id = $1`,
                 [user_key.logged_user.id],
-
             );
 
-            res.status(200).json({logged_user: user});
+            const blocked = await db.query(
+                `SELECT users.id AS id,
+                users.first_name AS first_name,
+                users.last_name AS last_name,
+                users.profile_picture AS profile_picture
+                FROM blocked
+                INNER JOIN users ON users.id = blocked.blocked_user
+                WHERE blocked.blocked_by = $1`,
+                [user_key.logged_user.id]
+            );
+
+            const friends = await db.query(
+                `SELECT users.id AS id,
+                users.first_name AS first_name,
+                users.last_name AS last_name,
+                users.profile_picture AS profile_picture
+                FROM friends 
+                INNER JOIN users ON users.id = friends.friend_2
+                WHERE friends.friend_1 = $1`,
+                [user_key.logged_user.id]
+            );
+
+            const alerts = await db.query(
+                `SELECT `
+            )
+
+            const logged = {
+                profile: user.rows[0],
+                friends: friends.rows,
+                blocked: blocked.rows
+            }
+
+            res.status(200).json({logged_user: logged});
         }
         else {
             res.status(401).send();
         }
     }
     catch (err) {
+        console.log(err)
         res.status(500).json({error: err});
     }
 };
@@ -537,12 +610,29 @@ exports.edit_profile_picture = async (req, res) => {
 
 exports.edit_profile_information = async (req, res) => {
     try {
-        const user_key = validateToken(req, res);
+        const user_key = await validateToken(req, res);
 
         if(user_key) {
+            console.log(req.body);
+            
             const updated_user_data = await db.query(
-                `UPDATE users SET first_name = $1 last_name = $2 dob = $3 description = $4 WHERE id = $5 RETURNING *`,
-                [req.body.first_name, req.body.last_name, req.body.dob, req.body.description, user_key.logged_user.id]
+                `UPDATE users SET 
+                first_name = $1,
+                last_name = $2, 
+                description = $3, 
+                alma_mater = $4, 
+                degree = $5,
+                status = $6,
+                WHERE id = $7 
+                RETURNING *`,
+                [
+                    req.body.first_name, 
+                    req.body.last_name,
+                    req.body.description, 
+                    req.body.alma_mater, 
+                    req.body.degree, 
+                    user_key.logged_user.id
+                ]
             );
 
             res.status(200).json({logged_user: updated_user_data});
@@ -552,7 +642,7 @@ exports.edit_profile_information = async (req, res) => {
         }
     }
     catch (err) {
-        res.send(500).json({error: err});
+        res.status(500).json({error: err});
     }
 }
 
