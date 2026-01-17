@@ -4,7 +4,7 @@ import {query_client} from '../../../client';
 export const useSendFriendRequestMutation = ([user, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/friend/request/${user}`, {
+            return await fetch(`http://localhost:9000/api/request/${user.id}`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -27,12 +27,14 @@ export const useSendFriendRequestMutation = ([user, setSiteError]) => {
             const alert_cache = query_client.getQueryData(['alerts']);
             const alert_arr = alert_cache.alerts.pending || [];
 
-            alert_arr.push({
+            const updated_alert_arr = alert_arr.push({
                 id: user.id,
                 first_name: user.first_name,
                 last_name: user.last_name,
                 profile_picture: user.profile_picture
             });
+
+            query_client.getQueryData(['alerts'], updated_alert_arr);
 
             return {alert_arr};
         },
