@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react';
+import {Link} from 'react-router-dom';
 import {BellIcon, ChatBubbleOvalLeftEllipsisIcon, MagnifyingGlassIcon, UserIcon} from '@heroicons/react/24/solid';
 import {useFetchLogged, useFetchAlerts, useFetchUsers} from '../../Functions/Queries/UserQueries';
 import {useFetchGroups} from '../../Functions/Queries/GroupQueries';
@@ -7,7 +8,6 @@ import {useBookStore} from '../../../Context/bookStore';
 import UserMenu from './Tabs/UserMenu';
 import AlertTab from './Tabs/AlertTab';
 import ChatBox from '../../Chats/ChatBox';
-import PageHeader from '../../Miscellaneous/Text/PageHeader';
 import NotificationCount from '../../Miscellaneous/Text/NotificationCount';
 import ProfileDisplay from '../ProfileInformation/ProfileDisplay';
 
@@ -35,7 +35,7 @@ const Navbar = () => {
     useEffect(() => {
         chatData.data?.chats.forEach(chat => {
             const unread_messages = chat.messages.filter(message => message.checked === false 
-                && message.sending_user !== loggedData.data?.logged_user.id);
+                && message.sending_user !== loggedData.data?.logged_user.profile.id);
 
             setUnreadMessageCount(unreadMessageCount + unread_messages.length);
         });
@@ -46,7 +46,7 @@ const Navbar = () => {
     }
 
     const searchUsersGroups = (e) => {
-        const accounts_and_groups = userData.data.users.concat(groupData.data.groups)
+        const accounts_and_groups = userData.data?.users.concat(groupData.data.groups)
             .sort((a, b) => a.first_name > b.first_name || a.title > b.title ? 1 : -1);
         
         const reg = new RegExp(e.target.value, 'i');
@@ -55,7 +55,7 @@ const Navbar = () => {
             setSearchData('');
         }
         else {
-            accounts_and_groups.filter(item => (reg.test(item.first_name) || reg.test(item.last_name)) || reg.test(item.title));
+            accounts_and_groups?.filter(item => (reg.test(item.first_name) || reg.test(item.last_name)) || reg.test(item.title));
             setSearchData(accounts_and_groups);
         }
     };
@@ -78,9 +78,11 @@ const Navbar = () => {
         });
     }
 
+    console.log(alertData.data)
+
     return (
-        <div className='flex justify-evenly items-center bg-orange-300'>
-            <PageHeader header={'Bookmark'} />
+        <div className='flex justify-evenly items-center bg-amber-300/75 w-screen'>
+            <Link to='/api/home' className='text-center text-sm font-semibold md:text-xl'> Bookmark </Link>
             
             <div className='relative'>
                 <form method='GET' action='/api/search' encType='application/json' className='flex justify-start 
@@ -96,8 +98,9 @@ const Navbar = () => {
                     </button>
                 </form>
 
-                {searchData.length > 0 &&
-                    <div className='absolute flex flex-col items-center gap-1 border border-slate-200 bg-orange-300 w-[350px] z-50'>
+                {searchData?.length > 0 &&
+                    <div className='absolute flex flex-col items-center gap-1 border border-slate-200 bg-orange-300 
+                        max-h-[350px] w-[350px] z-50'>
                         {searchData.map(user => {
                             return <ProfileDisplay profile={user} is_logged={false} profile_mode={'search'} />
                         })}
@@ -111,11 +114,11 @@ const Navbar = () => {
                         onClick={() => handleNotificationTab()}>
                         <BellIcon className='h-6' />
 
-                        <NotificationCount count={alertData.data?.alerts.length} />
+                        <NotificationCount count={alertData.data?.alerts.notifications.length} />
                     </button>
 
                     {alertTabs.notifications &&
-                        <AlertTab alerts={alertData.data?.alerts || []} />
+                        <AlertTab alerts={alertData.data?.alerts.notifications || []} />
                     }
                 </div>
                 
@@ -131,20 +134,20 @@ const Navbar = () => {
                         onClick={() => handleRequestsTab()}>
                        <UserIcon className='h-6' /> 
 
-                       <NotificationCount count={alertData.data?.requests.length} />
+                       <NotificationCount count={alertData.data?.alerts.requests?.length} />
                     </button>
 
                     {alertTabs.requests &&
-                        <AlertTab alerts={alertData.data?.requests || []} />
+                        <AlertTab alerts={alertData.data?.alerts.requests || []} />
                     }
                 </div>
             </div>
 
             <div className='relative' onClick={() => toggleUserMenu()}>
-                <ProfileDisplay logged={loggedData.data?.logged_user} is_logged={true} profile_mode={'navbar'} />
+                <ProfileDisplay profile={loggedData.data?.logged_user?.profile} is_logged={true} profile_mode={'navbar'} />
 
                 {userMenu &&
-                    <UserMenu user={loggedData.data?.logged_user} />
+                    <UserMenu user={loggedData.data?.logged_user?.profile} />
                 }
             </div>
 
