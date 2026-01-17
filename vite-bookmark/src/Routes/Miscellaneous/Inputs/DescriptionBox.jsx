@@ -1,19 +1,11 @@
-import {useBookStore} from '../../../Context/bookStore';
-
-const DescriptionBox = ({description, is_user}) => {
-    const setDescriptionValue = useBookStore((state) => state.setDescriptionValue);
-
-    const updateDescription = (e) => {
-        setDescriptionValue(e.currentTarget.value);
-    }
-
+const DescriptionBox = ({description, editDescription, is_user}) => {
     return (
-        <label for='description' className='flex flex-col items-start'>
+        <label htmlFor='description' className='flex flex-col items-start'>
             <span className='font-semibold'> Description </span>
 
-            <textarea id='description' cols='45' rows='10' value={description} 
+            <textarea id='description' cols='50' rows='10' className='bg-slate-200'
                 placeholder={`${is_user ? 'How would you describe yourself?' : 'What is the purpose of this group?'}`} 
-                onChange={(e) => updateDescription(e)}>
+                {...(editDescription && {value: description, onChange: editDescription})}>
             </textarea>
         </label> 
     )
