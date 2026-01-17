@@ -1,4 +1,3 @@
-import {useEffect} from 'react';
 import {PhotoIcon} from '@heroicons/react/24/solid';
 import {useEditGroupMutation} from '../../Functions/Mutations/GroupMutations';
 import {useDeleteGroupMutation} from '../../Functions/Mutations/GroupMutations';
@@ -10,20 +9,17 @@ import GroupBanUnbanButton from '../../Buttons/GroupBanUnbanButton';
 import EditButton from '../../Buttons/EditButton';
 
 const EditGroup = ({group}) => {
-    const description_input = useBookStore((state) => state.description_input);
-    const setDescriptionInput = useBookStore((state) => state.setDescriptionInput);
     const setSiteError = useBookStore((state) => state.setSiteError);
 
-    useEffect(() => {
-        if(!description_input) {
-            setDescriptionInput(group.description);
-        }
-    }, [description_input, group]);
-
+    const [groupDescription, setGroupDescription] = useState(group.description);
     const [groupImage, setGroupImage] = useState(group?.group_image);
 
     const editMutation = useEditGroupMutation([group, setSiteError]);
     const deleteGroupMutation = useDeleteGroupMutation([group, setSiteError]);
+
+    const editDescription = (e) => {
+        setGroupDescription(e.target.value);
+    }
 
     const confirmGroupChanges = () => {
         editMutation.mutate();
@@ -69,7 +65,7 @@ const EditGroup = ({group}) => {
                 </label>
             </div>
 
-            <DescriptionBox description={description_value} is_user={false} />
+            <DescriptionBox description={groupDescription} editDescription={editDescription} is_user={false} />
 
             <div>
                 <span className='font-semibold'> Banned users </span>
