@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {XMarkIcon} from '@heroicons/react/24/solid';
 import {useBookStore} from '../../../Context/bookStore';
 import UserGroupInput from '../../Miscellaneous/Inputs/UserGroupInput';
@@ -12,9 +13,10 @@ const CreateGroup = () => {
         description: null
     });
 
-    const description_value = useBookStore((state) => state.description_value);
     const setCreateGroupTab = useBookStore((state) => state.setCreateGroupTab);
     const setSiteError = useBookStore((state) => state.setSiteError);
+
+    const navigate = useNavigate();
 
     const disableCreateGroupTab = () => {
         setCreateGroupTab(false);
@@ -22,11 +24,14 @@ const CreateGroup = () => {
 
     const createGroup = () => {
         const title = document.querySelector('#title').value;
-        const description = description_value
+        const description = document.querySelector('#description').value
 
         fetch('http://localhost:9000/api/group/create', {
             method: 'POST',
             credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
                 title: title,
                 description: description
@@ -35,6 +40,9 @@ const CreateGroup = () => {
         .then(res => {
             if(!res.ok) {
                 throw Error(`Error ${res.status}: ${res.statusText}`);
+            }
+            else if(res.redirected) {
+                return navigate(res.url.replace('9000', '3000'), {rewrite: true});
             }
             else {
                 return res.json();
@@ -52,7 +60,7 @@ const CreateGroup = () => {
     };
 
     return (
-        <div className='absolute top-0 right-0 bg-slate-400/50 h-screen w-screen z-50'>
+        <div className='absolute top-0 right-0 bg-slate-200/50 h-screen w-screen z-50'>
             <XMarkIcon className='absolute top-[10px] right-[10px] stroke-slate-400 md:h-8 hover:stroke-zinc-100' 
                 onClick={() => disableCreateGroupTab()}
             />
@@ -74,7 +82,7 @@ const CreateGroup = () => {
                     </div>
                     
                     <div className='flex flex-col items-start mb-[10px]'>
-                        <DescriptionBox description={''} is_user={false} />
+                        <DescriptionBox description={''} editDescription={null} is_user={false} />
 
                         {groupErrors.description &&
                             <InputErr error={groupErrors.description} />
@@ -82,7 +90,7 @@ const CreateGroup = () => {
                     </div>
                 </div> 
 
-                <button type='button' className='font-semibold bg-fuschia-200 rounded-full p-1 mb-[10px] hover:bg-pink-100 md:w-[150px]' 
+                <button type='button' className='font-semibold bg-fuchsia-400 rounded-full p-1 mb-[10px] hover:bg-pink-100 md:w-[150px]' 
                     onClick={() => createGroup()}>
                     Create group
                 </button>
