@@ -8,6 +8,7 @@ exports.get_post_feed = async (req, res) => {
         if(user_key) {
             const user_posts = await db.query(
                 `SELECT posts.id as id,
+                users.id AS userid,
                 users.first_name AS first_name,
                 users.last_name AS last_name,
                 users.profile_picture AS profile_picture,
@@ -76,6 +77,7 @@ exports.get_post_feed = async (req, res) => {
                     feed_posts.push({
                         id: all_posts[i].id,
                         original_poster: all_posts[i].first_name ? {
+                            id: all_posts[i].userid,
                             first_name: all_posts[i].first_name,
                             last_name: all_posts[i].last_name,
                             profile_picture: all_posts[i].profile_picture
@@ -197,7 +199,6 @@ exports.like_post = async (req, res) => {
         }
     }
     catch (err) {
-        console.log(err);
         res.status(500).json({error: err});
     }
 };
