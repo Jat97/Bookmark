@@ -7,7 +7,7 @@ const UserGroupInput = ({id, input_value, input_fn}) => {
             minLength={id === 'password' || id === 'confirm_password' ? '8' : '1'} 
             maxLength={id === 'password' || id === 'confirm_password' ? '15' : '30'}
             placeholder={`${id.replace('_', ' ').replace(id[0], id[0].toUpperCase())}`}
-            {...(input_value ? {value: input_value, onChange: input_fn} : {defaultValue: input_value})}>
+            {...(input_fn ? {value: input_value, onChange: input_fn} : {defaultValue: input_value})}>
         </input>
     )
 }
