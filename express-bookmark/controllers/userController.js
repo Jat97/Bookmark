@@ -557,10 +557,6 @@ exports.get_logged_information = async (req, res) => {
                 [user_key.logged_user.id]
             );
 
-            const alerts = await db.query(
-                `SELECT `
-            )
-
             const logged = {
                 profile: user.rows[0],
                 friends: friends.rows,
@@ -574,7 +570,6 @@ exports.get_logged_information = async (req, res) => {
         }
     }
     catch (err) {
-        console.log(err)
         res.status(500).json({error: err});
     }
 };
@@ -603,7 +598,6 @@ exports.edit_profile_picture = async (req, res) => {
         }
     }
     catch (err) {
-        console.log(err);
         res.status(500).json({error: err});
     }
 };
