@@ -28,7 +28,7 @@ router.delete('/unfriend/:userid', userController.remove_from_friendslist);
 
 router.get('/notifications', userController.get_notifications);
 
-router.post('/request/send/:userid', userController.send_friend_request);
+router.post('/request/:userid', userController.send_friend_request);
 
 router.post('/request/accept/:userid', userController.accept_friend_request);
 
