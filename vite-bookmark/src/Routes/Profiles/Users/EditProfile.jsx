@@ -1,7 +1,8 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import {useBookStore} from '../../../Context/bookStore';
 import {useEditProfileMutation, useToggleHiddenMutation} from '../../Functions/Mutations/UserMutations';
 import UserGroupInput from '../../Miscellaneous/Inputs/UserGroupInput';
+import UserGroupSelect from '../../Miscellaneous/Inputs/UserGroupSelect';
 import DescriptionBox from '../../Miscellaneous/Inputs/DescriptionBox';
 import ProfileDisplay from '../ProfileInformation/ProfileDisplay';
 import InputErr from '../../Miscellaneous/Text/Errors/InputErr'
@@ -13,7 +14,8 @@ const EditProfile = ({user}) => {
 
     const [editErrors, setEditErrors] = useState({
         first_name: null,
-        last_name: null
+        last_name: null,
+        role: null
     });
 
     const [profileData, setProfileData] = useState({
@@ -21,6 +23,7 @@ const EditProfile = ({user}) => {
         last_name: user?.last_name,
         alma_mater: user?.alma_mater,
         degree: user?.degree,
+        role: user?.role,
         description: user?.description
     });
 
@@ -121,6 +124,18 @@ const EditProfile = ({user}) => {
                     {editErrors.degree &&
                         <InputErr error={editErrors.degree} />
                     }
+                </div>
+
+                <div className='flex flex-col items-start'>
+                    <label htmlFor='role'>
+                        <span id='role' className='font-semibold'> Change your role </span>
+
+                        <UserGroupSelect value={profileData.role} select_fn={editInformation} />
+
+                        {editErrors.role &&
+                            <InputErr error={editErrors.role} />
+                        }
+                    </label>
                 </div>
             </div>
 
