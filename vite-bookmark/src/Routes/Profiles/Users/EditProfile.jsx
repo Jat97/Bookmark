@@ -2,7 +2,7 @@ import {useState} from 'react';
 import {useBookStore} from '../../../Context/bookStore';
 import {useEditProfileMutation, useToggleHiddenMutation} from '../../Functions/Mutations/UserMutations';
 import UserGroupInput from '../../Miscellaneous/Inputs/UserGroupInput';
-import UserGroupSelect from '../../Miscellaneous/Inputs/UserGroupSelect';
+import UserGroupSelect from '../../Miscellaneous/Inputs/UserSelectInput';
 import DescriptionBox from '../../Miscellaneous/Inputs/DescriptionBox';
 import ProfileDisplay from '../ProfileInformation/ProfileDisplay';
 import InputErr from '../../Miscellaneous/Text/Errors/InputErr'
