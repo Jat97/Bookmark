@@ -49,7 +49,7 @@ const Login = () => {
 
     return (
         <div className='absolute top-[200px] h-screen w-screen md:top-1/3 md:left-[325px] md:rounded-full md:w-1/2'>
-            <div className='flex flex-col items-center gap-y-[20px] md:border md:border-slate-200 md:shadow-sm md:shadow-red-200 
+            <div className='flex flex-col items-center gap-y-[20px] md:border md:border-slate-200 md:shadow-md md:shadow-slate-200 
                 md:bg-white'>
                 <p className='text-lg font-semibold'> Sign in to Bookmark </p>
 
