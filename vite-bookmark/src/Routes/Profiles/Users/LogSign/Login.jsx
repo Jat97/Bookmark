@@ -62,7 +62,7 @@ const Login = () => {
                         </label>
                             
                         {logErrors.username &&
-                            <InputErr props={logErrors.username} />
+                            <InputErr error={logErrors.username} />
                         } 
                     </div>
 
@@ -74,7 +74,7 @@ const Login = () => {
                         </label>
                         
                         {logErrors.password &&
-                            <InputErr props={logErrors.password} />
+                            <InputErr error={logErrors.password} />
                         }
                     </div>
                 </div>
