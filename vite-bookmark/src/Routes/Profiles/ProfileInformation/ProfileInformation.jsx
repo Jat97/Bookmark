@@ -12,7 +12,8 @@ const ProfileInformation = ({profile}) => {
                 }
 
                 {profile?.alma_mater && 
-                    <p className='flex flex-col items-start'> Education: {profile?.alma_mater} 
+                    <p className='flex flex-col items-start'> 
+                        <span className='font-semibold'> Education: </span> {profile?.alma_mater} 
                         <span className='text-sm'> {profile?.degree} </span> 
                     </p>
                 }
