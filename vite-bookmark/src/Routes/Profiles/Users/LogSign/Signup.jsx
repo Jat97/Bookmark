@@ -3,6 +3,7 @@ import {Link, useNavigate} from 'react-router-dom';
 import {useBookStore} from '../../../../Context/bookStore';
 import LogSignButton from '../../../Buttons/LogSignButton';
 import UserGroupInput from '../../../Miscellaneous/Inputs/UserGroupInput';
+import UserSelectInput from '../../../Miscellaneous/Inputs/UserSelectInput';
 import InputErr from '../../../Miscellaneous/Text/Errors/InputErr';
 
 const Signup = () => {
@@ -15,6 +16,7 @@ const Signup = () => {
         last_name: null,
         email: null,
         dob: null,
+        role: null,
         password: null,
         confirm: null
     });
@@ -31,6 +33,7 @@ const Signup = () => {
                 last_name: document.querySelector('#last_name').value,
                 email: document.querySelector('#email').value,
                 dob: document.querySelector('#dob').value,
+                role: document.querySelector('#role').value,
                 password: document.querySelector('#password').value,
                 confirm: document.querySelector('#confirm_password').value
             })
@@ -65,62 +68,74 @@ const Signup = () => {
 
                 <div className='grid grid-cols-2 items-center font-semibold gap-y-[10px] w-11/12'>
                     <div>
-                        <label for='first_name' className='flex flex-col items-center'>
+                        <label htmlFor='first_name' className='flex flex-col items-center'>
                             <span className='font-semibold'> First Name </span>
 
                             <UserGroupInput id={'first_name'} input_value={''} input_fn={null} />
                         </label>
 
                         {signErrors.first_name &&
-                            <InputErr props={signErrors.first_name} />
+                            <InputErr error={signErrors.first_name} />
                         }
                     </div>
 
                     <div>
-                        <label for='last_name' className='flex flex-col items-center'>
+                        <label htmlFor='last_name' className='flex flex-col items-center'>
                             <span className='font-semibold'> Last Name </span>
 
                             <UserGroupInput id={'last_name'} input_value={''} input_fn={null} />
                         </label>
 
                         {signErrors.last_name && 
-                            <InputErr props={signErrors.last_name} />
+                            <InputErr error={signErrors.last_name} />
                         }
                     </div>
 
                     <div>
-                        <label for='email' className='flex flex-col items-center'>
+                        <label htmlFor='email' className='flex flex-col items-center'>
                             <span className='font-semibold'> Email </span>
 
                             <UserGroupInput id={'email'} input_value={''} input_fn={null} />
                         </label>
                        
                         {signErrors.email &&
-                            <InputErr props={signErrors.email} />
+                            <InputErr error={signErrors.email} />
                         }
                     </div>
 
                     <div>
-                        <label for='dob' className='flex flex-col items-center'>
+                        <label htmlFor='dob' className='flex flex-col items-center'>
                             <span className='font-semibold'> Date of birth </span>
 
                             <UserGroupInput id={'dob'} input_value={''} input_fn={null} />
                         </label>
 
                         {signErrors.dob &&
-                            <InputErr props={signErrors.dob} />
+                            <InputErr error={signErrors.dob} />
                         }
                     </div>
 
                     <div>
-                        <label for='password' className='flex flex-col items-center'>
+                        <label htmlFor='status'>
+                            <span className='font-semibold'> Which best describes your relationship to literature? </span>
+
+                            <UserSelectInput value={''} select_fn={null} />
+                        </label>
+
+                        {signErrors.role &&
+                            <InputErr error={signErrors.role} />
+                        }
+                    </div>
+
+                    <div>
+                        <label htmlFor='password' className='flex flex-col items-center'>
                             <span className='font-semibold'> Password </span> 
 
                             <UserGroupInput id={'password'} input_value={''} input_fn={null} />
                         </label>
                         
                         {signErrors.password &&
-                            <InputErr props={signErrors.password} />
+                            <InputErr error={signErrors.password} />
                         }
                     </div>
 
@@ -132,7 +147,7 @@ const Signup = () => {
                         </label>
                         
                         {signErrors.confirm &&
-                            <InputErr props={signErrors.confirm} />
+                            <InputErr error={signErrors.confirm} />
                         }
                     </div>
                 </div>
