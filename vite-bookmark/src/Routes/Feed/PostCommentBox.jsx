@@ -4,7 +4,7 @@ import {ArrowUturnLeftIcon, ChatBubbleLeftRightIcon} from "@heroicons/react/24/s
 import {useBookStore} from '../../Context/bookStore';
 import {useFetchLogged} from '../Functions/Queries/UserQueries';
 import {useSharePostMutation} from '../Functions/Mutations/PostMutations';
-import LikeButton from '../Buttons/LikeButton';
+import LikeButton from '../Buttons/Post/LikeButton';
 import TextBox from '../Miscellaneous/Inputs/TextBox';
 
 const PostCommentBox = ({post}) => {
