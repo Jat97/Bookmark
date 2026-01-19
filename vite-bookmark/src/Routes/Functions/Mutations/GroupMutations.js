@@ -1,14 +1,14 @@
 import {useMutation} from '@tanstack/react-query';
 import {query_client} from '../../../client';
 
-export const useEditGroupMutation = ([title, description, file, setSiteError]) => {
+export const useEditGroupMutation = ([groupData, file, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
             const form = new FormData();
 
             form.append('groupimage', file);
-            form.append('title', title);
-            form.append('description', description);
+            form.append('title', groupData.title);
+            form.append('description', groupData.description);
 
             return await fetch(`http://localhost:9000/api/group/edit/${group}`, {
                 method: 'PUT',
@@ -340,7 +340,7 @@ export const useLeaveGroupMutation = ([user, group, setSiteError]) => {
     return mutation;
 };
 
-export const useGroupPrivacyMutation = ([group, setSiteError]) => {
+export const useGroupPrivacyMutation = ([group, setTitleError, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
             return await fetch(`http://localhost:9000/api/group/privacy/${group}`, {
@@ -353,6 +353,11 @@ export const useGroupPrivacyMutation = ([group, setSiteError]) => {
                 }   
                 else {
                     return res.json();
+                }
+            })
+            .then(json => {
+                if(json.errors.title_error) {
+                    setTitleError(json.errors.title_error);
                 }
             })
             .catch(err => setSiteError(err.message))
