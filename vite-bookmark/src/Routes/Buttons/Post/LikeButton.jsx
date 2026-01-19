@@ -31,17 +31,17 @@ const LikeButton = ({logged, post}) => {
     }
 
     return (
-        <button id={post.id} data-testid={`like-${post.id}`} className='text-orange-300 cursor-pointer w-[75px] 
+        <button id={post.id} data-testid={`like-${post.id}`} className='text-amber-300 cursor-pointer w-[75px] 
             hover:underline' 
             onClick={() => handleLikeMutations()}>
             {post.likes.some((like) => like.id === logged.id) ?
                 <div className='flex justify-around items-center'>
-                    <HandThumbDownIcon className='h-6 fill-orange-300' />
+                    <HandThumbDownIcon className='h-6 fill-amber-300' />
                     Unlike
                 </div>
             :       
                 <div className='flex justify-around items-center'>
-                    <HandThumbUpIcon className='h-6 fill-orange-300' />
+                    <HandThumbUpIcon className='h-6 fill-amber-300' />
                     Like
                 </div>
             }
