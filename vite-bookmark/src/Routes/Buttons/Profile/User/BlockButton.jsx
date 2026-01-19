@@ -1,6 +1,6 @@
-import {useFetchBlocked} from '../Functions/Queries/UserQueries';
-import {useBlockUserMutation, useUnblockUserMutation} from '../Functions/Mutations/BlockMutations';
-import {useBookStore} from '../../Context/bookStore';
+import {useFetchBlocked} from '../../../Functions/Queries/UserQueries';
+import {useBlockUserMutation, useUnblockUserMutation} from '../../../Functions/Mutations/BlockMutations';
+import {useBookStore} from '../../../../Context/bookStore';
 
 const BlockButton = ({user}) => {
     const authorized = useBookStore((state) => state.authorized);

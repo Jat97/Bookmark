@@ -1,7 +1,7 @@
 import {HandThumbDownIcon, HandThumbUpIcon} from "@heroicons/react/24/solid";
 import {useLikeCommentMutation, useUnlikeCommentMutation, 
-    useLikePostMutation, useUnlikePostMutation} from '../Functions/Mutations/LikeMutations';
-import {useBookStore} from '../../Context/bookStore';
+    useLikePostMutation, useUnlikePostMutation} from '../../Functions/Mutations/LikeMutations';
+import {useBookStore} from '../../../Context/bookStore';
 
 const LikeButton = ({logged, post}) => {
     const setSiteError = useBookStore((state) => state.setSiteError);

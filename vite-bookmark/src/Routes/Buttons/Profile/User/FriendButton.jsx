@@ -1,7 +1,7 @@
 import {UserPlusIcon, UserMinusIcon} from '@heroicons/react/24/solid';
-import {useFetchAlerts, useFetchFriends} from '../Functions/Queries/UserQueries';
-import {useSendFriendRequestMutation, useRemoveFriendMutation} from '../Functions/Mutations/FriendMutations';
-import {useBookStore} from '../../Context/bookStore';
+import {useFetchAlerts, useFetchFriends} from '../../../Functions/Queries/UserQueries';
+import {useSendFriendRequestMutation, useRemoveFriendMutation} from '../../../Functions/Mutations/FriendMutations';
+import {useBookStore} from '../../../../Context/bookStore';
 
 const FriendButton = ({user}) => {
     const authorized = useBookStore((state) => state.authorized);

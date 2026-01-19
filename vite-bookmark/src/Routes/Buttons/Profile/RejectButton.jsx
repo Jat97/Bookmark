@@ -1,6 +1,6 @@
-import {useRejectRequestMutation} from "../Functions/Mutations/FriendMutations";
-import {useGroupRejectMutation} from "../Functions/Mutations/GroupMutations";
-import {useBookStore} from '../../Context/bookStore';
+import {useRejectRequestMutation} from "../../Functions/Mutations/FriendMutations";
+import {useGroupRejectMutation} from "../../Functions/Mutations/GroupMutations";
+import {useBookStore} from '../../../Context/bookStore';
 
 const RejectButton = ({user_group}) => {
     const setSiteError = useBookStore((state) => state.setSiteError);

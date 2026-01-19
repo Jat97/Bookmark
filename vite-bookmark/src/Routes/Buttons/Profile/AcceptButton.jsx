@@ -1,6 +1,6 @@
-import {useAcceptRequestMutation} from "../Functions/Mutations/FriendMutations";
-import {useGroupAcceptMutation} from '../Functions/Mutations/GroupMutations';
-import {useBookStore} from '../../Context/bookStore';
+import {useAcceptRequestMutation} from "../../Functions/Mutations/FriendMutations";
+import {useGroupAcceptMutation} from '../../Functions/Mutations/GroupMutations';
+import {useBookStore} from '../../../Context/bookStore';
 
 const AcceptButton = ({user_group}) => {
     const setSiteError = useBookStore((state) => state.setSiteError);

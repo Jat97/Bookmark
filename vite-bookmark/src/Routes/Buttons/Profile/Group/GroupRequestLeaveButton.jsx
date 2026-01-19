@@ -1,5 +1,5 @@
-import {useGroupRequestMutation, useLeaveGroupMutation} from "../Functions/Mutations/GroupMutations";
-import {useBookStore} from '../../Context/bookStore';
+import {useGroupRequestMutation, useLeaveGroupMutation} from "../../../Functions/Mutations/GroupMutations";
+import {useBookStore} from '../../../../Context/bookStore';
 
 const GroupRequestLeaveButton = ({logged, group, is_member}) => {
     const setSiteError = useBookStore((state) => state.setSiteError);

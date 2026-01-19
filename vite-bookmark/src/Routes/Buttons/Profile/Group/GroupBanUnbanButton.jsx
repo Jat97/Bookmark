@@ -1,5 +1,5 @@
-import {useBanUserMutation, useUnbanUserMutation} from "../Functions/Mutations/GroupMutations";
-import {useBookStore} from '../../Context/bookStore';
+import {useBanUserMutation, useUnbanUserMutation} from "../../../Functions/Mutations/GroupMutations";
+import {useBookStore} from '../../../../Context/bookStore';
 
 const GroupBanUnbanButton = ({group, member}) => {
     const setSiteError = useBookStore((state) => state.setSiteError);
