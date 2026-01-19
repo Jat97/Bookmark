@@ -1,6 +1,6 @@
 import {useState} from 'react';
-import AcceptButton from '../../../Buttons/AcceptButton';
-import RejectButton from '../../../Buttons/RejectButton';
+import AcceptButton from '../../../Buttons/Profile/AcceptButton';
+import RejectButton from '../../../Buttons/Profile/RejectButton';
 import ProfileDisplay from '../../ProfileInformation/ProfileDisplay';
 import {XMarkIcon} from '@heroicons/react/24/solid';
 
