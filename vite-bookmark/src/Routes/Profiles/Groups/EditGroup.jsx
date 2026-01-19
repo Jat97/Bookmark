@@ -1,28 +1,55 @@
+import {useParams} from 'react-router-dom';
 import {PhotoIcon} from '@heroicons/react/24/solid';
-import {useEditGroupMutation} from '../../Functions/Mutations/GroupMutations';
+import {useFetchGroups} from '../../Functions/Queries/GroupQueries';
+import {useEditGroupMutation, useGroupPrivacyMutation, useDeleteGroupMutation} from '../../Functions/Mutations/GroupMutations';
 import {useDeleteGroupMutation} from '../../Functions/Mutations/GroupMutations';
 import {useBookStore} from '../../../Context/bookStore';
 import ProfileDisplay from '../ProfileInformation/ProfileDisplay';
 import PageHeader from '../../Miscellaneous/Text/PageHeader';
+import UserGroupInput from '../../Miscellaneous/Inputs/UserGroupInput';
 import DescriptionBox from '../../Miscellaneous/Inputs/DescriptionBox';
-import GroupBanUnbanButton from '../../Buttons/GroupBanUnbanButton';
-import EditButton from '../../Buttons/EditButton';
+import InputErr from '../../Miscellaneous/Text/Errors/InputErr';
+import GroupBanUnbanButton from '../../Buttons/Profile/Group/GroupBanUnbanButton';
+import ToggleSwitch from '../../Buttons/Profile/ToggleSwitch';
+import EditButton from '../../Buttons/Profile/EditButton';
+import DeleteButton from '../../Buttons/Profile/DeleteButton';
 
 const EditGroup = ({group}) => {
+    const {groupid} = useParams();
+
+    const authorized = useBookStore((state) => state.authorized);
+    const setAuthorized = useBookStore((state) => state.setAuthorized);
     const setSiteError = useBookStore((state) => state.setSiteError);
+    
+    const groupData = useFetchGroups([authorized, setAuthorized, setSiteError]);
 
-    const [groupDescription, setGroupDescription] = useState(group.description);
+    const group = groupData.data.groups.find((group) => group.id.toString() === groupid);
+
+    const [groupInfo, setGroupInfo] = useState({
+        title: group.title,
+        description: group.description
+    });
+
     const [groupImage, setGroupImage] = useState(group?.group_image);
+    const [titleError, setTitleError] = useState(null);
 
-    const editMutation = useEditGroupMutation([group, setSiteError]);
+    const editMutation = useEditGroupMutation([group, setTitleError, setSiteError]);
+    const privacyMutation = useGroupPrivacyMutation([group, setSiteError]);
     const deleteGroupMutation = useDeleteGroupMutation([group, setSiteError]);
 
-    const editDescription = (e) => {
-        setGroupDescription(e.target.value);
+    const editData = (e) => {
+        setGroupInfo((prevState) => ({
+            ...prevState,
+            [e.target.id]: e.target.value
+        }));
     }
 
     const confirmGroupChanges = () => {
         editMutation.mutate();
+    }
+
+    const toggleGroupPrivacy = () => {
+        privacyMutation.mutate();
     }
 
     const deleteGroup = () => {
@@ -65,9 +92,25 @@ const EditGroup = ({group}) => {
                 </label>
             </div>
 
-            <DescriptionBox description={groupDescription} editDescription={editDescription} is_user={false} />
+            <ToggleSwitch status={group?.private} toggle_fn={toggleGroupPrivacy} />
 
             <div>
+                <div className='flex flex-col items-start'>
+                    <label htmlFor='title'>
+                        <span className='font-semibold'> Title </span>
+                        
+                        <UserGroupInput id={'title'} input_value={groupInfo.title} input_fn={editData} />
+                    </label>
+
+                    {titleError &&
+                        <InputErr error={titleError} />
+                    }
+                </div>
+                
+               <DescriptionBox description={groupInfo.description} editDescription={editData} is_user={false} /> 
+            </div>
+
+            <div className='flex flex-col items-start'>
                 <span className='font-semibold'> Banned users </span>
 
                 <div>
@@ -83,18 +126,10 @@ const EditGroup = ({group}) => {
                 </div>
             </div>
 
-            <div className='flex flex-col items-center'>
-                <div className='flex justify-around items-center'>
-                    <EditButton save_fn={confirmGroupChanges} />
+            <div className='flex justify-around items-center'>
+                <EditButton save_fn={confirmGroupChanges} />
 
-                    <Link to={`/api/group/${group?.id}`} className='text-center bg-slate-200 p-2 max-w-12'> 
-                        Cancel 
-                    </Link>
-                </div>
-                
-                <button type='button' className='text-white bg-red-400 hover:bg-pink-100' onClick={() => deleteGroup()}>
-                    Delete group
-                </button>
+                <DeleteButton delete_fn={deleteGroup} />
             </div>
         </div>
     )
