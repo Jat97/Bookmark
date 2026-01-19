@@ -14,7 +14,7 @@ import ToggleSwitch from '../../Buttons/Profile/ToggleSwitch';
 import EditButton from '../../Buttons/Profile/EditButton';
 import DeleteButton from '../../Buttons/Profile/DeleteButton';
 
-const EditGroup = ({group}) => {
+const EditGroup = () => {
     const {groupid} = useParams();
 
     const authorized = useBookStore((state) => state.authorized);
