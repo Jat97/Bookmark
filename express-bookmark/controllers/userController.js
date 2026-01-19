@@ -27,6 +27,7 @@ exports.create_account = [
             return await Promise.reject('You must be at least 18 years of age to register.');
         }
     }),
+    body('role', 'Please choose the role that best fits').trim(),
     body('password', 'Please enter a password').trim().isLength({min: 8}).custom(async password => {
         if(password.length < 8) {
             return await Promise.reject('Your password is too short.');
@@ -64,7 +65,7 @@ exports.create_account = [
                             null,
                             null,
                             null, 
-                            req.body.status,
+                            req.body.role,
                             true, 
                             false
                         ]
@@ -145,7 +146,7 @@ exports.get_all_users = async (req, res) => {
                 alma_mater,
                 degree,
                 description,
-                status,
+                role,
                 online,
                 hidden
                 FROM users 
@@ -527,7 +528,7 @@ exports.get_logged_information = async (req, res) => {
                 alma_mater,
                 degree
                 description,
-                status,
+                role,
                 online,
                 hidden
                 FROM users
@@ -616,7 +617,7 @@ exports.edit_profile_information = async (req, res) => {
                 description = $3, 
                 alma_mater = $4, 
                 degree = $5,
-                status = $6,
+                role = $6,
                 WHERE id = $7 
                 RETURNING *`,
                 [
@@ -624,7 +625,8 @@ exports.edit_profile_information = async (req, res) => {
                     req.body.last_name,
                     req.body.description, 
                     req.body.alma_mater, 
-                    req.body.degree, 
+                    req.body.degree,
+                    req.body.role, 
                     user_key.logged_user.id
                 ]
             );
