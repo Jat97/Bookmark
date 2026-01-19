@@ -190,7 +190,7 @@ export const useEditProfileMutation = ([user, data, setEditErrors, setSiteError]
     return mutation;
 }
 
-export const deleteAccountMutation = (setSiteError) => {
+export const useDeleteAccountMutation = (setSiteError) => {
     const mutation = useMutation({
         mutationFn: async () => {
             return await fetch('http://localhost:9000/api/user/delete', {
