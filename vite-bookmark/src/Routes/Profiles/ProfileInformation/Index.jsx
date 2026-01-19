@@ -1,22 +1,14 @@
-import {useLocation} from 'react-router-dom';
-import FriendButton from '../../Buttons/FriendButton';
-import BlockButton from '../../Buttons/BlockButton';
-import GroupRequestLeaveButton from '../../Buttons/GroupRequestLeaveButton';
-import AcceptButton from '../../Buttons/AcceptButton';
-import RejectButton from '../../Buttons/RejectButton';
-import PageHeader from '../../Miscellaneous/Text/PageHeader';
+import FriendButton from '../../Buttons/Profile/User/FriendButton';
+import BlockButton from '../../Buttons/Profile/User/BlockButton';
+import GroupRequestLeaveButton from '../../Buttons/Profile/Group/GroupRequestLeaveButton';
+import AcceptButton from '../../Buttons/Profile/AcceptButton';
+import RejectButton from '../../Buttons/Profile/RejectButton';
 import NoItems from '../../Miscellaneous/Text/NoItems';
 import ProfileDisplay from './ProfileDisplay';
 
 const Index = ({logged, moderator, items}) => {
-    const location = useLocation();
-
     return (
         <div> 
-            {location.pathname.includes('groups') || location.pathname.includes('users') &&
-                <PageHeader header={location.pathname.includes('groups') ? 'Groups' : 'Users'} />
-            }           
-            
             {items.length === 0 ?
                 <NoItems text={`There's nothing here!`} />
             :
@@ -28,7 +20,7 @@ const Index = ({logged, moderator, items}) => {
 
                                 {item.title && logged ?
                                     <GroupRequestLeaveButton logged={logged} group={item} 
-                                        is_member={item.members.some((member) => member.id === logged.id)}
+                                        is_member={item.members.some((member) => member.id === logged?.id)}
                                     />
                                 :
                                     item.title && moderator ?
