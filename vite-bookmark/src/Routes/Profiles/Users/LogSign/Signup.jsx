@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import {useBookStore} from '../../../../Context/bookStore';
-import LogSignButton from '../../../Buttons/LogSignButton';
+import LogSignButton from '../../../Buttons/Profile/User/LogSignButton';
 import UserGroupInput from '../../../Miscellaneous/Inputs/UserGroupInput';
 import UserSelectInput from '../../../Miscellaneous/Inputs/UserSelectInput';
 import InputErr from '../../../Miscellaneous/Text/Errors/InputErr';
