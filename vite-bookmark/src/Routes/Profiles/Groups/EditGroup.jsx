@@ -2,7 +2,6 @@ import {useParams} from 'react-router-dom';
 import {PhotoIcon} from '@heroicons/react/24/solid';
 import {useFetchGroups} from '../../Functions/Queries/GroupQueries';
 import {useEditGroupMutation, useGroupPrivacyMutation, useDeleteGroupMutation} from '../../Functions/Mutations/GroupMutations';
-import {useDeleteGroupMutation} from '../../Functions/Mutations/GroupMutations';
 import {useBookStore} from '../../../Context/bookStore';
 import ProfileDisplay from '../ProfileInformation/ProfileDisplay';
 import PageHeader from '../../Miscellaneous/Text/PageHeader';
