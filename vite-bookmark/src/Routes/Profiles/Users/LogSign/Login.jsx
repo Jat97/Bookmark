@@ -29,19 +29,17 @@ const Login = () => {
         })
         .then(res => {
             if(!res.ok) {
-                throw Error(`Error ${res.status}: ${res.statusText}`);
+                return res.json();
+                
             }
             else if(res.status === 200) {
                 return navigate('/api/home', {rewrite: true});
             }
-            else {
-                return res.json();
-            }
         })
         .then(json => {
             setLogErrors({
-                user: json.user_err ? json.user_err : null,
-                password: json.pass_err ? json.pass_err : null
+                user: json.user_err && json.user_err,
+                password: json.pass_err && json.pass_err
             });
         })
         .catch(err => setSiteError(err.message));
@@ -49,24 +47,24 @@ const Login = () => {
 
     return (
         <div className='absolute top-[200px] h-screen w-screen md:top-1/3 md:left-[325px] md:rounded-full md:w-1/2'>
-            <div className='flex flex-col items-center gap-y-[20px] md:border md:border-slate-200 md:shadow-md 
+            <div className='flex flex-col items-center gap-y-[25px] md:border md:border-slate-200 md:shadow-md 
                 md:shadow-slate-200 md:bg-white'>
                 <p className='text-lg font-semibold'> Sign in to Bookmark </p>
 
-                <div>
-                    <div className='w-1/3'>
+                <div className='flex flex-col gap-y-[15px]'>
+                    <div className='relative w-1/3'>
                         <label for='email' className='flex flex-col items-start'>
                             <span className='font-semibold'> Username </span>
 
                             <UserGroupInput id={'email'} input_value={''} input_fn={null} />
                         </label>
                             
-                        {logErrors.username &&
-                            <InputErr error={logErrors.username} />
+                        {logErrors.user &&
+                            <InputErr error={logErrors.user} />
                         } 
                     </div>
 
-                    <div className='w-1/3'>
+                    <div className='relative w-1/3'>
                         <label for='password' className='flex flex-col items-start'>
                             <span className='font-semibold'> Password </span>
 
