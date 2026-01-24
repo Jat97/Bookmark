@@ -23,12 +23,12 @@ const ChatBox = ({chats}) => {
     }
  
     return (
-        <div className='fixed bottom-0 right-2 grid grid-cols-2 border border-slate-200 rounded-tr-xl rounded-tl-xl 
+        <div className='fixed bottom-0 right-2 grid grid-cols-2 bg-white border border-slate-200 rounded-tr-xl rounded-tl-xl 
             bg-white shadow-sm shadow-slate-200 h-screen w-screen md:h-[300px] md:w-[500px]'>
                 
             <XMarkIcon className='absolute right-0 fill-slate-200 h-6 hover:fill-zinc-100' onClick={() => disableChat()} />
 
-            <div className='flex flex-col items-start'>
+            <div className='flex flex-col items-start border-r border-slate-200 h-full'>
                 {chats?.map(chat => {
                     return (
                         <div onClick={() => changeActiveChat()}>
