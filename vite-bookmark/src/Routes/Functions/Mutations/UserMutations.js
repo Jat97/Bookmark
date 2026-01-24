@@ -24,8 +24,13 @@ export const useToggleHiddenMutation = (setSiteError) => {
             const logged = query_client.getQueryData({queryKey: ['logged']});
 
             query_client.setQueryData(['logged'], {
-                ...logged,
-                hidden: logged.hidden ? false : true
+                logged_user: {
+                    ...logged.logged_user,
+                    profile: {
+                        ...logged.logged_user.profile,
+                        hidden: logged.logged_user.hidden ? false : true
+                    }
+                }
             });
 
             return {logged};
@@ -69,8 +74,13 @@ export const useEditPictureMutation = ([file, setSiteError]) => {
             const logged = query_client.getQueryData(['user']);
 
             query_client.setQueryData(['logged'], {
-                ...logged,
-                profile_picture: file
+                logged_user: {
+                    ...logged.logged_user,
+                    profile: {
+                        ...logged.logged_user.profile,
+                        profile_picture: file
+                    }
+                }
             });
 
             return {logged};
@@ -86,10 +96,10 @@ export const useEditPictureMutation = ([file, setSiteError]) => {
     return mutation;
 };
 
-export const useLogOutMutation = (setSiteError) => {
+export const useLogOutMutation = ([setSiteError, navigate]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch('http://localhost:9000/api/user/logout', {
+            return await fetch('http://localhost:9000/api/logout', {
                 method: 'PATCH',
                 credentials: 'include'
             })
@@ -98,7 +108,7 @@ export const useLogOutMutation = (setSiteError) => {
                     throw Error(`Error ${res.status}: ${res.statusText}`);
                 }
                 else {
-                    return res.json();
+                    return navigate('/api/login', {rewrite: true});
                 }
             })
             .catch(err => setSiteError(err.message))
@@ -106,12 +116,19 @@ export const useLogOutMutation = (setSiteError) => {
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['logged']});
 
-            const logged = query_client.getQueryData(['logged'], logged);
+            const logged = query_client.getQueryData(['logged']);
 
-            query_client.setQueryData(['logged'], {
-                ...logged,
-                online: false
+            const logged_out_user = query_client.setQueryData(['logged'], {
+                logged_user: {
+                    ...logged.logged_user,
+                    profile: {
+                        ...logged.logged_user.profile,
+                        online: false
+                    } 
+                }
             });
+
+            query_client.setQueryData(['logged'], logged_out_user);
 
             return {logged};
         },
@@ -140,6 +157,7 @@ export const useEditProfileMutation = ([user, data, setEditErrors, setSiteError]
                     last_name: data.last_name,
                     alma_mater: data.alma_mater,
                     degree: data.degree,
+                    role: data.role,
                     description: data.description
                 })
             })
@@ -166,13 +184,20 @@ export const useEditProfileMutation = ([user, data, setEditErrors, setSiteError]
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['logged']});
 
+            const logged = query_client.getQueryData(['logged']);
+
             const updated_user  = {
-                ...user,
-                first_name: data.first_name,
-                last_name: data.last_name,
-                alma_mater: data.alma_mater,
-                degree: data.degree,
-                description: data.description
+                logged_user: {
+                    ...logged.logged_user,
+                    profile: {
+                        first_name: data.first_name,
+                        last_name: data.last_name,
+                        alma_mater: data.alma_mater,
+                        degree: data.degree,
+                        status: data.status,
+                        description: data.description
+                    }
+                }
             }
 
             query_client.setQueryData(['logged'], updated_user);
