@@ -22,6 +22,7 @@ const Signup = () => {
     });
 
     const signUp = () => {
+        console.log(document.querySelector('#dob').value, document.querySelector('#role').value)
         fetch('http://localhost:9000/api/signup', {
             method: 'POST',
             credentials: 'include',
@@ -40,20 +41,18 @@ const Signup = () => {
         })
         .then(res => {
             if(!res.ok) {
-                throw Error(`Error ${res.status}: ${res.statusText}`);
+                return res.json();
             }
             else if(res.status === 200) {
                 return navigate('/api/home', {rewrite: true});
             }
-            else {
-                return res.json();
-            }
         })
         .then(json => {
+            console.log(json)
             json.errors.errors.forEach(error => {
                 setSignErrors(prevState => ({
                     ...prevState,
-                    [error.param] : err.msg
+                    [error.path] : error.msg
                 }));
             })
         })
@@ -61,14 +60,14 @@ const Signup = () => {
     }
 
     return (
-        <div className='absolute top-[150px] h-screen w-screen md:left-[350px] md:rounded-full md:w-1/2'>
-            <div className='flex flex-col items-center gap-y-[20px] md:border md:border-slate-200 
+        <div className='absolute top-[100px] h-screen w-screen md:left-[350px] md:rounded-full md:w-1/2'>
+            <div className='flex flex-col items-center gap-y-[30px] md:border md:border-slate-200 
                 md:shadow-sm md:shadow-slate-200 md:w-full'>
                 <p className='text-lg font-semibold'> Join us at Bookmark! </p>
 
-                <div className='grid grid-cols-2 items-center font-semibold gap-y-[10px] w-11/12'>
+                <div className='grid grid-cols-2 place-items-center font-semibold gap-y-[20px] w-full'>
                     <div>
-                        <label htmlFor='first_name' className='flex flex-col items-center'>
+                        <label htmlFor='first_name' className='flex flex-col items-start'>
                             <span className='font-semibold'> First Name </span>
 
                             <UserGroupInput id={'first_name'} input_value={''} input_fn={null} />
@@ -80,7 +79,7 @@ const Signup = () => {
                     </div>
 
                     <div>
-                        <label htmlFor='last_name' className='flex flex-col items-center'>
+                        <label htmlFor='last_name' className='flex flex-col items-start'>
                             <span className='font-semibold'> Last Name </span>
 
                             <UserGroupInput id={'last_name'} input_value={''} input_fn={null} />
@@ -92,7 +91,7 @@ const Signup = () => {
                     </div>
 
                     <div>
-                        <label htmlFor='email' className='flex flex-col items-center'>
+                        <label htmlFor='email' className='flex flex-col items-start'>
                             <span className='font-semibold'> Email </span>
 
                             <UserGroupInput id={'email'} input_value={''} input_fn={null} />
@@ -104,7 +103,7 @@ const Signup = () => {
                     </div>
 
                     <div>
-                        <label htmlFor='dob' className='flex flex-col items-center'>
+                        <label htmlFor='dob' className='flex flex-col items-start'>
                             <span className='font-semibold'> Date of birth </span>
 
                             <UserGroupInput id={'dob'} input_value={''} input_fn={null} />
@@ -116,8 +115,8 @@ const Signup = () => {
                     </div>
 
                     <div>
-                        <label htmlFor='status'>
-                            <span className='font-semibold'> Which best describes your relationship to literature? </span>
+                        <label htmlFor='role' className='flex flex-col items-start'>
+                            <span className='font-semibold'> Which describes you? </span>
 
                             <UserSelectInput value={''} select_fn={null} />
                         </label>
@@ -128,7 +127,7 @@ const Signup = () => {
                     </div>
 
                     <div>
-                        <label htmlFor='password' className='flex flex-col items-center'>
+                        <label htmlFor='password' className='flex flex-col items-start'>
                             <span className='font-semibold'> Password </span> 
 
                             <UserGroupInput id={'password'} input_value={''} input_fn={null} />
@@ -140,7 +139,7 @@ const Signup = () => {
                     </div>
 
                     <div>
-                        <label for='confirm_password' className='flex flex-col items-center'>
+                        <label for='confirm_password' className='flex flex-col items-start'>
                             <span className='font-semibold'> Confirm password </span> 
 
                             <UserGroupInput id={'confirm_password'} input_value={''} input_fn={null} />
