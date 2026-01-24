@@ -1,4 +1,4 @@
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import {useLogOutMutation} from '../../../Functions/Mutations/UserMutations';
 import {useBookStore} from '../../../../Context/bookStore';
 
@@ -6,7 +6,9 @@ const UserMenu = ({user}) => {
     const setCreateGroupTab = useBookStore((state) => state.setCreateGroupTab);
     const setSiteError = useBookStore((state) => state.setSiteError);
 
-    const logout_mutation = useLogOutMutation(setSiteError);
+    const navigate = useNavigate();
+
+    const logout_mutation = useLogOutMutation([setSiteError, navigate]);
 
     const enableGroupTab = () => {
         setCreateGroupTab(true);
