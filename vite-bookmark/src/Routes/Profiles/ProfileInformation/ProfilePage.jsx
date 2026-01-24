@@ -1,21 +1,20 @@
 import {useState} from 'react';
-import {useParams, useLocation} from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 import {ChatBubbleLeftIcon} from '@heroicons/react/24/solid';
 import {useFetchLogged, useFetchUsers} from '../../Functions/Queries/UserQueries';
+import {useFetchGroups} from '../../Functions/Queries/GroupQueries';
 import {useFetchPosts} from '../../Functions/Queries/PostQueries';
 import {useBookStore} from '../../../Context/bookStore';
 import ProfileDisplay from './ProfileDisplay';
 import PostCard from '../../Feed/Posts/PostCard';
-import FriendButton from '../../Buttons/FriendButton';
-import BlockButton from '../../Buttons/BlockButton';
-import GroupRequestLeaveButton from '../../Buttons/GroupRequestLeaveButton';
-import EditGroup from '../Groups/EditGroup';
-import EditProfile from '../Users/EditProfile';
-import ProfileDescription from './ProfileDescription';
+import FriendButton from '../../Buttons/Profile/User/FriendButton';
+import BlockButton from '../../Buttons/Profile/User/BlockButton';
+import GroupRequestLeaveButton from '../../Buttons/Profile/Group/GroupRequestLeaveButton';
+import ProfileInformation from './ProfileInformation';
+import Index from './ProfileInformation';
 
 const ProfilePage = () => {
     const {profileid} = useParams();
-    const location = useLocation();
 
     const [pageMode, setPageMode] = useState('posts');
 
@@ -29,108 +28,122 @@ const ProfilePage = () => {
     const postData = useFetchPosts([authorized, setAuthorized, setSiteError]);
     const groupData = useFetchGroups([authorized, setAuthorized, setSiteError]);
 
-    const current_profile = location.pathname.includes('group') ? 
-        groupData.data.groups.find((group) => group.id.toString() === profileid) 
-    : 
-        userData.data.users.find((user) => user.id.toString() === profileid);
+    const user_groups = userData.data?.users.concat(groupData.data?.groups);
 
-    const profile_posts = postData.data?.posts.filter(post => location.pathname.includes('group') ? 
-        post.original_group?.id === current_profile?.id : post.original_user.id === current_profile.id);
+    const current_profile = profileid === loggedData.data?.logged_user?.profile.id.toString() ? 
+        loggedData.data?.logged_user?.profile : user_groups?.find((page) => page?.id.toString() === profileid)
+
+    const profile_posts = postData.data?.posts.filter(post => current_profile?.first_name ?
+       post.original_poster?.id === current_profile?.id : post.original_group?.id === current_profile?.id 
+    );
 
     const startProfileChat = () => {
-        setSelectedChat(current_user);
-    }
+        setSelectedChat(current_profile);
+    };
 
     const togglePageView = (e) => {
-        setPageMode(e.currentTarget.id);
-    }
+        setPageMode(e.target.id);
+    };
+
+    console.log(profile_posts);
 
     return (
-        <div>
-            <div className='grid grid-cols-2 items-center'>
-                <div className='flex flex-col items-center gap-2 bg-orange-300 p-2 h-screen w-1/3'>
-                    <ProfileDisplay profile={!current_profile ? loggedData.data?.logged_user : current_profile} 
-                        is_logged={!current_profile && true} profile_mode={'profile'} />
+        <div className='relative flex justify-evenly items-center'>
+            <div className='absolute top-0 left-0 flex flex-col items-center gap-3 p-2 h-screen md:w-[200px]'>
+                <ProfileDisplay profile={!current_profile ? loggedData.data?.logged_user?.profile : current_profile} 
+                    is_logged={!current_profile && true} profile_mode={'profile'} />
 
-                    <div>
-                        {location.pathname.includes('group') ?
-                            <GroupRequestLeaveButton logged={loggedData.data.logged_user} group={current_profile}
-                                is_member={current_profile.members.some((member) => member.id === loggedData.data.logged_user.id)}
-                             />
-                        :
-                            current_profile.id === loggedData.data.logged_user.id &&
-                                <div className='flex flex-col items-center gap-1'>
-                                    <FriendButton user={current_user} />
+                <div>
+                    {current_profile?.title ?
+                        <GroupRequestLeaveButton logged={loggedData.data?.logged_user.profile} group={current_profile}
+                            is_member={current_profile.members.some((member) => member.id === loggedData.data.logged_user?.profile.id)}
+                            />
+                    :
+                        current_profile?.id !== loggedData.data?.logged_user?.profile?.id &&
+                            <div className='flex flex-col items-center gap-1'>
+                                <FriendButton user={current_profile} />
 
-                                    <BlockButton user={current_user} />
-                                    
-                                    <button type='button' className='cursor-pointer flex justify-around items-center 
-                                        font-semibold bg-zinc-300 rounded-full p-1 w-[125px] hover:bg-slate-100' 
-                                        onClick={() => startProfileChat()}>
-                                        <ChatBubbleLeftIcon className='h-5 md:h-6' />
-                                        Chat
-                                    </button>
-                                </div>
-                        }
-                    </div>
-
-                    <div onClick={(e) => togglePageView(e)}>
-                        <p id='posts' className='cursor-pointer hover:underline'> Posts </p>
-
-                        {location.pathname.includes('group') ? 
-                            <div>
-                                {current_profile.moderator.id === loggedData.data.logged_user.id &&
-                                    <div>
-                                        <p id='edit_group'> Edit group </p>
-                                        <p id='requests'> Requests <span> {current_profile.requests.length} </span> </p>
-                                    </div>
-                                }
+                                <BlockButton user={current_profile} />
                                 
-                                <p id='about_group'> About </p>
-                                <p id='members'> Members </p>  
+                                <button type='button' className='cursor-pointer flex justify-around items-center 
+                                    font-semibold bg-zinc-300 rounded-full p-1 w-[125px] hover:bg-slate-100' 
+                                    onClick={() => startProfileChat()}>
+                                    <ChatBubbleLeftIcon className='h-5 md:h-6' />
+                                    Chat
+                                </button>
                             </div>
-                        :
-                            <div className='font-semibold'>
-                                {current_profile.id !== loggedData.data.logged_user.id && 
-                                    <p id='edit_profile' className='cursor-pointer hover:underline'> Edit profile </p>
-                                }
+                    }
 
-                                <p id='about_user'> About </p>
-                                <p id='friends' className='cursor-pointer hover:underline'> Friends </p>
-                                <p id='groups' className='cursor-pointer hover:underline'> Groups </p>
-                            </div> 
-                        }  
-                    </div>
+                    {(loggedData.data?.logged_user.profile?.id === current_profile?.id || 
+                        current_profile?.moderator?.id === loggedData.data?.logged_user.profile?.id) &&
+                        <Link to={`/api/${current_profile?.title ? 'group' : 'profile'}/edit`}
+                            className='cursor-pointer font-semibold text-blue-600 z-20 hover:underline'> 
+                            Edit {current_profile?.title ? 'group' : 'profile'} 
+                        </Link>
+                    }   
+                </div>
+            </div>
+
+            <div className='absolute top-0 flex flex-col items-center m-5'>
+                <div className='font-semibold flex justify-around items-center gap-3' 
+                    onClick={(e) => togglePageView(e)}>
+                    <p id='posts' className={`cursor-pointer text-center border border-amber-300/50 rounded-tr-md 
+                        rounded-tl-md shadow-md shadow-yellow-300 p-1 w-[75px] hover:underline 
+                        ${pageMode === 'posts' && 'bg-amber-300/50'}`}> 
+                        Posts 
+                    </p>
+
+                    <p id={current_profile?.title ? 'about_group' : 'about_user'} 
+                        className={`cursor-pointer text-center border border-amber-300/50 rounded-tr-md rounded-tl-md 
+                        shadow-sm shadow-yellow-300 p-1 w-[75px] hover:underline 
+                        ${(pageMode === 'about_group' || pageMode === 'about_user') && 'bg-amber-300/50'}`}> 
+                        About 
+                    </p>
+
+                    <p id={`${current_profile?.moderator?.id === loggedData.data?.logged_user?.profile?.id ? 
+                        'requests' : 'friends'}`} className={`cursor-pointer text-center border border-amber-300/50 
+                        rounded-tr-md rounded-tl-md shadow-md shadow-yellow-300 p-1 w-[75px] hover:underline 
+                        ${(pageMode === 'requests' || pageMode === 'friends') && 'bg-amber-300/50'}`}>  
+                        {current_profile?.moderator?.id === loggedData.data?.logged_user?.profile?.id ? 
+                            'Requests' : 'Friends'
+                        }
+                    </p>
+
+                    <p id={`${current_profile?.title ? 'members' : 'groups'}`} 
+                        className={`cursor-pointer text-center border border-amber-300/50 rounded-tr-md 
+                        rounded-tl-md shadow-md shadow-yellow-300 p-1 w-[75px] hover:underline 
+                        ${(pageMode === 'members' || pageMode === 'groups') && 'bg-amber-300/50'}`}> 
+                        {current_profile?.title ? 'Members' : 'Groups'} 
+                    </p>
                 </div>
 
-                {pageMode === 'posts' ?
-                    <div className='flex flex-col items-center md:w-2/3'>
+                {pageMode === 'posts' &&
+                    <div className='flex flex-col items-start'>
                         {profile_posts?.map(post => {
                             return <PostCard post={post} />
                         })}
                     </div>
-                :
-                    pageMode === 'edit_group' ?
-                        <EditGroup group={groupData.data.groups.find((group) => group.id === profileid)} />
-                    :
-                        pageMode === 'edit_profile' ?
-                            <EditProfile user={current_profile} />
-                        :
-                            pageMode === 'about_group' || pageMode === 'about_user' ?
-                                <ProfileDescription description={current_profile.description} />
-                            :
-                                <Index logged={pageMode === 'groups' && loggedData.data.logged_user} 
-                                    moderator={pageMode === 'groups' && groupData.data.groups
-                                        .filter(group => group.members.some((member) => member.id === current_profile.id))}
-                                    items={pageMode === 'friends' ? current_profile.friends : 
-                                    pageMode === 'requests' ? current_profile.requests :
-                                    pageMode === 'members' && current_profile.members }
-                                />
-                                     
-                                    
-                                    
-                }                               
-            </div>
+                }
+
+                {(pageMode === 'about_group' || pageMode === 'about_user') &&
+                    <ProfileInformation 
+                        profile={current_profile} 
+                        post_count={profile_posts?.length} 
+                        user_count={current_profile?.members ? current_profile?.members?.length : 
+                            current_profile?.friends?.length
+                        }
+                    />
+                }
+
+                {(pageMode === 'groups' || pageMode === 'friends' || pageMode === 'members') &&
+                    <Index logged={pageMode === 'groups' && loggedData.data.logged_user?.profile} 
+                        moderator={pageMode === 'groups' && groupData.data?.groups
+                            .filter(group => group.members.some((member) => member.id === current_profile.id))}
+                        items={pageMode === 'friends' ? current_profile?.friends : 
+                        pageMode === 'members' && current_profile?.members }
+                    /> 
+                }   
+            </div>            
         </div>
     )
 }
