@@ -22,24 +22,25 @@ exports.create_account = [
             return Promise.reject('This email address is currently in use.');
         }
     }),
-    body('dob', 'Please enter your date of birth.').custom(async (birth) => {
+    body('dob', 'Please enter your date of birth.').notEmpty().custom(async (birth) => {
         if(birth > minDate) {
-            return await Promise.reject('You must be at least 18 years of age to register.');
+            return await Promise.reject('You must be at least 18 years of age.');
         }
     }),
-    body('role', 'Please choose the role that best fits').trim(),
-    body('password', 'Please enter a password').trim().isLength({min: 8}).custom(async password => {
+    body('role', 'Please choose the role that best fits').notEmpty(),
+    body('password', 'Please enter a password').isLength({min: 8}).notEmpty().custom(async password => {
         if(password.length < 8) {
             return await Promise.reject('Your password is too short.');
         }
     }),
-    body('confirm', 'Please confirm your password').trim().isLength({min: 8}).custom(async (confirm, {req}) => {
+    body('confirm', 'Please confirm your password').notEmpty().isLength({min: 8}).custom(async (confirm, {req}) => {
         if(confirm !== req.body.password) {
             return await Promise.reject('Your passwords do not match.');
         }
     }),
 
     (req, res) => {
+        console.log(req.body)
         const errors = validationResult(req);
 
         if(!errors.isEmpty()) {
@@ -52,8 +53,8 @@ exports.create_account = [
                 }
                 else {
                     const user = await db.query(`
-                        INSERT INTO users (first_name, last_name, email, dob, description, password, 
-                        profile_picture, alma_mater, degree, status, country, online, hidden) 
+                        INSERT INTO users (first_name, last_name, email, date_of_birth, description, password, 
+                        profile_picture, alma_mater, degree, role, online, hidden) 
                         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`, 
                         [
                             req.body.first_name, 
@@ -77,7 +78,7 @@ exports.create_account = [
                             return res.status(500).json({error: err});
                         }
                         else {
-                            res.cookie('signtoken', key, {
+                            res.cookie('usertoken', key, {
                                 expires: new Date(Date.now() + 1000000),
                                 secure: false,
                                 httpOnly: true,
@@ -95,11 +96,11 @@ exports.log_in = async (req, res) => {
     const user = await db.query(`SELECT * FROM users WHERE email = $1`, [req.body.user]);
 
     if(user.rows.length === 0) {
-        return res.status(400).json({email_err: 'This email is not currently in use.'});
+        return res.status(400).json({user_err: 'This email is not currently in use.'});
     }
     else {
         if(req.body.password.length === 0) {
-            return res.json({pass_err: 'Please enter a password.'});
+            return res.status(400).json({pass_err: 'Please enter a password.'});
         }
         else {
             bcrypt.compare(req.body.password, user.rows[0].password, (err, result) => {
@@ -191,7 +192,6 @@ exports.get_all_users = async (req, res) => {
         }
     }
     catch (err) {
-        console.log(err)
         res.status(500).json({error: err});
     }
 };
@@ -526,7 +526,7 @@ exports.get_logged_information = async (req, res) => {
                 TO_CHAR(date_of_birth, 'MM/DD/YYYY') AS date_of_birth,
                 profile_picture,
                 alma_mater,
-                degree
+                degree,
                 description,
                 role,
                 online,
@@ -607,9 +607,7 @@ exports.edit_profile_information = async (req, res) => {
     try {
         const user_key = await validateToken(req, res);
 
-        if(user_key) {
-            console.log(req.body);
-            
+        if(user_key) {    
             const updated_user_data = await db.query(
                 `UPDATE users SET 
                 first_name = $1,
@@ -617,7 +615,7 @@ exports.edit_profile_information = async (req, res) => {
                 description = $3, 
                 alma_mater = $4, 
                 degree = $5,
-                role = $6,
+                role = $6
                 WHERE id = $7 
                 RETURNING *`,
                 [
@@ -631,13 +629,16 @@ exports.edit_profile_information = async (req, res) => {
                 ]
             );
 
-            res.status(200).json({logged_user: updated_user_data});
+            console.log(updated_user_data.rows[0]);
+
+            res.status(200).json({logged_user: {profile: updated_user_data.rows[0]}});
         }
         else {
             res.status(400).send();
         }
     }
     catch (err) {
+        console.log(err);
         res.status(500).json({error: err});
     }
 }
@@ -648,7 +649,7 @@ exports.update_hidden_status = async (req, res) => {
 
         if(user_key) {
             const updated_user = await db.query(
-                `ALTER TABLE users SET hidden = $1 WHERE id = $2 RETURNING *`,
+                `UPDATE users SET hidden = $1 WHERE id = $2 RETURNING *`,
                 [req.body.hidden === 'true' ? true : false, user_key.logged_user.id]
             );
 
@@ -669,19 +670,20 @@ exports.log_out = async (req, res) => {
 
         if(user_key) {
             await db.query(
-                `ALTER TABLE users SET online = $1 WHERE id = $2`, 
+                `UPDATE users SET online = $1 WHERE id = $2`, 
                 [false, user_key.logged_user.id]
             );
 
-            res.clearCookie(req.cookies.usertoken ? 'usertoken' : 'signtoken', {path: '/api'});
+            res.clearCookie('usertoken', {path: '/api'});
 
-            res.status(200).redirect('/');
+            res.sendStatus(200);
         }
         else {
             res.status(401).send();
         }
     }
     catch (err) {
+        console.log(err);
         res.status(500).json({error: err});
     }
 }
