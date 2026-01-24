@@ -39,13 +39,10 @@ const CreateGroup = () => {
         })
         .then(res => {
             if(!res.ok) {
-                throw Error(`Error ${res.status}: ${res.statusText}`);
+                return res.json();
             }
             else if(res.redirected) {
                 return navigate(res.url.replace('9000', '3000'), {rewrite: true});
-            }
-            else {
-                return res.json();
             }
         })
         .then(json => {
