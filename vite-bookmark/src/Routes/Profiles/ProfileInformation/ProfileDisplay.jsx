@@ -30,7 +30,7 @@ const ProfileDisplay = ({profile, is_logged, profile_mode}) => {
 
     const handleUserImageCSS = () => {
         if(profile_mode === 'index' || profile_mode === 'navbar') {
-            return 'rounded-full w-[35px]';
+            return 'rounded-full w-[40px]';
         }
         else if(profile_mode === 'profile') {
             return 'w-[60px] md:w-[140px]';
@@ -46,13 +46,13 @@ const ProfileDisplay = ({profile, is_logged, profile_mode}) => {
             return 'h-6 md:h-8';
         }
         else if(profile_mode === 'profile') {
-            return 'h-16 md:h-20'
+            return 'h-16 md:h-28'
         }
     }
 
     return (
         <div className={`flex items-center ${handleIconDivCSS()}`}>
-            <div className={`relative flex flex-col items-center bg-black border border-orange-300
+            <div className={`relative flex flex-col items-center bg-black border border-orange-300 p-0.5
                     ${profile_mode !== 'profile' && 'rounded-full'}`}>
                 {profile?.profile_picture || profile?.group_image ? 
                     <img src={profile.profile_picture ? profile?.profile_picture : profile?.group_image} 
