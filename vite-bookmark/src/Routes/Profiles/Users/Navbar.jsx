@@ -61,7 +61,7 @@ const Navbar = () => {
     };
 
     const openNavChat = () => {
-        setSelectedChat(chatData.data.chats[0].chat.user);
+        setSelectedChat(chatData.data.chats[0]?.chat.user);
     }
 
     const handleNotificationTab = () => {
@@ -77,8 +77,6 @@ const Navbar = () => {
             requests: alertTabs.requests ? false : true
         });
     }
-
-    console.log(alertData.data)
 
     return (
         <div className='flex justify-evenly items-center bg-amber-300/75 w-screen'>
@@ -109,8 +107,8 @@ const Navbar = () => {
             </div>
             
             <div className='flex justify-around items-center w-1/6'>
-                <div>
-                    <button type='button' className='flex flex-row-reverse items-end hover:bg-amber-100' 
+                <div className='relative'>
+                    <button type='button' className='relative flex flex-row-reverse items-end hover:bg-amber-100' 
                         onClick={() => handleNotificationTab()}>
                         <BellIcon className='h-6' />
 
@@ -122,15 +120,15 @@ const Navbar = () => {
                     }
                 </div>
                 
-                <button type='button' className='flex flex-row-reverse items-end hover:bg-amber-100' 
+                <button type='button' className='relative flex flex-row-reverse items-end hover:bg-amber-100' 
                     onClick={() => openNavChat()}>
                     <ChatBubbleOvalLeftEllipsisIcon className='h-6' />
 
                     <NotificationCount count={unreadMessageCount} />
                 </button>
 
-                <div>
-                    <button className='flex flex-row-reverse items-end hover:bg-amber-100' 
+                <div className='relative'>
+                    <button className='flex flex-col-reverse items-end hover:bg-amber-100' 
                         onClick={() => handleRequestsTab()}>
                        <UserIcon className='h-6' /> 
 
@@ -143,8 +141,10 @@ const Navbar = () => {
                 </div>
             </div>
 
-            <div className='relative' onClick={() => toggleUserMenu()}>
-                <ProfileDisplay profile={loggedData.data?.logged_user?.profile} is_logged={true} profile_mode={'navbar'} />
+            <div className='relative' >
+                <div onClick={() => toggleUserMenu()}>
+                    <ProfileDisplay profile={loggedData.data?.logged_user?.profile} is_logged={true} profile_mode={'navbar'} />
+                </div>
 
                 {userMenu &&
                     <UserMenu user={loggedData.data?.logged_user?.profile} />
