@@ -1,6 +1,6 @@
 const InputErr = ({error}) => {
     return (
-        <p className='text-sm text-red-500'> {error} </p>
+        <p className='absolute text-sm text-red-500 w-[250px]'> {error} </p>
     )
 }
 
