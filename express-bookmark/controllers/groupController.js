@@ -27,7 +27,7 @@ exports.get_all_groups = async (req, res) => {
 
             let group_requests;
 
-            all_groups.rows.map(async (group) => {
+            for(const group of all_groups.rows) {
                 const group_memberships = await db.query(
                     `SELECT users.id AS id,
                     users.first_name AS first_name,
@@ -39,7 +39,7 @@ exports.get_all_groups = async (req, res) => {
                     [group.id]
                 ); 
 
-                const banned_users = await db.query(
+                 const banned_users = await db.query(
                     `SELECT users.id AS id,
                     users.first_name AS first_name,
                     users.last_name AS last_name,
@@ -50,7 +50,7 @@ exports.get_all_groups = async (req, res) => {
                     [group.id]
                 );
                         
-                if(group.userid.toString() === user_key.logged_user.id.toString()) {
+                if(group.userid.toString() === user_key.logged_user?.id.toString()) {
                     group_requests = await db.query(
                         `SELECT users.id AS id, 
                         users.first_name AS first_name,
@@ -75,13 +75,13 @@ exports.get_all_groups = async (req, res) => {
                     },
                     private: group.private,
                     created: group.created,
-                    members: group_memberships.rows,
-                    requests: group_requests.rows.length > 0 && group_requests.rows,
+                    members: group_memberships?.rows,
+                    requests: group_requests?.rows.length > 0 && group_requests?.rows,
                     banned_users: banned_users
                 }
 
-                return groups_members_requests.push(group_data);   
-            });
+                return groups_members_requests.push(group_data); 
+            }
 
             res.status(200).json({groups: groups_members_requests});
         }
@@ -100,8 +100,6 @@ exports.create_group = async (req, res) => {
 
         if(user_key) {
             const found_group = await findGroup(req);
-
-            console.log(req.body);
 
             if(found_group) {
                 res.status(400).json({title_error: 'A group by this name already exists.'});
