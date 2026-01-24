@@ -20,9 +20,6 @@ export const useEditGroupMutation = ([groupData, file, setSiteError]) => {
             })
             .then(res => {
                 if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
-                }
-                else {
                     return res.json();
                 }
             })
