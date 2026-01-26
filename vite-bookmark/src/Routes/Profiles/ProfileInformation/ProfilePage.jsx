@@ -12,6 +12,7 @@ import BlockButton from '../../Buttons/Profile/User/BlockButton';
 import GroupRequestLeaveButton from '../../Buttons/Profile/Group/GroupRequestLeaveButton';
 import ProfileInformation from './ProfileInformation';
 import Index from './ProfileInformation';
+import NoItems from '../../Miscellaneous/Text/NoItems';
 
 const ProfilePage = () => {
     const {profileid} = useParams();
@@ -45,8 +46,6 @@ const ProfilePage = () => {
         setPageMode(e.target.id);
     };
 
-    console.log(profile_posts);
-
     return (
         <div className='relative flex justify-evenly items-center'>
             <div className='absolute top-0 left-0 flex flex-col items-center gap-3 p-2 h-screen md:w-[200px]'>
@@ -66,7 +65,7 @@ const ProfilePage = () => {
                                 <BlockButton user={current_profile} />
                                 
                                 <button type='button' className='cursor-pointer flex justify-around items-center 
-                                    font-semibold bg-zinc-300 rounded-full p-1 w-[125px] hover:bg-slate-100' 
+                                    font-semibold bg-zinc-300 rounded-full p-1 w-[150px] hover:bg-slate-100' 
                                     onClick={() => startProfileChat()}>
                                     <ChatBubbleLeftIcon className='h-5 md:h-6' />
                                     Chat
@@ -84,25 +83,25 @@ const ProfilePage = () => {
                 </div>
             </div>
 
-            <div className='absolute top-0 flex flex-col items-center m-5'>
+            <div className='absolute top-0 flex flex-col items-start m-5 md:w-2/3'>
                 <div className='font-semibold flex justify-around items-center gap-3' 
                     onClick={(e) => togglePageView(e)}>
-                    <p id='posts' className={`cursor-pointer text-center border border-amber-300/50 rounded-tr-md 
-                        rounded-tl-md shadow-md shadow-yellow-300 p-1 w-[75px] hover:underline 
+                    <p id='posts' className={`cursor-pointer text-center border border-amber-300/50 shadow-md 
+                        shadow-yellow-300 p-1 w-[75px] hover:underline 
                         ${pageMode === 'posts' && 'bg-amber-300/50'}`}> 
                         Posts 
                     </p>
 
                     <p id={current_profile?.title ? 'about_group' : 'about_user'} 
-                        className={`cursor-pointer text-center border border-amber-300/50 rounded-tr-md rounded-tl-md 
-                        shadow-sm shadow-yellow-300 p-1 w-[75px] hover:underline 
+                        className={`cursor-pointer text-center border border-amber-300/50 shadow-sm 
+                            shadow-yellow-300 p-1 w-[75px] hover:underline 
                         ${(pageMode === 'about_group' || pageMode === 'about_user') && 'bg-amber-300/50'}`}> 
                         About 
                     </p>
 
                     <p id={`${current_profile?.moderator?.id === loggedData.data?.logged_user?.profile?.id ? 
                         'requests' : 'friends'}`} className={`cursor-pointer text-center border border-amber-300/50 
-                        rounded-tr-md rounded-tl-md shadow-md shadow-yellow-300 p-1 w-[75px] hover:underline 
+                        shadow-md shadow-yellow-300 p-1 w-[75px] hover:underline 
                         ${(pageMode === 'requests' || pageMode === 'friends') && 'bg-amber-300/50'}`}>  
                         {current_profile?.moderator?.id === loggedData.data?.logged_user?.profile?.id ? 
                             'Requests' : 'Friends'
@@ -110,39 +109,46 @@ const ProfilePage = () => {
                     </p>
 
                     <p id={`${current_profile?.title ? 'members' : 'groups'}`} 
-                        className={`cursor-pointer text-center border border-amber-300/50 rounded-tr-md 
-                        rounded-tl-md shadow-md shadow-yellow-300 p-1 w-[75px] hover:underline 
+                        className={`cursor-pointer text-center border border-amber-300/50 
+                        shadow-md shadow-yellow-300 p-1 w-[75px] hover:underline 
                         ${(pageMode === 'members' || pageMode === 'groups') && 'bg-amber-300/50'}`}> 
                         {current_profile?.title ? 'Members' : 'Groups'} 
                     </p>
                 </div>
+                
+                <div className='flex flex-col items-start border border-slate-200 bg-white w-full'>
+                    {pageMode === 'posts' &&
+                        profile_posts.length > 0 ?
+                            profile_posts?.map(post => {
+                                return (
+                                    <div className='flex flex-col gap-3'>
+                                        <PostCard post={post} />
+                                    </div>
+                                )
+                            })
+                        :
+                        <NoItems text={'No posts have been made from this account.'} />
+                    }
 
-                {pageMode === 'posts' &&
-                    <div className='flex flex-col items-start'>
-                        {profile_posts?.map(post => {
-                            return <PostCard post={post} />
-                        })}
-                    </div>
-                }
+                    {(pageMode === 'about_group' || pageMode === 'about_user') &&
+                        <ProfileInformation 
+                            profile={current_profile} 
+                            post_count={profile_posts?.length} 
+                            user_count={current_profile?.members ? current_profile?.members?.length : 
+                                current_profile?.friends?.length
+                            }
+                        />
+                    }
 
-                {(pageMode === 'about_group' || pageMode === 'about_user') &&
-                    <ProfileInformation 
-                        profile={current_profile} 
-                        post_count={profile_posts?.length} 
-                        user_count={current_profile?.members ? current_profile?.members?.length : 
-                            current_profile?.friends?.length
-                        }
-                    />
-                }
-
-                {(pageMode === 'groups' || pageMode === 'friends' || pageMode === 'members') &&
-                    <Index logged={pageMode === 'groups' && loggedData.data.logged_user?.profile} 
-                        moderator={pageMode === 'groups' && groupData.data?.groups
-                            .filter(group => group.members.some((member) => member.id === current_profile.id))}
-                        items={pageMode === 'friends' ? current_profile?.friends : 
-                        pageMode === 'members' && current_profile?.members }
-                    /> 
-                }   
+                    {(pageMode === 'groups' || pageMode === 'friends' || pageMode === 'members') &&
+                        <Index logged={loggedData.data.logged_user?.profile} 
+                            moderator={pageMode === 'groups' && groupData.data?.groups
+                                .filter(group => group.members.some((member) => member.id === current_profile.id))}
+                            items={pageMode === 'friends' ? current_profile?.friends : 
+                            pageMode === 'members' && current_profile?.members }
+                        /> 
+                    }      
+                </div>                  
             </div>            
         </div>
     )
