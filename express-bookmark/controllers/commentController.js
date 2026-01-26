@@ -51,7 +51,7 @@ exports.view_post_comments = async (req, res) => {
     }
 };
 
-exports.create_parent_comment = async (req, res) => {
+exports.create_comment = async (req, res) => {
     try {
         const user_key = await validateToken(req, res);
 
@@ -69,7 +69,7 @@ exports.create_parent_comment = async (req, res) => {
                     group.rows.length > 0 ? group.rows[0] : null, 
                     req.body.text, 
                     req.params.postid, 
-                    null, 
+                    post.commenting_user && post.id, 
                     new Date(Date.now())
                 ]
             );
@@ -78,45 +78,6 @@ exports.create_parent_comment = async (req, res) => {
         }
         else {
             res.status(401).send();
-        }
-    }
-    catch (err) {
-        res.status(500).json({error: err});
-    }
-};
-
-exports.reply_to_comment = async (req, res) => {
-    try {
-        const user_key = await validateToken(req, res);
-
-        if(user_key) {
-            const group = await db.query(
-                `SELECT * FROM groups WHERE id = $1`,
-                [req.body.groupid]
-            );
-
-            const comment = await db.query(
-                `SELECT * FROM comments WHERE id = $1`, 
-                [req.params.commentid]
-            );
-
-            const reply = await db.query(
-                `INSERT INTO comments (commenting_user, commenting_group, text, post, reply_to, posted) 
-                VALUE ($1, $2, $3, $4, $5) RETURNING *`,
-                [
-                    group.rows.length > 0 ? null : user_key.logged_user.id, 
-                    group.rows.length > 0 ? group.rows[0] : null,
-                    req.body.text, 
-                    comment.rows[0].post, 
-                    comment.rows[0].id, 
-                    Date.now()
-                ]
-            );
-
-            res.status(200).json({reply: reply.rows[0]});
-        }
-        else {
-            res.status(401).json({error: err});
         }
     }
     catch (err) {
