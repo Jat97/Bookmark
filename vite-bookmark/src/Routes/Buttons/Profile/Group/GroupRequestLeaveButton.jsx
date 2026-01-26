@@ -17,8 +17,8 @@ const GroupRequestLeaveButton = ({logged, group, is_member}) => {
     }
 
     return (
-        <button type='button' data-testid={'group_membership_button'} className={`curser-pointer rounded-full 
-            max-w-20 hover:bg-pink-100 ${is_member ? 'bg-red-200' : 'bg-violet-200'}`}
+        <button type='button' data-testid={'group_membership_button'} className={`curser-pointer font-semibold rounded-full 
+            w-[150px] hover:bg-pink-100 ${is_member ? 'bg-red-400/50' : 'bg-violet-400/50'}`}
             onClick={() => handleGroupMutations()}>
             {is_member ?
                 'Leave group'
