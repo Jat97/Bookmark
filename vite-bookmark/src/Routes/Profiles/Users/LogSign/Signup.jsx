@@ -22,7 +22,6 @@ const Signup = () => {
     });
 
     const signUp = () => {
-        console.log(document.querySelector('#dob').value, document.querySelector('#role').value)
         fetch('http://localhost:9000/api/signup', {
             method: 'POST',
             credentials: 'include',
