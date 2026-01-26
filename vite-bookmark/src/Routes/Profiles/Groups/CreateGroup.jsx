@@ -26,7 +26,7 @@ const CreateGroup = () => {
         const title = document.querySelector('#title').value;
         const description = document.querySelector('#description').value
 
-        fetch('http://localhost:9000/api/group/create', {
+        fetch('http://localhost:9000/api/group', {
             method: 'POST',
             credentials: 'include',
             headers: {
