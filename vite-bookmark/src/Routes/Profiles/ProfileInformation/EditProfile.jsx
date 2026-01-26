@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {useBookStore} from '../../../Context/bookStore';
+import {useFetchLogged} from '../../Functions/Queries/UserQueries';
 import {useEditProfileMutation, useToggleHiddenMutation, useDeleteAccountMutation} from '../../Functions/Mutations/UserMutations';
 import UserGroupInput from '../../Miscellaneous/Inputs/UserGroupInput';
 import UserGroupSelect from '../../Miscellaneous/Inputs/UserSelectInput';
@@ -13,7 +14,11 @@ import EditButton from '../../Buttons/Profile/EditButton';
 import DeleteButton from '../../Buttons/Profile/DeleteButton';
 
 const EditProfile = () => {
+    const authorized = useBookStore((state) => state.authorized);
+    const setAuthorized = useBookStore((state) => state.setAuthorized);
     const setSiteError = useBookStore((state) => state.setSiteError);
+
+    const loggedData = useFetchLogged([authorized, setAuthorized, setSiteError]);
 
     const [editErrors, setEditErrors] = useState({
         first_name: null,
@@ -22,16 +27,16 @@ const EditProfile = () => {
     });
 
     const [profileData, setProfileData] = useState({
-        first_name: user?.first_name,
-        last_name: user?.last_name,
-        alma_mater: user?.alma_mater,
-        degree: user?.degree,
-        role: user?.role,
-        description: user?.description
+        first_name: loggedData.data?.logged_user?.profile?.first_name,
+        last_name: loggedData.data?.logged_user?.profile?.last_name,
+        alma_mater: loggedData.data?.logged_user?.profile?.alma_mater,
+        degree: loggedData.data?.logged_user?.profile?.degree,
+        role: loggedData.data?.logged_user?.profile?.role,
+        description: loggedData.data?.logged_user?.profile?.description
     });
 
     const profile_mutation = useEditProfileMutation([
-        user, 
+        loggedData.data?.logged_user?.profile, 
         profileData, 
         setEditErrors, 
         setSiteError
@@ -61,23 +66,23 @@ const EditProfile = () => {
     }
 
     return (
-        <div className='flex flex-col items-start gap-3 md:w-2/3'>
-            <PageHeader text={'Edit your profile'} />
+        <div className='flex flex-col items-center gap-3'>
+            <PageHeader header={'Edit your profile'} />
 
-            <div className='flex justify-between items-center md:w-2/3'>
+            <div className='flex justify-between items-center md:w-1/3'>
                 <p className='flex flex-col items-start font-semibold'> Hide profile 
                     <span className='text-sm'> Users won't be able to see when you're online. </span> 
                 </p>
 
-                <ToggleSwitch status={user?.hidden} toggle_fn={toggleHiddenStatus} />
+                <ToggleSwitch status={loggedData.data?.logged_user.profile.hidden} toggle_fn={toggleHiddenStatus} />
             </div>
 
-            <div className='grid grid-cols-2 items-center gap-3 md:w-full'>
+            <div className='grid grid-cols-2 items-center gap-3'>
                 <div className='flex flex-col items-start'>
                     <label htmlFor='first_name' className='flex justify-around items-center'>
                         <span className='font-semibold'> First name </span>
 
-                        <UserGroupInput id={'first_name'} input_value={profileData?.first_name} input_fn={editInformation} />
+                        <UserGroupInput id={'first_name'} input_value={profileData.first_name} input_fn={editInformation} />
                     </label>
 
                     {editErrors.first_name && 
@@ -89,7 +94,7 @@ const EditProfile = () => {
                     <label htmlFor='last_name'>
                         <span className='font-semibold'> Last name </span>
 
-                        <UserGroupInput id={'last_name'} input_value={profileData?.last_name} input_fn={editInformation} />
+                        <UserGroupInput id={'last_name'} input_value={profileData.last_name} input_fn={editInformation} />
                     </label>
 
                     {editErrors.last_name &&
@@ -103,10 +108,6 @@ const EditProfile = () => {
 
                         <UserGroupInput id={'alma_mater'} input_value={profileData.alma_mater} input_fn={editInformation} />
                     </label>
-
-                    {editErrors.alma_mater &&
-                        <InputErr error={editErrors.alma_mater} />
-                    }
                 </div>
 
                 <div className='flex flex-col items-start'>
@@ -114,7 +115,8 @@ const EditProfile = () => {
                         <span className='font-semibold'> Degree </span>
 
                         <select id='degree' className='border-solid border-slate-200 bg-slate-200 rounded-2xl p-1 w-[150px]' 
-                            value={profileData?.degree} onChange={(e) => editInformation(e)}>
+                            value={profileData.degree} onChange={(e) => editInformation(e)}>
+                            <option value=''> Select a degree </option>
                             <option value='Diploma/GED'> Diploma / GED </option>
                             <option value={`Associate's`}> Associate's </option>
                             <option value={`Bachelor's`}> Bachelor's </option>
@@ -123,10 +125,6 @@ const EditProfile = () => {
                             <option value='None'> None </option>
                         </select>
                     </label>
-
-                    {editErrors.degree &&
-                        <InputErr error={editErrors.degree} />
-                    }
                 </div>
 
                 <div className='flex flex-col items-start'>
@@ -144,12 +142,12 @@ const EditProfile = () => {
 
             <DescriptionBox description={profileData.description} editDescription={editInformation} is_user={true} /> 
             
-            {user?.blocked?.length > 0 &&
+            {loggedData.data?.logged_user?.blocked?.length > 0 &&
                 <div>
                     <span className='font-semibold'> Blocked users </span>
 
                     <ul>
-                        {user?.blocked.map(blocked => {
+                        {loggedData.data?.logged_user?.blocked.map(blocked => {
                             <div>
                                 <ProfileDisplay profile={blocked} is_logged={false} profile_mode={'index'} />
 
@@ -160,7 +158,7 @@ const EditProfile = () => {
                 </div>
             }    
 
-            <div className='flex justify-around items-center'>
+            <div className='flex justify-around items-center md:w-1/3'>
                 <EditButton save_fn={editProfile} /> 
 
                 <DeleteButton delete_fn={deleteAccount} />
