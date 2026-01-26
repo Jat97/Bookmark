@@ -6,10 +6,10 @@ import RejectButton from '../../Buttons/Profile/RejectButton';
 import NoItems from '../../Miscellaneous/Text/NoItems';
 import ProfileDisplay from './ProfileDisplay';
 
-const Index = ({logged, moderator, items}) => {
+const Index = ({logged, items}) => {
     return (
         <div> 
-            {items.length === 0 ?
+            {items?.length === 0 ?
                 <NoItems text={`There's nothing here!`} />
             :
                 <ul className='flex flex-col items-center'>
@@ -18,23 +18,24 @@ const Index = ({logged, moderator, items}) => {
                             <li className='flex justify-around items-center w-2/3'>
                                 <ProfileDisplay profile={item} is_logged={false} profile_mode={'index'} />
 
-                                {item.title && logged ?
+                                {item?.moderator.id === logged?.id ?
+                                    <div className='flex flex-col items-center'>
+                                        <AcceptButton user_group={item} />
+
+                                        <RejectButton user_group={item} />
+                                    </div>
+                                :
                                     <GroupRequestLeaveButton logged={logged} group={item} 
                                         is_member={item.members.some((member) => member.id === logged?.id)}
                                     />
-                                :
-                                    item.title && moderator ?
-                                        <div>
-                                            <AcceptButton user_group={item} />
+                                }
 
-                                            <RejectButton user_group={item} />
-                                        </div>
-                                    :
-                                        <div className='flex flex-col items-center'>
-                                            <FriendButton user={item} />
+                                {!item.title &&
+                                    <div className='flex flex-col items-center'>
+                                        <FriendButton user={item} />
 
-                                            <BlockButton user={item} />
-                                        </div>
+                                        <BlockButton user={item} />
+                                    </div>
                                 }
                             </li>
                         )
