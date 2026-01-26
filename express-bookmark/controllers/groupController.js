@@ -77,10 +77,10 @@ exports.get_all_groups = async (req, res) => {
                     created: group.created,
                     members: group_memberships?.rows,
                     requests: group_requests?.rows.length > 0 && group_requests?.rows,
-                    banned_users: banned_users
+                    banned_users: banned_users?.rows
                 }
 
-                return groups_members_requests.push(group_data); 
+                groups_members_requests.push(group_data); 
             }
 
             res.status(200).json({groups: groups_members_requests});
@@ -131,7 +131,6 @@ exports.create_group = async (req, res) => {
         }
     }
     catch (err) {
-        console.log(err);
         res.status(500).json({error: err});
     }
 };
