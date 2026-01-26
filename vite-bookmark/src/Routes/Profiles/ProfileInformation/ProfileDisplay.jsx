@@ -2,7 +2,7 @@ import {useState} from 'react';
 import {Link} from 'react-router-dom';
 import {useBookStore} from '../../../Context/bookStore';
 import {useEditPictureMutation} from '../../Functions/Mutations/UserMutations';
-import {CameraIcon, UserIcon} from '@heroicons/react/24/solid';
+import {BookOpenIcon, CameraIcon, UserIcon} from '@heroicons/react/24/solid';
 
 const ProfileDisplay = ({profile, is_logged, profile_mode}) => {
     const [image, setImage] = useState(null);
@@ -54,12 +54,18 @@ const ProfileDisplay = ({profile, is_logged, profile_mode}) => {
         <div className={`flex items-center ${handleIconDivCSS()}`}>
             <div className={`relative flex flex-col items-center bg-black border border-orange-300 p-0.5
                     ${profile_mode !== 'profile' && 'rounded-full'}`}>
-                {profile?.profile_picture || profile?.group_image ? 
+                {(profile?.profile_picture || profile?.group_image) &&
                     <img src={profile.profile_picture ? profile?.profile_picture : profile?.group_image} 
                         className={`${handleUserImageCSS()}`}>
                     </img>
-                :
+                }
+            
+                {(profile?.first_name && !profile.profile_picture) &&
                     <UserIcon className={`${handleUserIconCSS()}`} />
+                }
+
+                {(profile?.title && !profile.group_image) &&
+                    <BookOpenIcon className={`${handleUserIconCSS()}`} />
                 }
 
                 {is_logged && profile_mode === 'profile' &&
