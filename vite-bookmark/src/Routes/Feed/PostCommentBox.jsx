@@ -68,7 +68,7 @@ const PostCommentBox = ({post}) => {
             </div>
 
             {displayTextBox && 
-                <TextBox props={['', '']} />
+                <TextBox post={post} poster={loggedData.data.logged_user.profile} cancel_fn={toggleTextBox} />
             }
         </div>
     )
