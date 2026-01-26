@@ -22,7 +22,7 @@ const BlockButton = ({user}) => {
     }
 
     return (   
-        <button id={user?.id} data-testid={user?.id} className={`cursor-pointer font-semibold rounded-full w-[125px] 
+        <button id={user?.id} data-testid={user?.id} className={`cursor-pointer font-semibold rounded-full w-[150px] 
             ${blockData.data?.blocked?.some((blocked) => blocked?.id === user?.id) ? 
             'bg-zinc-200 hover:bg-grey-100' : 'bg-violet-200 hover:bg-pink-100'}`}
             onClick={() => handleBlockMutations()}>
