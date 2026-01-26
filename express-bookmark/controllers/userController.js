@@ -478,7 +478,7 @@ exports.accept_friend_request = async (req, res) => {
             );
 
             await db.query(`
-                DELETE * FROM friend_requests WHERE requested_user = $1 AND requesting_user = $2`, 
+                DELETE FROM friend_requests WHERE requested_user = $1 AND requesting_user = $2`, 
                 [req.params.userid, user_key.logged_user.id]
             );
 
@@ -499,8 +499,8 @@ exports.reject_friend_request = async (req, res) => {
 
         if(user_key) {
             await db.query(
-                `DELETE * FROM friend_requests WHERE requested_user = $1 AND requesting_user = $2`, 
-                [req.params.userid, user_key.logged_user.id]
+                `DELETE FROM friend_requests WHERE requested_user = $1 AND requesting_user = $2`, 
+                [user_key.logged_user.id, req.params.userid]
             );
 
             res.status(200).send();
@@ -638,7 +638,6 @@ exports.edit_profile_information = async (req, res) => {
         }
     }
     catch (err) {
-        console.log(err);
         res.status(500).json({error: err});
     }
 }
@@ -683,7 +682,6 @@ exports.log_out = async (req, res) => {
         }
     }
     catch (err) {
-        console.log(err);
         res.status(500).json({error: err});
     }
 }
