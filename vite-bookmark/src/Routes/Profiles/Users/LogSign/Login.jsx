@@ -30,7 +30,6 @@ const Login = () => {
         .then(res => {
             if(!res.ok) {
                 return res.json();
-                
             }
             else if(res.status === 200) {
                 return navigate('/api/home', {rewrite: true});
@@ -53,7 +52,7 @@ const Login = () => {
 
                 <div className='flex flex-col gap-y-[15px]'>
                     <div className='relative w-1/3'>
-                        <label for='email' className='flex flex-col items-start'>
+                        <label htmlFor='email' className='flex flex-col items-start'>
                             <span className='font-semibold'> Username </span>
 
                             <UserGroupInput id={'email'} input_value={''} input_fn={null} />
@@ -65,7 +64,7 @@ const Login = () => {
                     </div>
 
                     <div className='relative w-1/3'>
-                        <label for='password' className='flex flex-col items-start'>
+                        <label htmlFor='password' className='flex flex-col items-start'>
                             <span className='font-semibold'> Password </span>
 
                             <UserGroupInput id={'password'} input_value={''} input_fn={null} />
