@@ -36,7 +36,7 @@ export const useFetchComments = ([postid, authorized, setAuthorized, setSiteErro
     const result = useQuery({
         queryKey: ['comments'],
         queryFn: async () => {
-            return await fetch(`http://localhost:9000/api/post/${postid}/comments`, {
+            return await fetch(`http://localhost:9000/api/${postid}/comments`, {
                 method: 'GET',
                 credentials: 'include'
             })

@@ -8,7 +8,7 @@ export const useSendMessageMutation = ([user, file, setSiteError]) => {
 
             FormData.append([file], 'upload.jpg');
 
-            return await fetch(`http://localhost:9000/api/message/${user.id}`, {
+            return await fetch(`http://localhost:9000/api/${user.id}/message`, {
                 method: 'POST',
                 credentials: 'include',
                 body: form
@@ -56,7 +56,7 @@ export const useSendMessageMutation = ([user, file, setSiteError]) => {
 export const deleteChatMutation = ([chatid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/chat/${chatid}`, {
+            return await fetch(`http://localhost:9000/api/${chatid}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })

@@ -146,7 +146,7 @@ export const useLogOutMutation = ([setSiteError, navigate]) => {
 export const useEditProfileMutation = ([user, data, setEditErrors, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch('http://localhost:9000/api/user/profile/edit', {
+            return await fetch('http://localhost:9000/api/user', {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
@@ -218,7 +218,7 @@ export const useEditProfileMutation = ([user, data, setEditErrors, setSiteError]
 export const useDeleteAccountMutation = (setSiteError) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch('http://localhost:9000/api/user/delete', {
+            return await fetch('http://localhost:9000/api/user', {
                 method: 'DELETE',
                 credentials: 'include'
             })

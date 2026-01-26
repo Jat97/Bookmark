@@ -10,7 +10,7 @@ export const useEditGroupMutation = ([groupData, file, setSiteError]) => {
             form.append('title', groupData.title);
             form.append('description', groupData.description);
 
-            return await fetch(`http://localhost:9000/api/group/edit/${group}`, {
+            return await fetch(`http://localhost:9000/api/${groupData.id}`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
@@ -53,7 +53,7 @@ export const useEditGroupMutation = ([groupData, file, setSiteError]) => {
 export const useGroupRequestMutation = ([logged, group, setSiteError]) => {
     const mutation = useMutation({
        mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/group/request/${group}`, {
+            return await fetch(`http://localhost:9000/api/${group.id}/request`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -75,6 +75,8 @@ export const useGroupRequestMutation = ([logged, group, setSiteError]) => {
 
             const request_cache = query_client.getQueryData(['group_requests']);
             const request_arr = request_cache.group_requests || [];
+
+            console.log(request_cache.group_requests);
 
             const new_request_arr = request_arr.push({
                 id: logged.id,
@@ -101,7 +103,7 @@ export const useGroupRequestMutation = ([logged, group, setSiteError]) => {
 export const useGroupAcceptMutation = ([user, group, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/group/${group}/request/accept/${user.id}`, {
+            return await fetch(`http://localhost:9000/api/${group}/${user.id}/accept`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -160,7 +162,7 @@ export const useGroupAcceptMutation = ([user, group, setSiteError]) => {
 export const useGroupRejectMutation = ([user, group, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/group/${group}/request/reject/${user.id}`, {
+            return await fetch(`http://localhost:9000/api/${group}/${user.id}/reject`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
@@ -204,7 +206,7 @@ export const useGroupRejectMutation = ([user, group, setSiteError]) => {
 export const useBanUserMutation = ([user, group, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/group/${group.id}/user/${user.id}`, {
+            return await fetch(`http://localhost:9000/api${group.id}/${user.id}/ban`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -254,7 +256,7 @@ export const useBanUserMutation = ([user, group, setSiteError]) => {
 export const useUnbanUserMutation = ([user, group, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/group/${group.id}/user/${user.id}`, {
+            return await fetch(`http://localhost:9000/api/${group.id}/${user.id}/unban`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
@@ -296,7 +298,7 @@ export const useUnbanUserMutation = ([user, group, setSiteError]) => {
 export const useLeaveGroupMutation = ([user, group, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/group/leave/${group.id}`, {
+            return await fetch(`http://localhost:9000/api/${group.id}/leave`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
@@ -340,7 +342,7 @@ export const useLeaveGroupMutation = ([user, group, setSiteError]) => {
 export const useGroupPrivacyMutation = ([group, setTitleError, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/group/privacy/${group}`, {
+            return await fetch(`http://localhost:9000/api/${group}`, {
                 method: 'PATCH',
                 credentials: 'include'
             })
@@ -392,7 +394,7 @@ export const useGroupPrivacyMutation = ([group, setTitleError, setSiteError]) =>
 export const useDeleteGroupMutation = ([group, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/group/${group}`, {
+            return await fetch(`http://localhost:9000/api/${group}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })

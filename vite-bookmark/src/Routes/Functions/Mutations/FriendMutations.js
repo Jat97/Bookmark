@@ -4,7 +4,7 @@ import {query_client} from '../../../client';
 export const useSendFriendRequestMutation = ([user, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/request/${user.id}`, {
+            return await fetch(`http://localhost:9000/api/${user.id}/request`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -52,7 +52,7 @@ export const useSendFriendRequestMutation = ([user, setSiteError]) => {
 export const useAcceptRequestMutation = ([user, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/request/accept/${user.id}`, {
+            return await fetch(`http://localhost:9000/api/${user.id}/accept`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -74,23 +74,24 @@ export const useAcceptRequestMutation = ([user, setSiteError]) => {
 
             const alert_cache = query_client.getQueryData(['alerts']);
             const alert_arr = alert_cache.alerts || [];
-            const friend_arr = query_client.getQueryData(['friends']);
+            const friend_cache = query_client.getQueryData(['friends']);
+            const friend_arr = friend_cache.friendslist || [];
 
-            alert_arr.requests.forEach((alert, index) => {
+            const updated_requests = alert_arr.requests.forEach((alert, index) => {
                 if(alert.id === user.id) {
-                    alert_arr.splice(index, 1);
+                    alert_arr.requests.splice(index, 1);
                 }
             });
             
-            friend_arr.push({
+            const updated_friend_arr = friend_arr.push({
                 id: user.id,
                 first_name: user.first_name,
                 last_name: user.last_name,
                 profile_picture: user.profile_picture
             });
 
-            query_client.setQueryData(['alerts'], alert_arr);
-            query_client.setQueryData(['friends'], friend_arr);
+            query_client.setQueryData(['alerts'], updated_requests);
+            query_client.setQueryData(['friends'], updated_friend_arr);
 
             return {alert_arr, friend_arr};
         },
@@ -99,6 +100,7 @@ export const useAcceptRequestMutation = ([user, setSiteError]) => {
         },
         onSettled: async () => {
             await query_client.invalidateQueries({queryKey: ['alerts']});
+            await query_client.invalidateQueries({queryKey: ['friends']});
         }
     });
 
@@ -108,7 +110,7 @@ export const useAcceptRequestMutation = ([user, setSiteError]) => {
 export const useRejectRequestMutation = ([userid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/request/reject/${userid}`, {
+            return await fetch(`http://localhost:9000/api/${userid}/reject`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
@@ -152,7 +154,7 @@ export const useRejectRequestMutation = ([userid, setSiteError]) => {
 export const useRemoveFriendMutation = ([userid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/unfriend/${userid}`, {
+            return await fetch(`http://localhost:9000/api/${userid}/unfriend`, {
                 method: 'DELETE',
                 credentials: 'include'
             })

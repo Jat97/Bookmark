@@ -60,7 +60,7 @@ export const useCreatePostMutation = ([poster, text, setText, setSiteError]) => 
 export const useEditPostMutation = ([postid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/post/${postid}`, {
+            return await fetch(`http://localhost:9000/api/${postid}`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
@@ -109,7 +109,7 @@ export const useEditPostMutation = ([postid, setSiteError]) => {
 export const useSharePostMutation = ([user, postid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/post/share/${postid}`, {
+            return await fetch(`http://localhost:9000/api/${postid}/share`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -160,7 +160,7 @@ export const useSharePostMutation = ([user, postid, setSiteError]) => {
 export const useDeletePostMutation = ([postid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/post/${postid}`, {
+            return await fetch(`http://localhost:9000/api/${postid}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
@@ -199,10 +199,10 @@ export const useDeletePostMutation = ([postid, setSiteError]) => {
     return mutation;
 };
 
-export const useParentCommentMutation = ([postid, setSiteError]) => {
+export const useCreateCommentMutation = ([postid, text, profile, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/post/comment/${postid}`, {
+            return await fetch(`http://localhost:9000/api/${postid}`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -227,10 +227,18 @@ export const useParentCommentMutation = ([postid, setSiteError]) => {
 
             const comment = {
                 id: comment_arr.length + 50,
-                commenting_user: data.commenting_user,
-                commenting_group: data.commenting_group,
-                text: data.text,
-                posted: data.posted,
+                commenting_user: profile.first_name && {
+                    id: profile.id, 
+                    first_name: profile.first_name,
+                    last_name: profile.last_name,
+                    profile_picture: profile.profile_picture
+                },
+                commenting_group: profile.title && {
+                    title: profile.title,
+                    group_image: profile.group_image
+                },
+                text: text,
+                posted: Data.now(),
                 reply_to: null,
                 likes: [],
                 replies: []
@@ -251,66 +259,10 @@ export const useParentCommentMutation = ([postid, setSiteError]) => {
     return mutation;
 };
 
-export const useReplyCommentMutation = ([commentid, text, setSiteError]) => {
-    const mutation = useMutation({
-        mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/comment/reply/${commentid}`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(res => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
-                }
-                else {
-                    return res.json();
-                } 
-            })
-            .catch(err => setSiteError(err.message))
-        },
-        onMutate: async () => {
-            await query_client.invalidateQueries({queryKey: ['comments']});
-
-            const comment_cache = query_client.getQueryData(['comments']);
-            const comment_arr = comment_cache.comments || [];
-
-            comment_arr.forEach(comment => {
-                if(comment.id === commentid) {  
-                    const reply = {
-                        id: comment_arr.length * 7.5,
-                        commenting_user: comment.commenting_user,
-                        commenting_group: comment.commenting_group,
-                        text: text,
-                        posted: Date.now(),
-                        reply_to: commentid,
-                        likes: [],
-                        replies: []
-                    }   
-
-                    comment.replies.push(reply);
-                }
-            });
-
-            return {comment_arr}
-        },
-        onError: (err, data, context) => {
-            query_client.setQueryData(['comments'], context.comment_arr);
-        },
-        onSettled: async () => {
-            await query_client.invalidateQueries({queryKey: ['comments']});
-        }
-    });
-
-    return mutation;
-};
-
 export const useEditCommentMutation = ([commentid, text, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/comment/edit/${commentid}`, {
+            return await fetch(`http://localhost:9000/api/${commentid}`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
@@ -358,7 +310,7 @@ export const useEditCommentMutation = ([commentid, text, setSiteError]) => {
 export const useDeleteCommentMutation = ([commentid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/comment/${commentid}`, {
+            return await fetch(`http://localhost:9000/api/${commentid}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
