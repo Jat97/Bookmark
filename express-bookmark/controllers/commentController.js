@@ -259,7 +259,7 @@ exports.unlike_comment = async (req, res) => {
 
 exports.delete_comment = async (req, res) => {
     try {
-        const user_key = await validateToken(req, res);
+        const user_key = await validateToken(req, res); 
 
         if(user_key.logged_user) {
             const replies = await db.query(

@@ -58,7 +58,7 @@ exports.get_all_chats = async (req, res) => {
                 chats.push({chat: new_chat, messages: arranged_messages});
             }
 
-            res.status(200).json({chats: chats});
+            res.status(200).json({chats: chats}); 
         }
         else if(user_key.guest) {
             res.sendStatus(403);
