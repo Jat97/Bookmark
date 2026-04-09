@@ -2,12 +2,12 @@ const jwt = require('jsonwebtoken');
 
 module.exports.validateToken = (req, res) => {
     return new Promise((resolve, reject) => {
-        const token = req.cookies.usertoken;
+        const token = req.cookies.usertoken ? req.cookies.usertoken : req.cookies.guesttoken;
 
         if(token) {
             jwt.verify(token, process.env.TOKEN_KEY, (err, key) => {
                 if(err) {
-                    reject(res.status(500).json({error: err}))
+                    reject(res.status(500).json({error: err}));
                     
                 }
                 else {
@@ -16,7 +16,7 @@ module.exports.validateToken = (req, res) => {
             })
         }
         else {
-            return reject(null)
+            return reject(null);
         }
     });
 }
