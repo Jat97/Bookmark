@@ -44,7 +44,7 @@ const PostCard = ({logged, post}) => {
                 
                     <span className='text-sm text-slate-400 mr-[10px]'> {dayjs().to(post.posted)} </span>
                 </div>
-            
+    
                 <span className='break-all m-2 p-2 w-5/6' dangerouslySetInnerHTML={{__html: post?.text}}></span>
             </div>
             
