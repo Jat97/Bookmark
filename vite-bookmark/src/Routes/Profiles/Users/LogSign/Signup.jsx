@@ -47,7 +47,6 @@ const Signup = () => {
             }
         })
         .then(json => {
-            console.log(json)
             json.errors.errors.forEach(error => {
                 setSignErrors(prevState => ({
                     ...prevState,
