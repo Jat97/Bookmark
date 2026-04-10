@@ -55,7 +55,6 @@ const ChatBox = () => {
     }
 
     const deleteChat = (e) => {
-        console.log(e.currentTarget.id, e.target.id);
         return delete_chat_mutation.mutate(e.currentTarget.id);
     }
 
@@ -79,7 +78,6 @@ const ChatBox = () => {
                     <ul className='flex flex-col items-start w-screen border-b border-solid 
                         md:border-r md:border-slate-200 md:overflow-x-hidden md:overflow-y-auto md:h-screen md:w-1/3'>
                         {chatData.data?.chats.map(chat => {
-                            console.log(chat);
                             return (
                                 <li id={chat.chat?.user.id} className={`relative flex flex-col items-start m-2 w-full 
                                         md:gap-y-2 md:p-1 md:w-[250px]
