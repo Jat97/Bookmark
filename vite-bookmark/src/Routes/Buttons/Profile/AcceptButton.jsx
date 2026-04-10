@@ -2,25 +2,25 @@ import {useAcceptRequestMutation} from "../../Functions/Mutations/FriendMutation
 import {useGroupAcceptMutation} from '../../Functions/Mutations/GroupMutations';
 import {useBookStore} from '../../../Context/bookStore';
 
-const AcceptButton = ({user_group}) => {
+const AcceptButton = ({user, group}) => {
     const setSiteError = useBookStore((state) => state.setSiteError);
 
-    const friend_accept_mutation = useAcceptRequestMutation([user_group, setSiteError]);
+    const friend_accept_mutation = useAcceptRequestMutation(setSiteError);
 
-    const group_accept_mutation = useGroupAcceptMutation([user_group, setSiteError]);
+    const group_accept_mutation = useGroupAcceptMutation(setSiteError);
 
     const acceptRequest = () => {
-        if(user_group.first_name) {
-            return friend_accept_mutation.mutate();
+        if(group) {
+            return group_accept_mutation.mutate({group: group, user: user});
         }
         else {
-            return group_accept_mutation.mutate();
+           return friend_accept_mutation.mutate({user: user});
         }
     }
 
     return (
-        <button id='accept' data-testid={`accept-${user_group?.id}`} className='cursor-pointer font-semibold bg-green-300/50 
-            rounded-full w-[100px] hover:bg-lime-100' 
+        <button id='accept' data-testid={`accept-${user?.id}`} className='cursor-pointer font-semibold text-sm 
+            bg-green-300/50 rounded-full w-[75px] hover:bg-lime-100' 
             onClick={() => acceptRequest()}>
             Accept
         </button>
