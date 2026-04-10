@@ -1,65 +1,31 @@
-import {useState} from 'react';
-import AcceptButton from '../../../Buttons/Profile/AcceptButton';
-import RejectButton from '../../../Buttons/Profile/RejectButton';
-import ProfileDisplay from '../../ProfileInformation/ProfileDisplay';
+import {Link} from 'react-router-dom';
+import AlertData from '../../../Profiles/ProfileInformation/Alerts/AlertData';
 import NoItems from '../../../Miscellaneous/Text/NoItems';
-import {XMarkIcon} from '@heroicons/react/24/solid';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 
 const AlertTab = ({alerts}) => {
-    const [alertView, setAlertView] = useState(false);
-
-    const toggleAlertView = () => {
-        setAlertView(alertView ? false : true);
-    }
-
     return (
-        <div className={`absolute flex flex-col items-center bg-slate-200
-            max-h-screen max-w-screen md:bg-yellow-300 md:top-[30px] 
-                md:left-[-100px] md:gap-3 md:max-h-80 md:w-[250px]
-            ${alertView && 'bg-slate-200/50'}`}>
-            {alertView &&
-                <XMarkIcon className='h-6 fill-slate-400 md:hidden hover:fill-zinc-100' 
-                    {...(alertView && {onClick: toggleAlertView})}/> 
-            }
-
+        <div className={`absolute top-0 left-0 flex flex-col items-center bg-slate-200
+            h-screen w-screen z-20 md:bg-yellow-300 md:top-[30px] 
+                md:left-[-100px] md:overflow-y-auto md:gap-3 md:max-h-60 md:max-w-[275px] md:z-50`}>
+        
             {alerts.length === 0 &&
                 <NoItems text={`There's nothing here.`} />
             }
 
-            <div className={`${alertView && 'border border-slate-200'}`}>
-               {alerts?.map(alert => {
-                    return (
-                        <div className='flex flex-col items-center'>
-                            <ProfileDisplay 
-                            profile={alert} 
-                            is_logged={false}
-                            profile_mode={'index'} />
-
-                            {alert.first_name &&
-                                <div className='flex justify-around items-center gap-x-2'>
-                                    <AcceptButton user_group={alert} />
-
-                                    <RejectButton user_group={alert} /> 
-                                </div>
-                            }
-
-                            {alert.text &&
-                                <div className='flex flex-col items-start'>
-                                    <div className='flex justify-between items-center'>
-                                        <p className='text-sm'> {alert?.text} </p>
-                                        <p className='text-xs text-gray-200'> {alert?.sent} </p>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    )
+            <div>
+               {alerts?.slice(0, 4).map(alert => {
+                    return <AlertData alert={alert} />
                })}  
             </div>
 
-            {(!alertView && alerts.length > 0) &&
-                <p className='cursor-pointer text-blue-600 hover:underline' onClick={() => toggleAlertView()}> 
-                    View all alerts 
-                </p>
+            {(alerts.length > 4) &&
+                <Link to={`/api/${alerts.some((alert) => alert.requesting_user) ? 'requests' : 'notifications'}`} 
+                    className='cursor-pointer text-blue-600 hover:underline'> 
+                    View all {alerts.some((alert) => alert.requesting_user) ? 'requests' : 'notifications'}
+                </Link>
             }
         </div>
     )
