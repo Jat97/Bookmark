@@ -90,7 +90,6 @@ const ActiveChat = ({chat}) => {
                     {chat.messages?.map(message => {
                         return <Message 
                             message={message}
-                            chat={chat}  
                             is_logged={message.sending_user === loggedData.data?.profile?.id}
                         />
                     })}
