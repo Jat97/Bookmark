@@ -1,0 +1,2352 @@
+openapi: 3.1.0
+info: 
+  title: Bookmark
+  description: An API for users who love literature.
+  version: 0.0.0
+
+servers:
+  - url: "http://api.bookmark.com"
+    description: Main server
+
+  - url: "http://staging-api.bookmark.com"
+    description: Server used for testing.
+
+paths: 
+  /users:
+    get:
+      summary: A list of users
+      security:
+      - logCookie: []
+      - guestCookie: []
+      responses:
+        '200': 
+          description: Returns an array of user objects. If the user has a usertoken, then they will receive an array that excludes their account and any accounts that have blocked, or been blocked by, them. Guests will receive an array containing every account on Bookmark.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+              examples:
+                example1:
+                  value:
+                    users:
+                    - id: 1
+                      first_name: Andrew 
+                      last_name: Taylor
+                      date_of_birth: 1959-05-15
+                      profile_picture: 'null'
+                      alma_mater: Example University
+                      degree: Associate's
+                      role: Reader
+                      online: true
+                      hidden: false
+                    - id: 2
+                      first_name: Catherine 
+                      last_name: Bush
+                      date_of_birth: 1958-07-30
+                      profile_picture: https://examplestorage.com/examplestring1/image/upload/examplestring2/image.jpg
+                      alma_mater: Sample State College
+                      degree: Bachelor's
+                      role: Novelist
+                      online: false
+                      hidden: true
+                    - id: 5
+                      first_name: David 
+                      last_name: Jones
+                      date_of_birth: 1947-01-08
+                      alma_mater: 'null'
+                      degree: 'null'
+                      role: Essayist
+                      online: true
+                      hidden: false
+                    - id: 6
+                      first_name: Roderick 
+                      last_name: Stewart
+                      alma_mater: A Real University
+                      degree: Master's
+                      role: Critic
+                      online: false
+                      hidden: true
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+  
+  /user:
+    get:
+      summary: The logged-in user's data
+      security:
+      - logCookie: []
+      - guestCookie: []
+      responses:
+        '200': 
+          description: Returns an object containing the user's data.
+          content:
+            application/json:
+              schema:            
+                type: object
+                properties: 
+                  profile:
+                      $ref: '#/components/schemas/User'
+                  friends:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  blocked:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+              examples:
+                example1:
+                  value:
+                    profile:
+                      id: 3
+                      first_name: John 
+                      last_name: Johnson
+                      date_of_birth: 1995-08-21,
+                      profile_picture: 'null'
+                      alma_mater: 'null'
+                      degree: 'null'
+                      role: Reader
+                      online: true
+                      hidden: false
+                    friends:
+                    - id: 1
+                      first_name: Andrew
+                      last_name: Taylor
+                      profile_picture: null
+                    - id: 2
+                      first_name: Catherine
+                      last_name: Bush
+                      profile_picture: https://examplestorage.com/examplestring1/image/upload/examplestring2/image.jpg
+                    blocked:
+                    - id: 4
+                      first_name: Lewis
+                      last_name: Reed
+                      profile_picture: null
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    put:
+      security:
+      - logCookie: []
+      - guestCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EditUser'
+      responses:
+        '200': 
+          description: Returns an object containing the updated user's data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EditUser'
+              examples:
+                example1:
+                  value:
+                    profile:
+                      id: 3
+                      first_name: Johnny
+                      last_name: Johnson
+                      alma_mater: University of Samples
+                      degree: Bachelor's
+                      role: Reader
+        '400':
+          description: The user submitted incomplete form data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  first_name:
+                    type: string
+                  last_name:
+                    type: string
+              examples:
+                example1:
+                  value:
+                    first_name: Please enter a first name.
+                example2:
+                  value:
+                    last_name: Please enter a last name.
+        '401':
+          $ref: '#/components/responses/NotAuthorized' 
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+          
+    delete:
+        security:
+        - logCookie: []
+        - guestCookie: []
+        summary: Deletes the user's account
+        responses:
+          '200':
+            description: Deletes the user's data. Any posts, comments, messages, or groups that were created by the user will also be deleted.
+          '401':
+            $ref: '#/components/responses/NotAuthorized'
+          '403':
+            $ref: '#/components/responses/UserForbidden'
+          '500':
+            $ref: '#/components/responses/ServerError'
+          
+  /signup:
+    post:
+      summary: Create an account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUp'
+      responses:
+        '201': 
+          description: The user's account was successfully created.
+          headers:
+            setCookie:
+              schema:
+                type: string
+                example: usertoken=logged1a2b3c; Path=/api; HttpOnly
+        '400':
+          description: The user submitted an incomplete form, attempted to use an email address belonging to another user, or their passwords did not match.
+          content:
+            application/json:
+              schema:
+                  type: object
+                  properties:
+                    first_name:
+                      type: string
+                    last_name:
+                      type: string
+                    email:
+                      type: string
+                    dob:
+                      type: string
+                    role:
+                      type: string
+                    password:
+                      type: string
+                    confirm:
+                      type: string
+              examples:
+                example1:
+                  value:
+                    first_name: Please enter your first name.
+                example2:
+                  value:
+                    last_name: Please enter your last name.
+                example3:
+                  value:
+                    dob: Please enter your date of birth.
+                example4:
+                  value:
+                    confirm: The passwords do not match.
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /login:
+    post:
+      summary: Log into your account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogIn'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LogIn'
+      responses:
+        '200':
+          description: The user was successfully logged in.
+          headers:
+            setCookie:
+              schema:
+                type: string
+                example: usertoken=logged1a2b3c; Path=/api; HttpOnly
+        '400':
+          description: The user submitted incomplete or incorrect account information.
+          content:
+            application/json:
+              schema:
+                  type: object
+                  properties:
+                    user_err:
+                      type: string
+                    pass_err:
+                      type: string
+              examples:
+                example1:
+                  value:
+                    user_err: No users found with this email address.
+                example2:
+                  value:
+                    pass_err: The password is incorrect.
+        '500':
+          $ref: '#/components/responses/ServerError'
+    
+  /login/guest:
+    post:
+      summary: Sign in as a guest
+      description: The user can sign in without creating an account, which grants them limited access to the API. They may view profile pages, posts, and comments, but they cannot create posts, chat with other users, or join groups.
+      responses:
+        '200':
+          description: The user was successfully signed in as a guest.
+          headers:
+            setCookie:
+              schema:
+                type: string
+                example: guesttoken=guest1a2b3c; Path=/api; HttpOnly
+        '500':
+          $ref: '#/components/responses/ServerError'
+        
+  /user/picture:
+    patch:
+      summary: Update your profile picture
+      security:
+      - logCookie: []
+      - guestCookie: []
+      requestBody:
+        content:
+          image/jpg:
+            schema:
+              type: string
+              format: base64
+          image/png:
+            schema:
+              type: string
+              format: base64
+      responses:
+        '200': 
+          description: Returns an object containing the user's name and the URL of the updated profile picture.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserImage'
+              examples:
+                example1:
+                  value:
+                    updated_image:
+                      id: 3
+                      profile_picture: https://examplestorage.com/examplestring9/image/upload/examplestring10/image.jpg
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500': 
+          $ref: '#/components/responses/ServerError'
+          
+  /user/hidden:
+    patch:
+      summary: Toggle user visibility
+      security:
+      - logCookie: []
+      - guestCookie: []
+      description: The user can hide their online activity. Because user input is not required for this endpoint, the server will update the user's hidden status based on its initial value.
+      responses:
+        '200':
+          description: Returns an object containing the updated hidden value. The updated value will be based on the initial value of the user's "hidden" property.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  updated_user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        format: int64
+                      hidden: 
+                        type: boolean
+              examples:
+                example1:
+                  value:
+                    updated_user: 
+                      id: 3
+                      hidden: true
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /notifications:
+    get:
+      summary: Retrieve the user's notifications
+      security:
+      - logCookie: []
+      - guestCookie: []
+      responses:
+        '200':
+          description: The user's notifications were successfully retrieved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  notifications:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Notification'
+                  requests:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserData'
+                  pending:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserData'
+              examples:
+                example1:
+                  value:
+                    notification:
+                    - id: 10
+                      alerting_user:
+                        first_name: Andrew
+                        last_name: Taylor
+                        profile_picture: 'null'
+                      post:
+                          id: 20
+                          text: Has anyone ever read Demons? I think it's one of Dostoevsky's more underappreciated works.
+                      text: liked your post
+                      sent: 2026-02-27
+                      checked: false
+                    - id: 11
+                      alerting_user:
+                        first_name: Catherine
+                        last_name: Bush
+                        profile_picture: https://examplestorage.com/examplestring1/image/upload/examplestring2/image.jpg
+                      post: 
+                        id: 21
+                        text: Can anyone recommend one of Herman Hesse's novels? I remember loving Siddhartha in high school.
+                      text: "commented on your post: Steppenwolf is pretty beloved, if you haven't read that one yet."
+                      sent: 2026-03-05
+                      checked: false
+                    requests:
+                    - id: 6
+                      first_name: Roderick 
+                      last_name: Stewart
+                      profile_picture: null
+                    pending:
+                    - id: 4
+                      first_name: David
+                      last_name: Jones
+                      profile_picture: https://examplestorage.com/examplestring3/image/upload/examplestring4/profile.jpg
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+  
+    patch: 
+      summary: Check the user's notifications
+      security:
+      - logCookie: []
+      - guestCookie: []
+      responses:
+        '200':
+          description: The user's unchecked notifications were successfully checked.
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  
+  /logout:
+    patch:
+      summary: End the current session
+      security:
+      - logCookie: []
+      - guestCookie: []
+      responses:
+        '200':
+          description: The user was successfully logged out, and their token successfully deleted.
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /user/{userid}/request:
+    post:
+      summary: Send a friend request
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: userid
+          schema:
+            type: integer
+          required: true
+          description: An id representing the user receiving the request
+      responses:
+        '201':
+          description: Returns an object that contains the request data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+              examples:
+                example1:
+                  value:
+                    friend_request:
+                      id: 30
+                      requesting_user: 3
+                      requested_user: 6
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /user/{userid}/accept:
+    post:
+      summary: Accept a friend request
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: userid
+          schema:
+            type: integer
+          required: true
+          description: The id of the user who sent the request
+      responses:
+        '201':
+          description: Returns an object that contains the new friend data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewFriend'
+              examples:
+                example1:
+                  value:
+                    friend:
+                      id: 40
+                      friend_1: 3
+                      friend_2: 5 
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        
+  /user/{userid}/reject:
+    delete:
+      summary: Reject a request
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: userid
+          schema:
+            type: integer
+          required: true
+          description: The id of the user who sent the request
+      responses:
+        '200':
+          description: The selected user's friend request was denied.
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  
+  /user/{userid}/unfriend:
+    delete:
+      summary: Unfriend a user
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: userid
+          schema:
+            type: integer
+          required: true
+          description: The id of the unfriended user
+      responses:
+        '200':
+          description: The selected user was successfully unfriended.
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    
+  /user/{userid}/block:
+    post:
+      summary: Block a user
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: userid
+          schema:
+            type: integer
+          required: true
+          description: The id of the blocked user
+      responses:
+        '201':
+          description: Returns an object containing the id of the logged-in user and the blocked user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewBlock'
+              examples:
+                example1:
+                  value:
+                    block:
+                      id: 50
+                      blocked_user: 4
+                      blocked_by: 3
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  
+  /user/{userid}/unblock:
+    delete:
+      summary: Unblock a user
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: userid
+          schema:
+            type: integer
+          required: true
+          description: The id of the user no longer being blocked
+      responses:
+        '200':
+          description: The selected user is no longer blocked.
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403': 
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /groups:
+    get:
+      summary: Retrieve all groups
+      security:
+      - logCookie: []
+      - guestCookie: []
+      responses:
+        '200':
+          description: Returns array of group objects. If the user is the moderator of a group, then that group will contain arrays for requests and banned users as well.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/PartialGroup'
+                  - $ref: '#/components/schemas/FullGroup'
+              examples:
+                example1:
+                  value:
+                  - id: 60
+                    title: Dostoevsky Fan Club
+                    description: We're a group dedicated to Dostoevsky. We primarily discuss his works, but we'll sometimes talk about the author himself.
+                    group_image: https://examplestorage.com/examplestring7/image/upload/examplestring8/fyodr.jpg
+                    moderator:
+                      id: 3
+                      first_name: Johnny
+                      last_name: Johnson
+                      profile_picture: https://examplestorage.com/examplestring9/image/upload/examplestring10/image.jpg
+                    private: false
+                    created: 2026-03-10
+                    members:
+                    - id: 2
+                      first_name: Catherine
+                      last_name: Bush
+                      profile_picture: https://examplestorage.com/examplestring1/image/upload/examplestring2/image.jpg
+                    - id: 5
+                      first_name: David 
+                      last_name: Jones
+                      profile_picture: https://examplestorage.com/examplestring3/image/upload/examplestring4/image.jpg
+                    banned_users:
+                    - id: 4
+                      first_name: Lewis
+                      last_name: Reed
+                      profile_picture: null
+                    requests:
+                    - id: 1
+                      first_name: Andrew  
+                      last_name: Taylor
+                      profile_picture: null
+                  - id: 61
+                    title: Let's Talk Victorian 
+                    description: The place for Victorian enthusiasts. From Tennyson to Wilde, we cover all the writers active during Victoria's reign. Every day, we discuss poetry, and every Tuesday, we host group reading sessions. Come and join us!
+                    group_image: null
+                    moderator:
+                      id: 2
+                      first_name: Catherine
+                      last_name: Bush
+                      profile_picture: https://examplestorage.com/examplestring1/image/upload/examplestring2/image.jpg
+                    private: true
+                    created: 2026-03-12
+                    members:
+                    - id: 1
+                      first_name: Andrew
+                      last_name: Taylor
+                      profile_picture: null
+                    - id: 5
+                      first_name: David 
+                      last_name: Jones
+                      profile_picture: https://examplestorage.com/examplestring3/image/upload/examplestring4/image.jpg
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  
+  /group:
+    post: 
+      summary: Create a group
+      security:
+      - logCookie: []
+      - guestCookie: []
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupBody'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/GroupBody'
+      responses:
+        '201':
+          description: Returns an object containing the newly created group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupBody'
+              examples:
+                example1:
+                  value:
+                    group:
+                      id: 62
+                      title: Japanese Literature Circle
+                      description: We discuss Japanese literature and its impacts on both Japanese culture and the broader literary world.
+                      group_image: null
+                      moderator: 3
+                      private: true
+                      created: 2026-03-17
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+            
+  /group/{groupid}:
+    put:
+      summary: Update group information
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: groupid
+          schema:
+            type: integer
+          required: true
+          description: The id of the edited group.
+      requestBody: 
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GroupBody'
+      responses:
+        '200':
+          description: Returns an object containing the updated group's data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupResponse'
+              examples:
+                example1:
+                  value:
+                    group:
+                      id: 62
+                      title: Japanese Literary Circle
+                      description: We discuss Japanese literature and its impacts on both Japanese culture and the broader literary world. You may discuss authors outside of Japan, but only if it's to show how Japanese literature influenced them.
+                      group_image: https://examplestorage.com/examplestring15/image/upload/examplestring16/image.jpg
+                      private: false
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    
+    delete:
+      summary: Delete a group
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: groupid
+          schema:
+            type: integer
+          required: true
+          description: The id of the deleted group
+      description: The user may delete a group they've created. In addition to the group, all posts, comments, requests, bans, and memberships associated with it will be deleted as well.
+      responses:
+        '200':
+          description: The group was successfully deleted.
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /group/{groupid}/private:
+    patch:  
+      summary: Toggle group visibility
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: groupid
+          schema:
+            type: integer
+          required: true
+          description: The id of the updated group
+      responses: 
+        '200':
+          description: Returns an object containing the updated privacy value. The updated value depends on the initial value of the user's "privacy" property.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: 
+                    type: integer
+                    format: int64
+                  title:
+                    type: string
+                  private:
+                    type: boolean
+              examples:
+                example1:
+                  value:
+                    id: 62
+                    title: Japanese Literary Circle
+                    private: true
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /group/{groupid}/request:
+    post:
+      summary: Request to join a group
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: groupid
+          schema:
+            type: integer
+          required: true
+          description: The id of the requested group
+      responses:
+        '201':
+          description: Returns an object containing the request data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+              examples:
+                example1:
+                  value:
+                    id: 70
+                    requesting_user: 3
+                    requested_group: 31
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /group/{groupid}/{userid}/accept:
+    post:
+      summary: Accept a user's request to join the group
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: groupid
+          schema:
+            type: integer
+          required: true
+          description: The id of the requested group
+        - in: path
+          name: userid
+          schema:
+            type: integer
+          required: true
+          description: The id of the accepted user
+      responses:
+        '201':
+          description: A new member object is created. The request will be deleted as well.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupMembership'
+              examples:
+                example1:
+                  value:
+                    id: 80
+                    member: 1
+                    member_of: 30
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /group/{groupid}/{userid}/reject:
+    delete:
+      summary: Reject a user's request to join the group.
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: groupid
+          schema:
+            type: integer
+          required: true
+          description: The id of the requested group
+        - in: path
+          name: userid
+          schema:
+            type: integer
+          required: true
+          description: The id of the rejected user
+      responses:
+        '200':
+          description: The selected user's request was denied.
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  
+  /group/{groupid}/leave:
+    delete:
+      summary: Leave the group
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: groupid
+          schema:
+            type: integer
+          required: true
+          description: The id of the group that the user is leaving
+      responses:
+        '200':
+          description: The user's membership data was successfully deleted.
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':  
+          $ref: '#/components/responses/ServerError'
+  
+  /group/{groupid}/{userid}/ban:
+    post:
+      summary: Ban a user from the group
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: groupid
+          schema:
+            type: integer
+          required: true
+          description: The id of the group
+        - in: path
+          name: userid
+          schema: 
+            type: integer
+          required: true
+          description: The id of the user being banned
+      responses:
+        '201':
+          description: An object containing data for the ban. The selected user's membership data will be deleted as well.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupBan'
+              examples:
+                example1:
+                  value:
+                    id: 90
+                    banned_user: 5
+                    banning_group: 30
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  
+  /group/{groupid}/{userid}/unban:
+    delete:
+      summary: Unban a user
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: groupid
+          schema: 
+            type: integer
+          required: true
+          description: The id of the group
+        - in: path
+          name: userid
+          schema:
+            type: integer
+          required: true
+          description: The id of the user
+      responses:
+        '200':
+          description: The selected user's ban data was successfully deleted.
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /posts:
+    get:
+      summary: Retrieve an array of posts
+      security:
+      - logCookie: []
+      - guestCookie: []
+      responses:
+        '200':
+          description: Returns an array containing post objects. If the user possesses a usertoken, then the array will contain posts from them, their friends, and any groups that they have joined. Guests will receive an array containing all user posts.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+              examples:
+                example1:
+                  value:
+                  - id: 20
+                    original_poster: 
+                      id: 3
+                      first_name: Johnny
+                      last_name: Johnson
+                      profile_picture: https://examplestorage.com/examplestring9/image/upload/examplestring10/image.jpg
+                    original_group: null
+                    text: Has anyone ever read Demons? I think it's underappreciated compared to Dostoevsky's other works.
+                    posted: 2026-02-27
+                    edited: null
+                    shared_by: null
+                    likes:
+                    - id: 1
+                      first_name: Andrew
+                      last_name: Taylor
+                      profile_picture: null
+                  - id: 21
+                    original_poster: null
+                    original_group:
+                      id: 62
+                      title: Japanese Literary Circle
+                      group_image: https://examplestorage.com/examplestring15/image/upload/examplestring16/image.jpg
+                    text: Next Tuesday, we're going to begin our group reading of Kokoro by Natsume Souseki! If you want to participate, be sure to have read the first three chapters by then!
+                    posted: '2026-03-02'
+                    edited: null
+                    shared_by: null
+                    likes: []
+                  - id: 22
+                    original_poster:
+                      id: 3
+                      first_name: Johnny
+                      last_name: Johnson
+                      profile_picture: https://examplestorage.com/examplestring9/image/upload/examplestring10/image.jpg
+                    text: Can anyone recommend one of Herman Hesse's novels? I remember loving Siddhartha in high school.
+                    posted: '2026-03-05'
+                    edited: null
+                    shared_by: null
+                    likes: []
+                  - id: 23
+                    original_poster:
+                      id: 2
+                      first_name: Catherine
+                      last_name: Bush
+                      profile_picture: https://examplestorage.com/examplestring1/image/upload/examplestring2/image.jpg
+                    original_group: null
+                    text: I'm about to read Wuthering Heights for the millionth time. Everyone hates it, but I think it's a fascinating novel.
+                    posted: 2026-03-06
+                    edited: null
+                    shared_by: null
+                    likes: []
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  
+  /post:
+    post:
+      summary: Create a post
+      security:
+      - logCookie: []
+      - guestCookie: []
+      requestBody:
+        required: true
+        description: The groupid in the request body has a value only when the user is posting on behalf of a group. Otherwise, it should always be null.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBody'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PostBody'
+      responses:
+        '201':
+          description: Returns an object containing the new post's data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponse'
+              examples:
+                example1:
+                  value:
+                    post:
+                      id: 24
+                      original_poster: 3
+                      original_group: null
+                      text: You know what's really funny? How Matthew Lewis realized that he barely had any plot for The Monk, so he had to develop a barely-relevant B-plot and write an entire act around it.
+                      posted: '2026-03-15'
+                      edited: null
+                      shared_by: null
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  
+  /post/{postid}:
+    put:
+      summary: Edit a post
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: postid
+          schema:
+            type: integer
+          required: true
+          description: The id of the edited post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+      responses:
+        '200':
+          description: Returns an object containing the updated post's data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponse'
+              examples:
+                example1:
+                  value:
+                    post:
+                      id: 24
+                      original_poster: 3
+                      original_group: null
+                      text: You know what's really funny? How Matthew Lewis realized that he barely had any plot for The Monk, so he had to develop a barely-relevant B-plot and write an entire act around it. For as long as it drags on, the ending is kind of hilarious, at least.
+                      posted: '2026-03-15'
+                      edited: '2026-03-16'
+                      shared_by: null
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        
+    delete:
+      summary: Delete a post
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: postid
+          schema: 
+            type: integer
+          required: true
+          description: The id of the deleted post
+      responses:
+        '200':
+          description: The post was successfully deleted. Any likes and comments for this post will also be deleted.
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /post/{postid}/like:
+    post:
+      summary: Like a post
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: postid
+          schema:
+            type: integer
+          required: true
+          description: The id of the liked post
+      responses:
+        '201':
+          description: Returns an object containing the ids of the liked post and the user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostLike'
+              examples:
+                example1:
+                  value:
+                    post_like: 
+                      id: 100
+                      liking_user: 3
+                      liked_post: 61
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /post/{postid}/unlike:
+    delete:
+      summary: Undo a post like
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: postid
+          schema:
+            type: integer
+          required: true
+          description: The id of the post
+      responses:
+        '200':
+          description: The like object was successfully deleted.
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  
+  /post/{postid}/share:
+    post:
+      summary: Share another user's post
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: postid
+          schema:
+            type: integer
+          required: true
+          description: The id of the shared post
+      responses:
+        '201':
+          description: Returns an object containing data for the shared post. Because the API treats sharing a post as creating a new one, the object will have a different id from the original post.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+              examples:
+                example1:
+                  value:
+                    post:
+                      id: 25
+                      original_poster: null
+                      original_group:
+                        id: 62
+                        title: Japanese Literary Circle
+                        group_image: https://examplestorage.com/examplestring15/image/upload/examplestring16/image.jpg
+                      posted: '2026-03-05'
+                      edited: null
+                      shared_by:
+                        id: 3
+                        first_name: Johnny
+                        last_name: Johnson
+                        profile_picture: https://examplestorage.com/examplestring9/image/upload/examplestring10/image.jpg
+                      likes: []
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /post/{postid}/comments:
+    get:
+      summary: View all comments for a post
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: postid
+          schema:
+            type: integer
+          required: true
+          description: The id of the post
+      responses:
+        '200':
+          description: Returns an array containing the comments for the selected post.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  comments:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Comment'
+              examples:
+                example1:
+                  value:
+                    comments:
+                      - id: 110
+                        commenting_user:
+                          id: 2
+                          first_name: Catherine
+                          last_name: Bush
+                          profile_picture: https://examplestorage.com/examplestring1/image/upload/examplestring2/image.jpg
+                        commenting_group: null
+                        text: Steppenwolf is pretty beloved, if you haven't read that one yet.
+                        posted: '2026-03-04'
+                        edited: null
+                        likes: []
+                        replies: []
+                      - id: 111
+                        commenting_user:
+                          id: 1
+                          first_name: Andrew
+                          last_name: Taylor
+                          profile_picture: null
+                        commenting_group: null
+                        text: I'm not sure if I've ever read Siddhartha. Does it have anything to do with Siddhartha Gautama?
+                        posted: '2026-03-05'
+                        edited: null
+                        likes: []
+                        replies: []
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  
+  /post/{postid}/comment:
+    post:
+      summary: Comment on a post
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: postid
+          schema:
+            type: integer
+          required: true
+          description: The id of the post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+      responses:
+        '201':
+          description: Returns an object containing the new comment's data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentResponse'
+              examples:
+                example1: 
+                  value:
+                    comment:
+                      id: 112
+                      commenting_user:
+                        id: 3
+                        first_name: Johnny
+                        last_name: Johnson
+                        profile_picture: https://examplestorage.com/examplestring9/image/upload/examplestring10/image.jpg
+                      commenting_group: null
+                      post: 63
+                      text: I think a lot of people hate it because it's one of those novels where nothing really happens, but that's true of a lot of works from that era as well.
+                      reply_to: null
+                      posted: '2026-03-06'
+                      edited: null
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /comment/{commentid}:
+    put:  
+      summary: Edit a comment
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: commentid
+          schema:
+            type: integer
+          required: true
+          description: The id of the edited comment
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                text: 
+                  type: string
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+      responses:
+        '200':  
+          description: Returns an object containing the updated comment's data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentResponse'
+              examples:
+                example1:
+                  value:
+                    comment:
+                      id: 112
+                      commenting_user:
+                        id: 3
+                        first_name: Johnny
+                        last_name: Johnson
+                        profile_picture: https://examplestorage.com/examplestring9/image/upload/examplestring10/image.jpg
+                      commenting_group: null
+                      post: 64
+                      text: I think a lot of people hate it because it's one of those novels where nothing really happens, but that's true of a lot of works from that era as well. Ever read a Jane Austen novel?
+                      posted: '2026-03-06'
+                      edited: '2026-03-06'
+                      reply_to: null
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    delete:
+      summary: Delete a comment
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: commentid
+          schema:
+            type: integer
+          required: true
+          description: The id of the deleted comment
+      responses:
+        '200':
+          description: The comment was successfully deleted. Any likes, replies, and notifications associated with the comment will be deleted as well.
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403': 
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /comment/{commentid}/like:
+    post:
+      summary: Like another user's comment
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: commentid
+          schema:
+            type: integer
+          required: true
+          description: The id of the liked comment
+      responses:
+        '201':
+          description: Returns an object containing the ids of the liked comment and the user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentLike'
+              examples:
+                example1:
+                  value:
+                    like:
+                      id: 120
+                      liking_user: 3
+                      liking_group: null
+                      liked_comment: 70
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  
+  /comment/{commentid}/unlike:
+    delete:
+      summary: Remove a like on another user's comment
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: commentid
+          schema:
+            type: integer
+          required: true
+          description: The id of the selected comment
+      responses:
+        '200':
+          description: The like was successfully deleted.
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  
+  /chats:
+    get:
+      summary: Retrieve an array of chats
+      security:
+      - logCookie: []
+      - guestCookie: []
+      responses:
+        '200':
+          description: Returns an array containing data for chats and messages.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  chats:
+                    type: array
+                    items:
+                      anyOf:
+                        - $ref: '#/components/schemas/Chat'
+                        - $ref: '#/components/schemas/Message'
+              examples:
+                example1:
+                  value:
+                    chats:
+                    - chat:
+                        id: 130
+                        user:
+                          id: 2
+                          first_name: Catherine
+                          last_name: Bush
+                          profile_picture: https://examplestorage.com/examplestring1/image/upload/examplestring2/image.jpg
+                      messages:
+                        - id: 140
+                          sending_user: 3
+                          receiving_user: 2
+                          text: What do you think of the early Gothic novels? I feel like you'd enjoy the Castle of Otranto.
+                          image: null
+                          sent: '2026-03-13'
+                          checked: true
+                        - id: 141
+                          sending_user: 2
+                          receiving_user: 3
+                          text: I don't care much for Otranto, but I did enjoy Mysteries of Udolpho. Ann Radcliffe's prose can be captivating.
+                          image: null
+                          sent: '2026-03-13'
+                          checked: false
+                    - chat:
+                        id: 131
+                        user:
+                          id: 1
+                          first_name: Andrew
+                          last_name: Taylor
+                          profile_picture: null
+                      messages:
+                        - id: 132
+                          sending_user: 1
+                          receiving_user: 3
+                          text: I'm curious to know what you think of this novel.
+                          image: https://examplestorage.com/examplestring11/image/upload/examplestring12/golden_pavillion.jpg
+                          sent: '2026-03-14'
+                          checked: false
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /chat/{userid}:
+    post:
+      summary: Start a chat with another user
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+        - in: path
+          name: userid
+          schema:
+            type: integer
+          required: true
+          description: The id of the selected user
+      responses:
+        '201':
+          description: Returns an object containing the new chat's data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedChat'
+              examples:
+                example1:
+                  value: 
+                    chat:
+                      id: 132
+                      user_1: 3
+                      user_2: 5
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403': 
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  
+  /user/{userid}/message:
+    post:
+      summary: Send a message to another user
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+      - in: path
+        name: userid
+        schema:
+          type: integer
+        required: true
+        description: The id of the messaged user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/MessageBody'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MessageBody'
+      responses:
+        '201':
+          description: Returns an object containing the sent message's data. If the user receiving the message does not have an active chat with the logged-in user, then a new chat will be created for them.
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/MessageBody'
+              examples:
+                example1:
+                  value:
+                    message:
+                      id: 143
+                      sending_user: 3
+                      receiving_user: 5
+                      text: How it feels to read the first chapter of Portrait of the Artist as a Young Man.
+                      image: http://examplestorage.com/examplestring13/image/upload/examplestring14/joyce_meme.jpg
+                      sent: 2026-03-18
+                      checked: false
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /chat/{chatid}:
+    delete:
+      summary: Delete a chat
+      security:
+      - logCookie: []
+      - guestCookie: []
+      parameters:
+      - in: path
+        name: chatid
+        schema:
+          type: integer
+        required: true
+        description: The id of the deleted chat
+      responses:
+        '200':
+          description: The chat was successfully deleted. If the other user has deleted their copy of the chat, then all messages between both users will be deleted as well.
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id: 
+          type: integer
+          format: int64
+        first_name:
+          type: string
+        last_name: 
+          type: string
+        date_of_birth:
+          type: string
+        profile_picture:
+          type: string
+        alma_mater:
+          type: string
+        degree:
+          type: string
+        role: 
+          type: string
+        online:
+          type: boolean
+        hidden: 
+          type: boolean
+    
+    LogIn:
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      
+    SignUp:
+      properties:
+        first_name: 
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        dob:
+          type: string
+        role:
+          type: string
+        password:
+          type: string
+        confirm:
+          type: string
+    
+    UserData:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        first_name:
+          type: string
+        last_name:
+          type: string
+        profile_picture: 
+          type: string
+
+    UserImage:
+      type: object
+      properties:
+        updated_image:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+            profile_picture:
+              type: string
+
+    UserChat:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        first_name:
+          type: string
+        last_name: 
+          type: string
+        profile_picture:
+          type: string
+        online:
+          type: boolean
+        hidden:
+          type: boolean
+
+    EditUser:
+      type: object
+      properties:
+        profile:
+          type: object
+          properties:
+            first_name: 
+              type: string
+            last_name:
+              type: string
+            alma_mater: 
+              type: string
+            degree: 
+              type: string
+            role:
+              type: string
+    
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        alerting_user:
+          oneOf:
+          - $ref: '#/components/schemas/UserData'
+          - type: integer
+            format: int64
+        post:
+          oneOf:
+          - $ref: '#/components/schemas/Post'
+          - type: integer
+            format: int64
+        text:
+          type: string
+        sent:
+          type: string
+        checked:
+          type: boolean
+
+    Request:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        requested_user:
+          oneOf:
+          - $ref: '#/components/schemas/UserData' 
+          - type: integer
+            format: int64
+        requested_group:
+          oneOf:
+          - $ref: '#/components/schemas/PartialGroup'
+          - type: integer
+            format: int64
+        requesting_user:
+          oneOf:
+          - $ref: '#/components/schemas/UserData'
+          - type: integer
+            format: int64    
+  
+    NewFriend:
+      type: object
+      properties:
+        friend:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+            friend_1: 
+              type: integer
+              format: int64
+            friend_2:
+              type: integer
+              format: int64
+
+    NewBlock:
+      type: object
+      properties:
+        blocked:
+          type: object
+          properties:
+            id: 
+              type: integer
+              format: int64
+            blocked_user:
+              type: integer
+              format: int64
+            blocked_by:
+              type: integer
+              format: int64
+    
+    PartialGroup:
+      type: object
+      properties:
+        group:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+            title:
+              type: string
+            description:
+              type: string
+            group_image:
+              type: string
+            moderator:
+              oneOf:
+                - $ref: '#/components/schemas/UserData'
+                - type: integer
+                  format: int64
+            private:
+              type: boolean
+            created:
+              type: string
+            members:
+              type: array 
+              items:
+                $ref: '#/components/schemas/UserData'
+      
+    FullGroup:
+      type: object
+      properties:
+        group:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+            title:
+              type: string
+            description:
+              type: string
+            group_image:
+              type: string
+            moderator:
+              oneOf:
+                - $ref: '#/components/schemas/UserData'
+                - type: integer
+                  format: int64
+            private:
+              type: boolean
+            created:
+              type: string
+            members:
+              type: array 
+              items:  
+                $ref: '#/components/schemas/UserData'
+            requests:
+              type: array
+              items: 
+                $ref: '#/components/schemas/Request'
+            banned_users:
+              type: array
+              items:    
+                $ref: '#/components/schemas/UserData'
+
+    GroupData:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+        group_image:
+          type: string
+        moderator:
+          oneOf:
+            - $ref: '#/components/schemas/UserData'
+            - type: integer
+              format: int64
+        private:
+          type: boolean
+        created:
+          type: string
+
+    GroupBody:
+      type: object
+      properties:
+        title: 
+          type: string
+        description: 
+          type: string 
+        private:
+          type: boolean
+        group_image: 
+          type: string
+          format: binary
+
+    GroupResponse:
+      type: object
+      properties:
+        group:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+            title:
+              type: string
+            description: 
+              type: string
+            group_image:
+              type: string
+            private: 
+              type: boolean
+    
+    GroupMembership:
+      type: object
+      properties:
+        member:
+          type: object
+          properties:
+            id: 
+              type: integer
+              format: int64
+            member:
+              type: integer
+              format: int64
+            member_of: 
+              type: integer
+              format: int64
+    
+    GroupBan:
+      type: object
+      properties:
+        ban:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+            banned_user:
+              type: integer
+              format: int64
+            banning_group:
+              type: integer
+              format: int64
+    
+    Post:
+      type: object
+      properties: 
+        post:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+            original_poster:
+              oneOf:
+                - $ref: '#/components/schemas/User'
+                - type: integer
+                  format: int64
+            original_group:
+              oneOf:
+                - $ref: '#/components/schemas/GroupData'
+                - type: integer
+                  format: int64
+            text: 
+              type: string
+            posted: 
+              type: string
+            edited: 
+              type: string
+            shared_by:
+              oneOf:
+                - $ref: '#/components/schemas/User'
+                - type: integer
+                  format: int64
+            likes:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserData'
+    
+    PostResponse:
+      type: object 
+      properties:
+        post:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+            original_poster: 
+              type: integer
+              format: int64
+            original_group:
+              type: integer
+              format: int64
+            text: 
+              type: string
+            posted:
+              type: string
+            edited: 
+              type: string
+            shared_by:
+              type: integer
+              format: int64
+    
+    PostBody:
+      type: object
+      properties:
+        text:
+          type: string
+        groupid:
+          type: integer
+    
+    PostLike:
+      type: object
+      properties:
+        post_like:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+            liking_user:
+              type: integer
+              format: int64
+            liked_post:
+              type: integer
+              format: int64
+
+    Comment:
+      type: object
+      properties:
+        comment:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+            commenting_user:
+              $ref: '#/components/schemas/UserData'
+            commenting_group:
+              $ref: '#/components/schemas/GroupData'
+            text:
+              type: string
+            reply_to:
+              type: integer
+              format: int64
+            posted:
+              type: string
+            edited:
+              type: string
+            likes:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserData'
+            replies:
+              type: array
+              items: 
+                $ref: '#/components/schemas/Comment'
+    
+    CommentResponse:
+      type: object
+      properties:
+        comment:
+          type: object
+          properties:
+            id: 
+              type: integer
+              format: int64
+            commenting_user:
+              type: integer
+              format: int64
+            commenting_group:
+              type: integer
+              format: int64
+            post: 
+              type: integer
+              format: int64
+            text:
+              type: string
+            reply_to: 
+              type: integer
+              format: int64
+            posted: 
+              type: string
+            edited: 
+              type: string
+
+    CommentLike:
+      type: object
+      properties:
+        like:
+          type: object
+          properties:
+            id: 
+              type: integer
+              format: int64
+            liking_user:
+              type: integer
+              format: int64
+            liking_group:
+              type: integer
+              format: int64
+            liked_comment:
+              type: integer
+              format: int64
+    
+    Chat:
+      type: object
+      properties:
+        chat:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+            user:
+              $ref: '#/components/schemas/UserChat'
+    
+    CreatedChat:
+      type: object
+      properties:
+        chat:
+          type: object
+          properties:
+            id: 
+              type: integer
+              format: int64
+            user_1:
+              type: integer
+              format: int64
+            user_2:
+              type: integer
+              format: int64
+        
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        sending_user:
+          type: integer
+          format: int64
+        receiving_user:
+          type: integer
+          format: int64
+        text:
+          type: string
+        image:
+          type: string
+        sent:
+          type: string
+        checked: 
+          type: boolean
+    
+    MessageBody:
+      type: object
+      properties:
+        text:
+          type: string
+        image:
+          type: string
+            
+  securitySchemes:
+    logCookie:
+      type: apiKey
+      in: cookie
+      name: usertoken
+    guestCookie:
+      type: apiKey
+      in: cookie
+      name: guesttoken
+
+  responses:
+    resourceCreated:
+      description: The resource was successfully created.
+    NotAuthorized: 
+      description: Token either missing or expired.
+    UserForbidden:
+      description: The user is not allowed to access this endpoint.
+    ServerError:
+      description: Server error.
