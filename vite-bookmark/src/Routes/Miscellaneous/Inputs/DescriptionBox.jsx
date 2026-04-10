@@ -1,6 +1,6 @@
 const DescriptionBox = ({description, editDescription, is_user}) => {
     return (
-        <label htmlFor='description' className='flex flex-col items-start'>
+        <label htmlFor='description' className='flex flex-col items-start gap-y-2'>
             <span className='font-semibold'> Description </span>
 
             <textarea id='description' cols='50' rows='10' className='bg-slate-200'
