@@ -24,11 +24,14 @@ const GroupBanUnbanButton = ({group, member}) => {
                 :     
                     'bg-emerald-200 hover:bg-lime-100'}
             `} onClick={() => handleBans()}>
-            {group.banned_users?.some((user) => user.id === member.id) ? 
-                'Unban'
-            :
-                'Ban'
-            }
+            
+            <span>
+               {group.banned_users?.some((user) => user.id === member.id) ? 
+                    'Unban'
+                :
+                    'Ban'
+                } 
+            </span>
         </button>
     )
 }
