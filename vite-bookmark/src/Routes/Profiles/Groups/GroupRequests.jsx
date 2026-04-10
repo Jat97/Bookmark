@@ -5,7 +5,7 @@ import RejectButton from '../Buttons/RejectButton';
 
 const GroupRequests = ({group}) => { 
    return (
-        <div>
+        <div className='flex flex-col items-center'>
             <PageHeader headers={`${group.requests.length} requests`} />
 
             {group.requests.map(request => {
