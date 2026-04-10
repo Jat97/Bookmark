@@ -9,19 +9,16 @@ export const useFetchGroups = ([authorized, setAuthorized, setSiteError]) => {
                 credentials: 'include'
             })
             .then(res => {
-                if(res.status === 401) {
+                if(res.status === 401 || res.status === 500) {
                     setAuthorized(false);
-                }
-                else if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
                 }
                 else {
                     if(!authorized) {    
                         setAuthorized(true);
                     }
-
-                    return res.json();
                 }
+                
+                return res.json();
             })
             .catch(err => setSiteError(err))
         }

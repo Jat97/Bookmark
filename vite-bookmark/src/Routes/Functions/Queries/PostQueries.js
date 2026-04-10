@@ -9,22 +9,24 @@ export const useFetchPosts = ([authorized, setAuthorized, setSiteError]) => {
                 credentials: 'include'
             })
             .then(res => {            
-                if(res.status === 401) {
+                if(res.status === 401 || res.status === 500) {
                     setAuthorized(false);
-                }
-                else if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
                 }
                 else {
                     if(!authorized) {
                         setAuthorized(true);
                     }
-
-                    return res.json();
+                }
+                
+                return res.json();
+            })
+            .then(json => {
+                if(json.error.error) {
+                    setSiteError(json.error.error);
                 }
             })
             .catch(err => {
-                setSiteError(err)
+                setSiteError(err.message)
             })
         }
     });
@@ -41,11 +43,8 @@ export const useFetchComments = ([postid, authorized, setAuthorized, setSiteErro
                 credentials: 'include'
             })
             .then(res => {
-                if(res.status === 401) {
+                if(res.status === 401 || res.status === 500) {
                     setAuthorized(false);
-                }
-                else if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
                 }
                 else {
                     if(!authorized) {
@@ -53,6 +52,11 @@ export const useFetchComments = ([postid, authorized, setAuthorized, setSiteErro
                     }
 
                     return res.json();
+                }
+            })
+            .then(json => {
+                if(json.error.error) {
+                    setSiteError(json.error.error);
                 }
             })
             .catch(err => setSiteError(err))

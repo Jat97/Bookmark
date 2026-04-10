@@ -9,21 +9,23 @@ export const useFetchChats = ([authorized, setAuthorized, setSiteError]) => {
                 credentials: 'include'
             })
             .then(res => {
-                if(res.status === 401) {
+                if(res.status === 401 || res.status === 500) {
                     setAuthorized(false);
                 }   
-                else if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
-                }
                 else {
                     if(!authorized) {
                         setAuthorized(true);
-                    }
-
-                    return res.json();
+                    }    
+                }
+                
+                return res.json();
+            })
+            .then(json => {
+                if(json.error.error) {
+                    setSiteError(json.error.error);
                 }
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         }
     });
 
