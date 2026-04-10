@@ -6,6 +6,7 @@ import InputErr from '../../../Miscellaneous/Text/Errors/InputErr';
 import LogSignButton from '../../../Buttons/Profile/User/LogSignButton';
 
 const Login = () => {
+    const setGuest = useBookStore(state => state.setGuest);
     const setSiteError = useBookStore((state) => state.setSiteError);
 
     const navigate = useNavigate();
@@ -36,12 +37,40 @@ const Login = () => {
             }
         })
         .then(json => {
-            setLogErrors({
-                user: json.user_err && json.user_err,
-                password: json.pass_err && json.pass_err
-            });
+            if(json.server_error) {
+                setSiteError(json.server_error);
+            }
+            else {
+                setLogErrors({
+                    user: json.user_err && json.user_err,
+                    password: json.pass_err && json.pass_err
+                }); 
+            }
         })
         .catch(err => setSiteError(err.message));
+    }
+
+    const signAsGuest = () => {
+        fetch('http://localhost:9000/api/login/guest', {
+            method: 'POST',
+            credentials: 'include'
+        })
+        .then(res => {
+            if(!res.ok) {
+                return res.json();
+            }
+            else {
+                setGuest(true);
+
+                navigate('/api/home', {rewrite: true});
+            }
+        })
+        .then(json => {
+            if(json.server_error) {
+                setSiteError(json.server_error);
+            }
+        })
+        .catch(err => setSiteError(err.message))
     }
 
     return (
@@ -50,10 +79,10 @@ const Login = () => {
                 md:shadow-slate-200 md:bg-white'>
                 <p className='text-lg font-semibold'> Sign in to Bookmark </p>
 
-                <div className='flex flex-col gap-y-[15px]'>
+                <div className='flex flex-col gap-y-[20px]'>
                     <div className='relative w-1/3'>
                         <label htmlFor='email' className='flex flex-col items-start'>
-                            <span className='font-semibold'> Username </span>
+                            <span className='font-semibold'> Email </span>
 
                             <UserGroupInput id={'email'} input_value={''} input_fn={null} />
                         </label>
@@ -78,6 +107,11 @@ const Login = () => {
 
                 <div className='flex flex-col items-center gap-y-[10px] mb-[10px]'>
                     <LogSignButton log_sign_text={'Log in'} log_sign_fn={logIn} />
+
+                    <button type='button' className='cursor-pointer text-white font-semibold bg-zinc-300 rounded-full 
+                        p-1 w-[150px] hover:bg-slate-100' onClick={() => signAsGuest()}>
+                        Log in as guest
+                    </button>
 
                     <p> Don't have an account? 
                         <Link to='/api/signup' className='text-blue-600 underline'> Create one! </Link> 
