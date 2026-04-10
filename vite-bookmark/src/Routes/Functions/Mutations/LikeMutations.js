@@ -1,10 +1,10 @@
 import {useMutation} from '@tanstack/react-query';
 import {query_client} from '../../../client';
 
-export const useLikePostMutation = ([logged, postid, setSiteError]) => {
+export const useLikePostMutation = (setSiteError) => {
     const mutation = useMutation({
-        mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/${postid}/like`, {
+        mutationFn: async (data) => {
+            return await fetch(`http://localhost:9000/api/post/${data.postid}/like`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -12,11 +12,11 @@ export const useLikePostMutation = ([logged, postid, setSiteError]) => {
                 }
             })
             .then(res => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
-                }
-                else {
-                    return res.json();
+                return res.json();
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
                 }
             })
             .catch(err => setSiteError(err.message))
@@ -24,17 +24,18 @@ export const useLikePostMutation = ([logged, postid, setSiteError]) => {
         onMutate: async () => {
             await query_client.cancelQueries({queryKey: ['posts']});
 
-            const liked_posts_cache = query_client.getQueryData(['posts']);
-            const liked_posts_arr = liked_posts_cache.posts || [];
+            const log_cache = query_client.getQueryData(['logged']);
+            const post_cache = query_client.getQueryData(['posts']);
+            const post_arr = post_cache.posts || [];
 
-            const new_liked_posts = liked_posts_arr.forEach(content => {
+            const new_liked_posts = post_arr.map(content => {
                 if(content.id === postid) {
-                    if(content.likes.some((like) => like.liking_user === logged) === false) {
-                        content.likes.push({
-                            id: content.likes.length + 14,
-                            liking_user: logged,
-                            liked_post: postid,
-                            liked_comment: null
+                    if(!post.likes.some((like) => like.liking_user === log_cache.id)) {
+                        post.likes.push({
+                            id: log_cache.id,
+                            first_name: log_cache.first_name,
+                            last_name: log_cache.last_name,
+                            profile_picture: log_cache.profile_picture
                         });
                     }
                 }
@@ -42,12 +43,12 @@ export const useLikePostMutation = ([logged, postid, setSiteError]) => {
 
             await query_client.setQueryData(['posts'], new_liked_posts);
 
-            return {liked_posts_arr};
+            return {post_arr};
         },
         onError: (err, data, context) => {
             query_client.setQueryData(['posts'], context.liked_posts_arr);
         },
-        onSettled: async () => {
+        onSuccess: async () => {
             await query_client.invalidateQueries({queryKey: ['posts']});
         }
     });
@@ -55,45 +56,43 @@ export const useLikePostMutation = ([logged, postid, setSiteError]) => {
     return mutation;
 };
 
-export const useUnlikePostMutation = ([logged, postid, setSiteError]) => {
+export const useUnlikePostMutation = (setSiteError) => {
     const mutation = useMutation({
-        mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/${postid}/unlike`, {
+        mutationFn: async (data) => {
+            return await fetch(`http://localhost:9000/api/post/${data.postid}/unlike`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
             .then(res => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.sendStatus}`);
-                }
-                else {
-                    return res.send();
+                return res.json();
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
                 }
             })
             .catch(err => setSiteError(err.message))
         },
-        onMutate: async () => {
-            await query_client.cancelQueries({queryKey: ['posts']});
+        onMutate: async (data) => {
+            await query_client.invalidateQueries({queryKey: ['posts']});
 
-            const liked_posts_cache = query_client.getQueryData(['posts']);
-            const liked_posts_arr = liked_posts_cache.posts || [];
+            const post_cache = query_client.getQueryData(['posts']);
+            const post_arr = post_cache.posts || [];
 
-            const new_liked_posts = liked_posts_arr.forEach(content => {
-                content.likes.forEach((like, index) => {
-                    if(like.id === logged.id) {
-                        return liked_posts_arr.splice(index, 1);
-                    }
-                });
+            const new_liked_posts = post_arr.map(post => {
+                if(post.id === data.postid) {
+                    return post.likes.filter(like => like.id !== logged.id);
+                }
             });
 
             query_client.setQueryData(['posts'], new_liked_posts);
 
-            return {liked_posts_arr};
+            return {post_arr};
         },
         onError: (err, data, context) => {
             return query_client.setQueryData(['posts'], context.liked_posts_arr);
         },
-        onSettled: async () => {
+        onSuccess: async () => {
             await query_client.invalidateQueries({queryKey: ['posts']});
         }
     });
@@ -101,10 +100,10 @@ export const useUnlikePostMutation = ([logged, postid, setSiteError]) => {
     return mutation;
 };
 
-export const useLikeCommentMutation = ([logged, commentid, setSiteError]) => {
+export const useLikeCommentMutation = (setSiteError) => {
     const mutation = useMutation({
-        mutationFn: () => {
-            fetch(`http://localhost:9000/api/${commentid}/like`, {
+        mutationFn: (data) => {
+            fetch(`http://localhost:9000/api/comment/${data.commentid}/like`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -112,36 +111,43 @@ export const useLikeCommentMutation = ([logged, commentid, setSiteError]) => {
                 }
             })
             .then(res => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
-                }
-                else {
-                    return res.json();
+                return res.json();
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
                 }
             })
             .catch(err => setSiteError(err.message))
         },
-        onMutate: async () => {
+        onMutate: async (data) => {
             await query_client.invalidateQueries({queryKey: ['comments']});
 
-            const liked_comments_cache = query_client.getQueryData(['comments']);
-            const liked_comments_arr = liked_comments_cache || [];
+            const log_cache = query_client.getQueryData(['logged']);
+            const comment_cache = query_client.getQueryData(['comments']);
+            const comment_arr = comment_cache.comments || [];
 
-            liked_comments_arr.push({
-                id: logged.id,
-                first_name: logged.first_name,
-                last_name: logged.last_name,
-                profile_picture: logged.profile_picture
-            });
+            const liked_comments_arr = comment_arr.map(comment => {
+                if(comment.id === data.commentid) {
+                    if(!comment.likes.some((like) => like.id === logged.id)) {
+                        comment.likes.push({
+                            id: logged.id,
+                            first_name: log_cache.first_name,
+                            last_name: log_cache.last_name,
+                            profile_picture: log_cache.profile_picture
+                        });
+                    }
+                }
+            }); 
 
             query_client.setQueryData(['comments'], liked_comments_arr);
 
-            return {liked_comments_arr};
+            return {comment_arr};
         },
         onError: (err, data, context) => {
             query_client.setQueryData(['comments'], context.liked_comments_arr);
         },
-        onSettled: async () => {
+        onSuccess: async () => {
             await query_client.invalidateQueries({queryKeys: ['comments']});
         }
     });
@@ -149,45 +155,44 @@ export const useLikeCommentMutation = ([logged, commentid, setSiteError]) => {
     return mutation;
 };
 
-export const useUnlikeCommentMutation = ([logged, commentid, setSiteError]) => {
+export const useUnlikeCommentMutation = (setSiteError) => {
     const mutation = useMutation({
-        mutationFn: () => {
-            fetch(`http://localhost:9000/api/${commentid}/unlike`, {
+        mutationFn: (data) => {
+            fetch(`http://localhost:9000/api/comment/${data.commentid}/unlike`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
             .then(res => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
-                }
-                else {
-                    res.send();
+                return res.json();
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
                 }
             })
             .catch(err => setSiteError(err.message))
         },
-        onMutate: async () => {
+        onMutate: async (data) => {
             await query_client.invalidateQueries({queryKey: ['comments']});
 
-            const liked_comments_cache = query_client.getQueryData(['comments']);
-            const liked_comments_arr = liked_comments_cache || [];
+            const log_cache = query_client.getQueryData(['logged']);
+            const comment_cache = query_client.getQueryData(['comments']);
+            const comment_arr = comment_cache.comments || [];
 
-            const new_liked_comments = liked_comments_arr.forEach(content => {
-                content.likes.forEach((like, index) => {
-                    if(like.id === logged.id) {
-                        liked_comments_arr.splice(index, 1);
-                    }
-                });
+            const new_liked_comments = comment_arr.map(comment => {
+                if(comment.id === data.commentid) {
+                    return comment.likes.filter(like => like.id !== log_cache.id);
+                }
             });
 
             query_client.setQueryData(['comments'], new_liked_comments);
 
-            return {liked_comments_arr}
+            return {comment_arr}
         },
         onError: (err, data, context) => {
             query_client.setQueryData(['comments'], context.liked_comments_arr);
         },
-        onSettled: async () => {
+        onSuccess: async () => {
             await query_client.invalidateQueries({queryKey: ['comments']});
         }
     });

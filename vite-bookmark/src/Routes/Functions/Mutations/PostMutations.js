@@ -1,9 +1,9 @@
 import {useMutation} from '@tanstack/react-query';
 import {query_client} from '../../../client';
 
-export const useCreatePostMutation = ([poster, text, setText, setSiteError]) => {
+export const useCreatePostMutation = ([setText, setSiteError]) => {
     const mutation = useMutation({
-        mutationFn: async () => {
+        mutationFn: async (data) => {
             return await fetch('http://localhost:9000/api/post', {
                 method: 'POST',
                 credentials: 'include',
@@ -11,15 +11,16 @@ export const useCreatePostMutation = ([poster, text, setText, setSiteError]) => 
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    text: text
+                    groupid: data.poster.title && data.poster.id,
+                    text: data.text
                 })
             })
             .then(res => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
-                }
-                else {
-                    return res.json();
+                return res.json();
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
                 }
             })
             .catch(err => setSiteError(err.message))
@@ -28,7 +29,9 @@ export const useCreatePostMutation = ([poster, text, setText, setSiteError]) => 
             await query_client.invalidateQueries({queryKey: ['posts']});
 
             const post_cache = query_client.getQueryData(['posts']);
-            const post_arr = post_cache.posts || [];
+            const post_arr = post_cache || [];
+
+            const updated_post_arr = {...post_arr};
 
             const new_post = {
                 id: post_arr.length + 25,
@@ -41,7 +44,9 @@ export const useCreatePostMutation = ([poster, text, setText, setSiteError]) => 
                 likes: []
             }
 
-            post_arr.push(new_post);
+            updated_post_arr.posts.push(new_post);
+
+            query_client.setQueryData(['posts'], updated_post_arr);
 
             return {post_arr}
         },
@@ -57,22 +62,25 @@ export const useCreatePostMutation = ([poster, text, setText, setSiteError]) => 
     return mutation;
 };
 
-export const useEditPostMutation = ([postid, setSiteError]) => {
+export const useEditPostMutation = ([setText, setSiteError]) => {
     const mutation = useMutation({
-        mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/${postid}`, {
+        mutationFn: async (data) => {
+            return await fetch(`http://localhost:9000/api/post/${data.postid}`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({
+                    text: data.text
+                })
             })
             .then(res => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
-                }
-                else {
-                    return res.json();
+                return res.json();
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
                 }
             })
             .catch(err => setSiteError(err.message))
@@ -81,35 +89,40 @@ export const useEditPostMutation = ([postid, setSiteError]) => {
             await query_client.invalidateQueries({queryKey: ['posts']});
 
             const post_cache = query_client.getQueryData(['posts']);
-            const post_arr = post_cache.posts || [];
+            const post_arr = post_cache || [];
 
-            post_arr.forEach(post => {
-                if(post.id === postid) {
+            const updated_post_arr = {...post_arr};
+
+            updated_post_arr.posts.forEach(post => {
+                if(post.id === data.postid) {
                     post = {
                         ...post,
                         text: data.text,
-                        edited: data.edited
+                        edited: Date.now()
                     }
                 }
             });
+
+            query_client.setQueryData(['posts'], updated_post_arr);
 
             return {post_arr}
         },
         onError: (err, data, context) => {
             query_client.setQueryData(['posts'], context.post_arr);
         },
-        onSettled: async () => {
-            return await query_client.invalidateQueries({queryKey: ['posts']});
+        onSuccess: async () => {
+            await query_client.invalidateQueries({queryKey: ['posts']});
+            setText('');
         }
     });
 
     return mutation;
 };
 
-export const useSharePostMutation = ([user, postid, setSiteError]) => {
+export const useSharePostMutation = ([postid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/${postid}/share`, {
+            return await fetch(`http://localhost:9000/api/post/${postid}/share`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -117,11 +130,11 @@ export const useSharePostMutation = ([user, postid, setSiteError]) => {
                 }
             })
             .then(res => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
-                } 
-                else {
-                    return res.json();
+                return res.json();
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
                 }
             })
             .catch(err => setSiteError(err.message))
@@ -130,26 +143,32 @@ export const useSharePostMutation = ([user, postid, setSiteError]) => {
             await query_client.invalidateQueries({queryKey: ['posts']});
 
             const post_cache = query_client.getQueryData(['posts']);
-            const post_arr = post_cache.posts || [];
+            const log_cache = query_client.getQueryData(['logged']);
+            const post_arr = post_cache || [];
 
-            const shared_post = post_arr.find(post => post.id === postid);
+            const updated_post_arr = {...post_arr};
 
-            post_arr.push({
+            const shared_post = post_arr.posts.find(post => post.id === postid);
+
+            updated_post_arr.posts.push({
                 id: post_arr.length + 25,
                 original_poster: shared_post.original_poster,
                 text: shared_post.text,
                 posted: shared_post.posted,
                 original_group: shared_post.original_group,
-                shared_by: user,
-                edited: shared_post.edited
+                shared_by: log_cache.profile,
+                edited: shared_post.edited,
+                likes: []
             });
+
+            query_client.setQueryData(['posts'], updated_post_arr);
 
             return {post_arr};
         },
         onError: (err, data, context) => {
             query_client.setQueryData(['posts'], context.post_arr);
         },
-        onSettled: async () => {
+        onSuccess: async () => {
             await query_client.invalidateQueries({queryKey: ['posts']});
         }
     });
@@ -160,16 +179,16 @@ export const useSharePostMutation = ([user, postid, setSiteError]) => {
 export const useDeletePostMutation = ([postid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/${postid}`, {
+            return await fetch(`http://localhost:9000/api/post/${postid}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
             .then(res => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
-                }
-                else {
-                    return res.json();
+                return res.json();
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
                 }
             })
             .catch(err => setSiteError(err.message))
@@ -178,20 +197,20 @@ export const useDeletePostMutation = ([postid, setSiteError]) => {
             await query_client.invalidateQueries({queryKey: ['posts']});
 
             const post_cache = query_client.getQueryData(['posts']);
-            const post_arr = post_cache.posts || [];
+            const post_arr = post_cache || [];
+            
+            const updated_post_arr = {...post_arr};
 
-            post_arr.forEach((post, index) => {
-                if(post.id === postid) {
-                    post_arr.splice(index, 1);
-                }
-            });
+            updated_post_arr.posts.filter(post => post.id !== postid);
+
+            query_client.setQueryData(['posts'], updated_post_arr);
 
             return {post_arr}
         },
         onError: (err, data, context) => {
             query_client.setQueryData(['posts'], context.post_arr);
         },
-        onSettled: async () => {
+        onSuccess: async () => {
             await query_client.invalidateQueries({queryKey: ['posts']});
         }
     });
@@ -199,22 +218,26 @@ export const useDeletePostMutation = ([postid, setSiteError]) => {
     return mutation;
 };
 
-export const useCreateCommentMutation = ([postid, text, profile, setSiteError]) => {
+export const useCreateCommentMutation = ([postid, text, profile, setText, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/${postid}`, {
+            return await fetch(`http://localhost:9000/api/post/${postid}/comment`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({
+                    text: text,
+                    groupid: profile.title && profile.id
+                })
             })
             .then(res => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
-                }
-                else {
-                    return res.json();
+                return res.json();
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
                 }
             })
             .catch(err => setSiteError(err.message))
@@ -223,7 +246,9 @@ export const useCreateCommentMutation = ([postid, text, profile, setSiteError]) 
             await query_client.invalidateQueries({queryKey: ['comments']});
 
             const comment_cache = query_client.getQueryData(['comments']);
-            const comment_arr = comment_cache.comments || [];
+            const comment_arr = comment_cache || [];
+
+            const updated_comment_arr = {...comment_arr};
 
             const comment = {
                 id: comment_arr.length + 50,
@@ -238,31 +263,34 @@ export const useCreateCommentMutation = ([postid, text, profile, setSiteError]) 
                     group_image: profile.group_image
                 },
                 text: text,
-                posted: Data.now(),
+                posted: Date.now(),
                 reply_to: null,
                 likes: [],
                 replies: []
             }
 
-            comment_arr.push(comment);
+            updated_comment_arr.comments.push(comment);
+
+            query_client.setQueryData(['comments'], updated_comment_arr);
 
             return {comment_arr}
         },
         onError: (err, data, context) => {
             query_client.setQueryData(['comments'], context.comment_arr);
         },
-        onSettled: async () => {
+        onSuccess: async () => {
             await query_client.invalidateQueries({queryKey: ['comments']});
+            setText('');
         }
     });
 
     return mutation;
 };
 
-export const useEditCommentMutation = ([commentid, text, setSiteError]) => {
+export const useEditCommentMutation = ([commentid, text, setText, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/${commentid}`, {
+            return await fetch(`http://localhost:9000/api/comment/${commentid}`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
@@ -270,11 +298,11 @@ export const useEditCommentMutation = ([commentid, text, setSiteError]) => {
                 }
             })
             .then(res => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
-                }
-                else {
-                    return res.json();
+                return res.json();
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
                 }
             })
             .catch(err => setSiteError(err.message))
@@ -283,9 +311,11 @@ export const useEditCommentMutation = ([commentid, text, setSiteError]) => {
             await query_client.invalidateQueries({queryKey: ['comments']});
 
             const comment_cache = query_client.getQueryData(['comments']);
-            const comment_arr = comment_cache.comments || [];
+            const comment_arr = comment_cache || [];
 
-            comment_arr.forEach(comment => {
+            const updated_comment_arr = {...comment_arr};
+
+            updated_comment_arr.comments.forEach(comment => {
                 if(comment.id === commentid) {
                     comment = {
                         ...comment,
@@ -294,13 +324,16 @@ export const useEditCommentMutation = ([commentid, text, setSiteError]) => {
                 }
             });
 
+            query_client.setQueryData(['comments'], updated_comment_arr);
+
             return {comment_arr}
         },
         onError: (err, data, context) => {
             query_client.getQueryData(['comments'], context.comment_arr);
         },
-        onSettled: async () => {
+        onSuccess: async () => {
             await query_client.invalidateQueries({queryKey: ['comments']});
+            setText('');
         }
     });
 
@@ -310,16 +343,16 @@ export const useEditCommentMutation = ([commentid, text, setSiteError]) => {
 export const useDeleteCommentMutation = ([commentid, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/${commentid}`, {
+            return await fetch(`http://localhost:9000/api/comment/${commentid}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
-            .then(res => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
-                }
-                else {
-                    return res.json();
+            .then(res => {  
+                return res.json();
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
                 }
             })
             .catch(err => setSiteError(err.message))
@@ -328,20 +361,20 @@ export const useDeleteCommentMutation = ([commentid, setSiteError]) => {
             await query_client.invalidateQueries({queryKey: ['comments']});
 
             const comment_cache = query_client.getQueryData(['comments']);
-            const comment_arr = comment_cache.comments || [];
+            const comment_arr = comment_cache || [];
 
-            comment_arr.forEach((comment, index) => {
-                if(comment.id === commentid) {
-                    comment_arr.splice(index, 1);
-                }
-            });
+            const updated_comment_arr = {...comment_arr};
+
+            updated_comment_arr.comments.filter(comment => comment.id !== commentid);
+
+            query_client.setQueryData(['comments'], updated_comment_arr);
 
             return {comment_arr}
         },
         onError: (err, data, context) => {
             query_client.setQueryData(['comments'], context.comment_arr);
         },
-        onSettled: async () => {
+        onSuccess: async () => {
             await query_client.invalidateQueries({queryKey: ['comments']});
         }
     });

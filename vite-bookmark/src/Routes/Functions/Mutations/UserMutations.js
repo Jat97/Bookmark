@@ -9,11 +9,11 @@ export const useToggleHiddenMutation = (setSiteError) => {
                 credentials: 'include'
             })
             .then(res => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
-                }
-                else {
-                    return res.send();
+                return res.json();
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
                 }
             })
             .catch(err => setSiteError(err.message))
@@ -21,24 +21,24 @@ export const useToggleHiddenMutation = (setSiteError) => {
         onMutate: async () => {
             await query_client.invalidateQueries({queryKey: ['logged']});
 
-            const logged = query_client.getQueryData({queryKey: ['logged']});
+            const logged = query_client.getQueryData(['logged']);
 
-            query_client.setQueryData(['logged'], {
-                logged_user: {
-                    ...logged.logged_user,
-                    profile: {
-                        ...logged.logged_user.profile,
-                        hidden: logged.logged_user.hidden ? false : true
-                    }
-                }
-            });
+            const updated_logged = {
+                ...logged,
+                profile: {
+                    ...logged.profile,
+                    hidden: logged.profile.hidden ? false : true
+                }  
+            };
+
+            query_client.setQueryData(['logged'], updated_logged);
 
             return {logged};
         },
         onError: (err, data, context) => {
             query_client.setQueryData(['logged'], context.logged);
         },
-        onSettled: async () => {
+        onSuccess: async () => {
             await query_client.invalidateQueries({queryKey: ['logged']});
         }
     });
@@ -46,12 +46,12 @@ export const useToggleHiddenMutation = (setSiteError) => {
     return mutation;
 };
 
-export const useEditPictureMutation = ([file, setSiteError]) => {
+export const useEditPictureMutation = (setSiteError) => {
     const mutation = useMutation({
-        mutationFn: async () => {
+        mutationFn: async (data) => {
             const form = new FormData();
 
-            form.append('profilepic', file);
+            form.append('profilepic', data.file);
 
             return await fetch('http://localhost:9000/api/user/picture', {
                 method: 'PATCH',
@@ -59,27 +59,25 @@ export const useEditPictureMutation = ([file, setSiteError]) => {
                 body: form
             })
             .then((res) => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
-                }
-                else {
-                    return res.json();
+                return res.json();
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
                 }
             })
             .catch(err => setSiteError(err.message))
         },
-        onMutate: async () => {
+        onMutate: async (data) => {
             await query_client.invalidateQueries({queryKey: ['user']});
 
             const logged = query_client.getQueryData(['user']);
 
             query_client.setQueryData(['logged'], {
-                logged_user: {
-                    ...logged.logged_user,
-                    profile: {
-                        ...logged.logged_user.profile,
-                        profile_picture: file
-                    }
+                ...logged,
+                profile: {
+                    ...logged.profile,
+                    profile_picture: data.file
                 }
             });
 
@@ -88,7 +86,7 @@ export const useEditPictureMutation = ([file, setSiteError]) => {
         onError: (err, data, context) => {
             query_client.setQueryData(['logged'], context.logged);
         },
-        onSettled: async () => {
+        onSuccess: async () => {
             await query_client.invalidateQueries({queryKey: ['logged']});
         }
     });
@@ -96,7 +94,58 @@ export const useEditPictureMutation = ([file, setSiteError]) => {
     return mutation;
 };
 
-export const useLogOutMutation = ([setSiteError, navigate]) => {
+export const useCheckNotificationMutation = (setSiteError) => {
+    const mutation = useMutation({
+        mutationFn: async () => {
+            return await fetch('http://localhost:9000/api/notifications', {
+                method: 'PATCH',
+                credentials: 'include'
+            })
+            .then(res => {
+                return res.json();
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
+                }
+            })
+            .catch(err => setSiteError(err.message))
+        },
+        onMutate: async () => {
+            await query_client.invalidateQueries({queryKey: ['alerts']});
+
+            const alert_cache = query_client.getQueryData(['alerts']);
+            const alert_arr = alert_cache || [];
+
+            const updated_alert_arr = {...alert_arr};
+
+            updated_alert_arr.notifications.forEach((alert, index) => {
+                if(!alert.checked) {
+                     const new_alert = {
+                        ...alert,
+                        checked: true
+                    }
+                    
+                    updated_alert_arr.notifications.splice(0, new_alert, index)
+                }
+            });
+
+            query_client.setQueryData(['alerts'], updated_alert_arr);
+
+            return {alert_arr};
+        },
+        onError: (err, data, context) => {
+            query_client.setQueryData(['alerts'], context.alert_arr);
+        },
+        onSuccess: async () => {
+            await query_client.invalidateQueries({queryKey: ['alerts']});
+        }
+    });
+
+    return mutation;
+};
+
+export const useLogOutMutation = ([navigate, setGuest, setSiteError]) => {
     const mutation = useMutation({
         mutationFn: async () => {
             return await fetch('http://localhost:9000/api/logout', {
@@ -105,10 +154,15 @@ export const useLogOutMutation = ([setSiteError, navigate]) => {
             })
             .then(res => {
                 if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
+                    return res.json();
                 }
                 else {
                     return navigate('/api/login', {rewrite: true});
+                }
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
                 }
             })
             .catch(err => setSiteError(err.message))
@@ -119,13 +173,11 @@ export const useLogOutMutation = ([setSiteError, navigate]) => {
             const logged = query_client.getQueryData(['logged']);
 
             const logged_out_user = query_client.setQueryData(['logged'], {
-                logged_user: {
-                    ...logged.logged_user,
-                    profile: {
-                        ...logged.logged_user.profile,
-                        online: false
-                    } 
-                }
+                ...logged,
+                profile: {
+                    ...logged.profile,
+                    online: false
+                } 
             });
 
             query_client.setQueryData(['logged'], logged_out_user);
@@ -135,17 +187,19 @@ export const useLogOutMutation = ([setSiteError, navigate]) => {
         onError: (err, data, context) => {
             query_client.setQueryData(['logged'], context.logged);
         },
-        onSettled: async () => {
+        onSuccess: async () => {
             await query_client.invalidateQueries({queryKey: ['logged']});
+            
+            setGuest(false);
         }
     });
 
     return mutation;
 };
 
-export const useEditProfileMutation = ([user, data, setEditErrors, setSiteError]) => {
+export const useEditProfileMutation = ([setEditErrors, setPopup, setSiteError]) => {
     const mutation = useMutation({
-        mutationFn: async () => {
+        mutationFn: async (data) => {
             return await fetch('http://localhost:9000/api/user', {
                 method: 'PUT',
                 credentials: 'include',
@@ -153,69 +207,69 @@ export const useEditProfileMutation = ([user, data, setEditErrors, setSiteError]
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    first_name: data.first_name,
-                    last_name: data.last_name,
-                    alma_mater: data.alma_mater,
-                    degree: data.degree,
-                    role: data.role,
-                    description: data.description
+                    first_name: data.profile.first_name,
+                    last_name: data.profile.last_name,
+                    alma_mater: data.profile.alma_mater,
+                    degree: data.profile.degree,
+                    role: data.profile.role,
+                    description: data.profile.description
                 })
             })
             .then(res => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.status}`);
-                }
-                else {
-                    return res.json();
-                }
+                return res.json();
             })
             .then(json => {
-            if(json.errors) {
-                json.errors.errors.forEach(error => {
-                    setEditErrors((prevState) => ({
-                        ...prevState,
-                        [error.params] : error.message
-                    }));
-                })
-            }
+                if(json.errors) {
+                    json.errors.errors.forEach(error => {
+                        setEditErrors((prevState) => ({
+                            ...prevState,
+                            [error.params] : error.message
+                        }));
+                    });
+                }
+                else {
+                    setSiteError(json.error)
+                }
+
+                return json;
             })
-            .catch(err => setSiteError(err))
+            .catch(err => setSiteError(err.message))
         },
-        onMutate: async () => {
+        onMutate: async (data) => {
             await query_client.invalidateQueries({queryKey: ['logged']});
 
             const logged = query_client.getQueryData(['logged']);
 
             const updated_user  = {
-                logged_user: {
-                    ...logged.logged_user,
-                    profile: {
-                        first_name: data.first_name,
-                        last_name: data.last_name,
-                        alma_mater: data.alma_mater,
-                        degree: data.degree,
-                        status: data.status,
-                        description: data.description
-                    }
+                ...logged,
+                profile: {
+                    first_name: data.profile.first_name,
+                    last_name: data.profile.last_name,
+                    alma_mater: data.profile.alma_mater,
+                    degree: data.profile.degree,
+                    status: data.profile.status,
+                    description: data.profile.description
                 }
             }
 
             query_client.setQueryData(['logged'], updated_user);
 
-            return {user}
+            return {logged}
         },
         onError: (err, data, context) => {
-            query_client.setQueryData(['logged'], context.user);
+            query_client.setQueryData(['logged'], context.logged);
         },
-        onSettled: async () => {
+        onSuccess: async () => {
             await query_client.invalidateQueries({queryKey: ['logged']});
+
+            setPopup(true);
         }
     });
 
     return mutation;
 }
 
-export const useDeleteAccountMutation = (setSiteError) => {
+export const useDeleteAccountMutation = (navigate, setSiteError) => {
     const mutation = useMutation({
         mutationFn: async () => {
             return await fetch('http://localhost:9000/api/user', {
@@ -224,15 +278,20 @@ export const useDeleteAccountMutation = (setSiteError) => {
             })
             .then(res => {
                 if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
+                    return res.json();
                 }
                 else {
-                    return res.send();
+                    navigate('/api/login', {rewrite: true});
+                }
+            })
+            .then(json => {
+                if(json.error) {
+                    setSiteError(json.error)
                 }
             })
             .catch(err => setSiteError(err.message))
         },
-        onSettled: async () => {
+        onSuccess: async () => {
             await query_client.invalidateQueries({queryKey: ['logged']});
         }
     });

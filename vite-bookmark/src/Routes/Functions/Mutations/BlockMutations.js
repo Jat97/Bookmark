@@ -1,10 +1,10 @@
 import {useMutation} from '@tanstack/react-query';
 import {query_client} from '../../../client';
 
-export const useBlockUserMutation = ([user, setSiteError]) => {
+export const useBlockUserMutation = (setSiteError) => {
     const mutation = useMutation({
-        mutationFn: () => {
-            fetch(`http://localhost:9000/api/${user.id}/block`, {
+        mutationFn: (data) => {
+            fetch(`http://localhost:9000/api/user/${data.user.id}/block`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -12,26 +12,26 @@ export const useBlockUserMutation = ([user, setSiteError]) => {
                 }
             })
             .then(res => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
-                }
-                else {
-                    return res.json();
+                return res.json();
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
                 }
             })
             .catch(err => setSiteError(err.message))
         },
-        onMutate: async () => {
+        onMutate: async (data) => {
             await query_client.invalidateQueries({queryKey: ['blocked']});
 
             const block_cache = query_client.getQueryData('blocked');
             const block_arr = block_cache.blocked_users || [];
 
             block_arr.push({
-                id: user.id,
-                first_name: user.first_name,
-                last_name: user.last_name,
-                profile_picture: user.profile_picture
+                id: data.user.id,
+                first_name: data.user.first_name,
+                last_name: data.user.last_name,
+                profile_picture: data.user.profile_picture
             });
 
             query_client.setQueryData(['blocked'], block_arr);
@@ -49,31 +49,31 @@ export const useBlockUserMutation = ([user, setSiteError]) => {
     return mutation;
 };
 
-export const useUnblockUserMutation = ([userid, setSiteError]) => {
+export const useUnblockUserMutation = (setSiteError) => {
     const mutation = useMutation({
-        mutationFn: () => {
-            fetch(`http://localhost:9000/api/${userid}/unblock`, {
+        mutationFn: (data) => {
+            fetch(`http://localhost:9000/api/user/${data.userid}/unblock`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
             .then(res => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
-                }
-                else {
-                    res.send();
+                return res.json();
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
                 }
             })
             .catch(err => setSiteError(err.message))
         },
-        onMutate: async () => {
+        onMutate: async (data) => {
             await query_client.invalidateQueries({queryKey: ['blocked']});
 
             const block_cache = query_client.setQueryData(['blocked']);
             const block_arr = block_cache.blocked || [];
 
             const new_block_arr = block_arr.forEach((block, index) => {
-                if(block.id === userid) {
+                if(block.id === data.userid) {
                     block_arr.splice(index, 1);
                 }
             });
@@ -85,7 +85,7 @@ export const useUnblockUserMutation = ([userid, setSiteError]) => {
         onError: (err, data, context) => {
             query_client.setQueryData(['blocked'], context.block_arr);
         },
-        onSettled: async () => {
+        onSuccess: async () => {
             await query_client.invalidateQueries({queryKey: ['blocked']});
         }
     });

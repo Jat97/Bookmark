@@ -1,26 +1,87 @@
 import {useMutation} from '@tanstack/react-query';
 import {query_client} from '../../../client';
 
-export const useSendMessageMutation = ([user, file, setSiteError]) => {
+export const useCreateChatMutation = ([setSelectedChat, setSiteError]) => {
     const mutation = useMutation({
-        mutationFn: async () => {
+        mutationFn: async (data) => {
+            return await fetch(`http://localhost:9000/api/chat/${data.user.id}`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => {
+                return res.json();
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
+                }
+
+                return json;
+            })
+            .catch(err => setSiteError(err))
+        },
+        onMutate: async (data) => {
+            await query_client.invalidateQueries({queryKey: ['chats']});
+
+            const chat_cache = query_client.getQueryData(['chats']);
+            const chat_arr = chat_cache.chats || [];
+
+            const updated_chat_arr = [...chat_arr];
+
+            updated_chat_arr.push({
+                chat: {
+                    id: chat_arr.length + 20,
+                    user: data.user,
+                    last_message_sent: null
+                },
+                messages: []
+            });
+
+            query_client.setQueryData(['chats'], {chats: updated_chat_arr});
+
+            return {chat_arr};
+        },
+        onError: (err, data, context) => {
+            query_client.setQueryData(['chats'], context.chat_arr);
+        },
+        onSuccess: async (data) => {
+            await query_client.invalidateQueries({queryKey: ['chats']});
+            const chat_cache = query_client.getQueryData(['chats']);
+
+            const found_chat = chat_cache.chats.find(chat => chat.chat.user.id === data.user.id);
+
+            setSelectedChat(found_chat);
+        }
+    });
+
+    return mutation;
+};
+
+export const useSendMessageMutation = ([setText, setSiteError]) => {
+    const mutation = useMutation({
+        mutationFn: async (data) => {
             const form = new FormData();
 
-            FormData.append([file], 'upload.jpg');
+            if(file) {
+                form.append('chatimage', data.file);
+            }
 
-            return await fetch(`http://localhost:9000/api/${user.id}/message`, {
+            form.append('text', data.text);
+            
+            return await fetch(`http://localhost:9000/api/chat/${data.chat.user.id}/message`, {
                 method: 'POST',
                 credentials: 'include',
                 body: form
             })
             .then(res => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
-                }
-                else {
-                    const data = res.json();
-
-                    return data;
+                return res.json();
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
                 }
             })
             .catch(err => setSiteError(err.message))
@@ -28,63 +89,90 @@ export const useSendMessageMutation = ([user, file, setSiteError]) => {
         onMutate: async (data) => {
             await query_client.invalidateQueries({queryKey: ['chats']});
 
-            const message_cache = query_client.getQueryData(['chats']);
-            const message_arr = message_cache.messages || [];
+            const chat_cache = query_client.getQueryData(['chats']);
+            const log_cache = query_client.getQueryData(['logged']);
+            const chat_arr = chat_cache.chats || [];
 
-            message_arr.push({
-                receiving_user: user,
-                image: data.image,
-                text: data.text,
-                sent: Date.now()
+            var updated_chat_arr;
+
+            updated_chat_arr = [...chat_arr];
+
+            updated_chat_arr.forEach(item => {
+                item.chat.last_message_sent = {
+                    text: data.text,
+                    image: data.file,
+                    sending_user: log_cache.profile.id,
+                    receiving_user: data.chat.user.id,
+                    sent: Date.now(),
+                    checked: false
+                }
+                
+                if(item.chat.user.id === data.chat.user.id) {
+                    item.messages.push({
+                        sending_user: log_cache.profile.id,
+                        receiving_user: data.chat.user.id,
+                        image: data.file,
+                        text: data.text,
+                        sent: Date.now()
+                    });
+                }
             });
 
-            query_client.setQueryData(['chats'], message_arr);
+            query_client.setQueryData(['chats'], {chats: updated_chat_arr});
 
-            return {message_arr}
+            return {chat_cache}
         },
         onError: (err, data, context) => {
-            query_client.setQueryData(['chats'], context.message_arr);
+            query_client.setQueryData(['chats'], context.chat_cache);
         },
-        onSettled: async () => {
+        onSuccess: async () => {
             await query_client.invalidateQueries(['chats']);
+            setText('');
         }
     });
 
     return mutation;
 };
 
-export const deleteChatMutation = ([chatid, setSiteError]) => {
+export const useDeleteChatMutation = (setSiteError) => {
     const mutation = useMutation({
-        mutationFn: async () => {
-            return await fetch(`http://localhost:9000/api/${chatid}`, {
+        mutationFn: async (data) => {
+            return await fetch(`http://localhost:9000/api/chat/${data.id}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
             .then(res => {
-                if(!res.ok) {
-                    throw Error(`Error ${res.status}: ${res.statusText}`);
+                return res.json();
+            })
+            .then(json => {
+                if(json.server_error) {
+                    setSiteError(json.server_error);
                 }
             })
             .catch(err => setSiteError(err.message))
         },
-        onMutate: async () => {
+        onMutate: async (id) => {
             await query_client.invalidateQueries({queryKey: ['chats']});
 
             const chat_cache = query_client.getQueryData(['chats']);
             const chat_arr = chat_cache || [];
 
-            chat_arr.forEach((chat, index) => {
-                if(chat.chat.id === chatid) {
-                    chat_arr.splice(index, 1);
+            const updated_chat_arr = {...chat_arr};
+
+            updated_chat_arr.chats.forEach((chat, index) => {
+                if(chat.id === id) {
+                    updated_chat_arr.chats.splice(index, 1);
                 }
             });
+
+            query_client.setQueryData(['chats'], updated_chat_arr);
 
             return {chat_arr};
         },
         onError: (err, data, context) => {
             query_client.setQueryData(['chats'], context.chat_arr);
         },
-        onSettled: async () => {
+        onSuccess: async () => {
             await query_client.invalidateQueries({queryKey: ['chats']});
         }
     });
