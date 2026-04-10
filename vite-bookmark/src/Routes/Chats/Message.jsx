@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
-const Message = ({message, chat, is_logged}) => {
+const Message = ({message, is_logged}) => {
     return (
         <div className={`flex flex-col w-full p-1 ${is_logged ? 'items-end' : 'items-start'}`}>
             {message.image &&
@@ -12,12 +12,11 @@ const Message = ({message, chat, is_logged}) => {
             <div className={`word-break rounded-tl-md rounded-tr-md w-fit
                 ${is_logged ? 'rounded-br-xs rounded-bl-md bg-amber-400' : 'rounded-br-md rounded-bl-xs bg-stone-400'}
                 ${message.text && 'p-1' }`}>
-                <p> {message.text} </p>
+                <span> {message.text} </span>
             </div>
 
-            {message.sent === chat.last_message_sent && 
-                <p className='text-xs text-slate-200'> {dayjs().to(message.sent)} </p>
-            }
+           
+            <span className='text-xs text-slate-200'> {dayjs().to(message.sent)} </span>
         </div>
     )
 }
