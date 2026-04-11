@@ -279,16 +279,16 @@ If the user has a usertoken, and the request is successful, then they will recei
 
 **Response Example**
 
-{
-    "profile": {
-        "id": 3,
-        "first_name": "Johnny",
-        "last_name": "Johnson",
-        "alma_mater": "University of Demonstration",
-        "degree": "Bachelor's",
-        "role": "Reader",
+    {
+        "profile": {
+            "id": 3,
+            "first_name": "Johnny",
+            "last_name": "Johnson",
+            "alma_mater": "University of Demonstration",
+            "degree": "Bachelor's",
+            "role": "Reader",
+        }
     }
-}
 
 #### PATCH /api/user/picture
 
@@ -965,13 +965,13 @@ If the user has a usertoken, and the request is successful, then they will recei
 
 **Response Example**
 
-{
-    "ban": {
-        "id": 90,
-        "banned_user": 5,
-        "banning_group": 60
+    {
+        "ban": {
+            "id": 90,
+            "banned_user": 5,
+            "banning_group": 60
+        }
     }
-}
 
 #### DELETE /api/group/{groupid}/{userid}/unban
 
