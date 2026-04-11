@@ -4,6 +4,8 @@ info:
   description: An API for users who love literature.
   version: 0.0.0
 
+  description: For further information on this API, see https://github.com/Jat97/Bookmark.
+
 servers:
   - url: "http://api.bookmark.com"
     description: Main server
