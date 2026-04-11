@@ -66,11 +66,9 @@ None
 
 If the request is successful, then users will receive a 200 HTTP status code and an array containing the data for accounts registered to Bookmark.
 
-    + If a user has been blocked by the logged-in user, or if the logged-in user has been blocked by another user, then those accounts will be omitted from the array.
+If a user has been blocked by the logged-in user, or if the logged-in user has been blocked by another user, then those accounts will be omitted from the array. The logged-in user's data will be omitted from the array as well, as there is a separate endpoint to retrieve it.
 
-        + Because there is a separate endpoint to retrieve data for the logged-in user, their account will be omitted from the array as well.
-
-    + Because guests cannot block or be blocked by other users, they will receive the full list of accounts.
+If the user has a guesttoken, then they will receive the full array of users.
 
 **Response Example**
 
@@ -210,7 +208,7 @@ None
 
 If the request is successful, then the user will receive a 201 HTTP status code and a usertoken.
 
-    + Because this endpoint does not redirect elsewhere after a succesful request, any redirects must be handled in the client.    
+Because this endpoint does not redirect elsewhere after a succesful request, any redirects must be handled in the client.    
 
 If the user submits an email address that is registered to another user, or if they submit two separate passwords, then they will receive a 400 HTTP status code and an accompanying error.
 
@@ -237,9 +235,9 @@ None
 
 If the request is successful, then the user will receive a 200 HTTP status code and a usertoken.
 
-    + Because this endpoint does not redirect elsewhere after a successful request, any redirects must be handled in the client.
-
 If the user submits an email address that is not registered to an account, or if they submit an incorrect or empty password, then they will receive a 400 HTTP status code and an accompanying error.
+
+Because this endpoint does not redirect elsewhere after a successful request, any redirects must be handled in the client.
 
 #### POST /api/login/guest
 
@@ -304,19 +302,17 @@ None
 
 > curl -X PATCH "http://api.bookmark.com/api/user/picture" -H "Cookie: usertoken=your_token" -F "profilepicture=@/express-bookmark/public/profilepics""
 
-    + The file uploaded to profilepics must be an image. 
+The file uploaded to profilepics must be an image. 
 
-        + Images with .jpg extensions will be accepted, though other extensions are untested. 
-
-        + There are no file size restrictions.
+There are no file size restrictions.
 
 **Response**
 
 If the user has a usertoken, and the request is successful, then they will receive a 200 HTTP status code and, an object containing the data for their profile picture.
 
-    + When uploading an image, the API will return a URL that will then be saved to the user's "profile_picture" property.
+When uploading an image, the API will return a URL that will then be saved to the user's "profile_picture" property.
 
-    + If the user makes a request without uploading an image, then they will receive a 200 HTTP status code without an accompanying object.
+If the user makes a request without uploading an image, then they will receive a 200 HTTP status code without an accompanying object.
 
 **Response Example**
 
@@ -345,7 +341,7 @@ None
 
 If the user has a usertoken, and the request is successful, then they will receive a 200 HTTP status code and an object containing their updated status.
 
-    + Because this endpoint does not require a request body, the user's hidden status will update depending on its initial value. If the user's hidden status is set to true, then it will update to false, and vice versa.
+The user's hidden status will update depending on its initial value. If the user's hidden status is set to true, then it will update to false, and vice versa.
 
 **Response Example**
 
@@ -376,57 +372,57 @@ If the user has a usertoken, and the request is successful, then they will recei
 
 **Response Example**
 
-{
-    "notifications": [
-        {
-            "id": 10,
-            "alerting_user": {
-                "first_name": "Andrew",
-                "last_name": "Taylor",
-                "profile_picture": null
+    {
+        "notifications": [
+            {
+                "id": 10,
+                "alerting_user": {
+                    "first_name": "Andrew",
+                    "last_name": "Taylor",
+                    "profile_picture": null
+                },
+                "post": {
+                    "id": 20,
+                    "text": "Has anyone ever read Demons? I think it's underappreciated compared to Dostoevsky's other works."
+                },
+                "text": "liked your post.",
+                "sent": "2026-02-27",
+                "checked": false 
             },
-            "post": {
-                "id": 20,
-                "text": "Has anyone ever read Demons? I think it's underappreciated compared to Dostoevsky's other works."
-            },
-            "text": "liked your post.",
-            "sent": "2026-02-27",
-            "checked": false 
-        },
-        {
-            "id": 11,
-            "alerting_user": {
-                "id": 2,
-                "first_name": "Catherine",
-                "last_name": "Bush",
-                "profile_picture": "https://examplestorage.com/examplestring1/image/upload/examplestring2/image.jpg"
-            },
-            "post": {
-                "id": 23,
-                "text": "Can anyone recommend one of Herman Hesse's novels? I remember loving Siddhartha in high school."
+            {
+                "id": 11,
+                "alerting_user": {
+                    "id": 2,
+                    "first_name": "Catherine",
+                    "last_name": "Bush",
+                    "profile_picture": "https://examplestorage.com/examplestring1/image/upload/examplestring2/image.jpg"
+                },
+                "post": {
+                    "id": 23,
+                    "text": "Can anyone recommend one of Herman Hesse's novels? I remember loving Siddhartha in high school."
+                }
+                "text": "commented on your post: Steppenwolf is pretty beloved, if you haven't read that one yet.",
+                "sent": "2026-03-05",
+                "checked": false
             }
-            "text": "commented on your post: Steppenwolf is pretty beloved, if you haven't read that one yet.",
-            "sent": "2026-03-05",
-            "checked": false
-        }
-    ],
-    "requests": [
-        {
-            "id": 6,
-            "first_name": "Roderick",
-            "last_name": "Stewart",
-            "profile_picture": "https://examplestorage.com/examplestring5/image/upload/examplestring6/picture.jpg",
-        }
-    ],
-    "pending": [
-        {
-            "id": 5,
-            "first_name": "David",
-            "last_name": "Jones",
-            "profile_picture": "https://examplestorage.com/examplestring3/image/upload/examplestring4/profile.jpg",
-        }
-    ]
-}
+        ],
+        "requests": [
+            {
+                "id": 6,
+                "first_name": "Roderick",
+                "last_name": "Stewart",
+                "profile_picture": "https://examplestorage.com/examplestring5/image/upload/examplestring6/picture.jpg",
+            }
+        ],
+        "pending": [
+            {
+                "id": 5,
+                "first_name": "David",
+                "last_name": "Jones",
+                "profile_picture": "https://examplestorage.com/examplestring3/image/upload/examplestring4/profile.jpg",
+            }
+        ]
+    }
 
 #### PATCH /api/notifications
 
@@ -444,9 +440,7 @@ None
 
 If the user has a usertoken, and the request is successful, then they will receive a 200 HTTP status code.
 
-    + Because this endpoint does not require a request body, notifications will be updated based on the value of their "checked" property. If the "checked" value is set to false, then it will be updated to true.
-
-        + If all notifications have already been checked, then no changes will be made.
+Notifications will be updated based on the value of their "checked" property. If the "checked" value is set to false, then it will be updated to true. If all notifications have already been checked, then no changes will be made.
 
 #### PATCH /api/logout
 
@@ -482,9 +476,9 @@ None
 
 If the user has a usertoken, and the request is successful, then they will receive a 200 HTTP status code in addition to their token being removed.
 
-    + Chats, messages, posts, comments, and groups created by the user will be deleted, as well as notifications received by the user.
+Chats, messages, posts, comments, and groups created by the user will be deleted, as well as notifications received by the user.
 
-    + Because this endpoint does not redirect elsewhere after a successful request, any redirects must be handled in the client.
+Because this endpoint does not redirect elsewhere after a successful request, any redirects must be handled in the client.
 
 ## Friends
 
@@ -672,90 +666,88 @@ None
 
 **Response**
 
-If the request is successful, then the user will receive a 200 HTTP status code and an array containing all groups created on Bookmark, as well as their members.
+If the request is successful, then the user will receive a 200 HTTP status code and an array containing all groups created on Bookmark, as well as their members. The data received will be same for both users and guests.
 
-    + The data received will be same for both users and guests.
-
-    + Users who are also moderators of their own groups will receive two additional arrays containing data for group requests and users that they have banned.
+Users who are also moderators of their own groups will receive two additional arrays containing data for group requests and users that they have banned.
 
 **Response Example**
 
-{
-    "groups": [
-        {
-            "id": 60,
-            "title": "Dostoevsky Fan Club",
-            "description": "We're a group dedicated to Dostoevsky. We primarily discuss his works, but we'll sometimes talk about the author himself.",
-            "group_image": "https://examplestorage.com/examplestring7/image/upload/examplestring8/fyodr.jpg",
-            "moderator": {
-                "id": 3,
-                "first_name": "John",
-                "last_name": "Johnson",
-                "profile_picture": null 
+    {
+        "groups": [
+            {
+                "id": 60,
+                "title": "Dostoevsky Fan Club",
+                "description": "We're a group dedicated to Dostoevsky. We primarily discuss his works, but we'll sometimes talk about the author himself.",
+                "group_image": "https://examplestorage.com/examplestring7/image/upload/examplestring8/fyodr.jpg",
+                "moderator": {
+                    "id": 3,
+                    "first_name": "John",
+                    "last_name": "Johnson",
+                    "profile_picture": null 
+                },
+                "private": false,
+                "created": "2026-03-10",
+                "members": [
+                    {
+                        "id": 2,
+                        "first_name": "Catherine",
+                        "last_name": "Bush",
+                        "profile_picture": "https://examplestorage.com/examplestring1/image/upload/examplestring2/image.jpg"
+                    },
+                    {
+                        "id": 5,
+                        "first_name": "David",
+                        "last_name": "Jones",
+                        "profile_picture": "https://examplestorage.com/examplestring3/image/upload/examplestring4/image.jpg"
+                    }
+                ],
+                "banned_users": [
+                    {
+                        "id": 4,
+                        "first_name": "Lewis",
+                        "last_name": "Reed",
+                        "profile_picture": null
+                    }
+                ],
+                "requests": [
+                    {
+                        "id": 1,
+                        "first_name": "Andrew",
+                        "last_name": "Taylor",
+                        "profile_picture": null
+                    }
+                ]
             },
-            "private": false,
-            "created": "2026-03-10",
-            "members": [
-                {
+            {
+                "id": 61,
+                "title": "Let's Talk Victorian",
+                "description": "The place for Victorian enthusiasts. From Tennyson to Wilde, we cover all the writers active during Victoria's reign. Every day, we discuss poetry, and every Tuesday, we host group reading sessions. Come and join us!",
+                "group_image": null,
+                "moderator": {
                     "id": 2,
                     "first_name": "Catherine",
                     "last_name": "Bush",
                     "profile_picture": "https://examplestorage.com/examplestring1/image/upload/examplestring2/image.jpg"
                 },
-                {
-                    "id": 5,
-                    "first_name": "David",
-                    "last_name": "Jones",
-                    "profile_picture": "https://examplestorage.com/examplestring3/image/upload/examplestring4/image.jpg"
-                }
-            ],
-            "banned_users": [
-                {
-                    "id": 4,
-                    "first_name": "Lewis",
-                    "last_name": "Reed",
-                    "profile_picture": null
-                }
-            ],
-            "requests": [
-                {
-                    "id": 1,
-                    "first_name": "Andrew",
-                    "last_name": "Taylor",
-                    "profile_picture": null
-                }
-            ]
-        },
-        {
-            "id": 61,
-            "title": "Let's Talk Victorian",
-            "description": "The place for Victorian enthusiasts. From Tennyson to Wilde, we cover all the writers active during Victoria's reign. Every day, we discuss poetry, and every Tuesday, we host group reading sessions. Come and join us!",
-            "group_image": null,
-            "moderator": {
-                "id": 2,
-                "first_name": "Catherine",
-                "last_name": "Bush",
-                "profile_picture": "https://examplestorage.com/examplestring1/image/upload/examplestring2/image.jpg"
-            },
-            "private": true,
-            "created": "2026-03-12",
-            "members": [
-                {
-                    "id": 1,
-                    "first_name": "Andrew",
-                    "last_name": "Taylor",
-                    "profile_picture": null
-                },
-                {
-                    "id": 5,
-                    "first_name": "David",
-                    "last_name": "Jones",
-                    "profile_picture": "https://examplestorage.com/examplestring3/image/upload/examplestring4/image.jpg"
-                }
-            ]
-        }
-    ]
-}
+                "private": true,
+                "created": "2026-03-12",
+                "members": [
+                    {
+                        "id": 1,
+                        "first_name": "Andrew",
+                        "last_name": "Taylor",
+                        "profile_picture": null
+                    },
+                    {
+                        "id": 5,
+                        "first_name": "David",
+                        "last_name": "Jones",
+                        "profile_picture": "https://examplestorage.com/examplestring3/image/upload/examplestring4/image.jpg"
+                    }
+                ]
+            }
+        ]
+    }
 
 #### POST /api/group
 
@@ -781,9 +773,9 @@ None
 
 If the user has a usertoken, and the request is successful, then the user will receive both a 201 HTTP status code and an object containing data for their new group.
 
-    + Because this endpoint doesn't redirect to the new group's URL after a successful request, the redirect must be handled in the client.
-
 If the user enters a name that belongs to another group, then they will receive a 400 HTTP status code and an accompanying error.
+
+Because this endpoint doesn't redirect to the new group's URL after a successful request, the redirect must be handled in the client.
 
 **Response Example**
 
@@ -811,11 +803,9 @@ Users can edit the information for their group.
 
 > curl -X PUT "http://api.bookmark.com/api/group/62" -H "Cookie: usertoken=your_token" -F "groupimage=@/express-bookmark/public/groupimages" -F "title=Japanese Literary Circle" -F "description=We discuss Japanese literature and its impacts on both Japanese culture and the broader literary world. -F "private=true"
 
-    + The file uploaded to groupimages must be an image.
+The file uploaded to groupimages must be an image.
 
-        + The server accepts .jpg extensions, though other extensions are untested.
-
-        + There are no file size restrictions.
+There are no file size restrictions.
 
 **Request Error Example**
 
@@ -825,7 +815,7 @@ Users can edit the information for their group.
 
 If the user has a usertoken, and the request is successful, then they will receive a 200 HTTP status code and an object containing the updated group data.
 
-    + If a file is uploaded to the server, then the API will return a URL that will then be saved to the group's "group_image" property.
+If a file is uploaded to the server, then the API will return a URL that will then be saved to the group's "group_image" property.
 
 If the user submits a name that belongs to another group, then they will receive a 400 HTTP status code and an accompanying error.
 
@@ -855,9 +845,7 @@ Users who moderate their own groups can hide them from other users.
 
 **Response**
 
-If the user has a usertoken, and the request is successful, then they will receive a 200 HTTP status code and an object containing the updated privacy status.
-
-    + Because this endpoint does not require a request body, the privacy status of the group will update based on its initial value. If "private" was set to true, then it will be updated to false, and vice versa.
+If the user has a usertoken, and the request is successful, then they will receive a 200 HTTP status code and an object containing the updated privacy status. The privacy status of the group will update based on its initial value. If "private" was set to true, then it will be updated to false, and vice versa.
 
 **Response Example**
 
@@ -973,9 +961,7 @@ Group moderators can ban users from their groups.
 
 **Response**
 
-If the user has a usertoken, and the request is successful, then they will receive a 201 HTTP status code and an object containing the ids of the banned user and the group that banned them.
-
-    + If the banned user was a member of the group that banned them, then they will be removed as a member as well.
+If the user has a usertoken, and the request is successful, then they will receive a 201 HTTP status code and an object containing the ids of the banned user and the group that banned them. If the banned user was a member of the group that banned them, then they will be removed as a member as well.
 
 **Response Example**
 
@@ -1019,11 +1005,9 @@ Users can delete the groups they've created.
 
 **Response**
 
-If the user has a usertoken, and the request is successful, then they will receive a 200 HTTP status code.
+If the user has a usertoken, and the request is successful, then they will receive a 200 HTTP status code. In addition, all posts, comments, requests, notifications, and memberships associated with the group will be deleted.
 
-    + In addition, all posts, comments, requests, notifications, and memberships associated with the group will be deleted.
-
-    + Because this endpoint does not redirect elsewhere after a successful request, redirects must be handled in the client. 
+Because this endpoint does not redirect elsewhere after a successful request, any redirects must be handled in the client. 
 
 ## Posts
 
@@ -1147,7 +1131,7 @@ None
         groupid: null
     }
 
-        + groupid will only have a value if the user is posting on behalf of a group. Otherwise, it is always null.
+groupid will only have a value if the user is posting on behalf of a group. Otherwise, it is always null.
 
 **Response**
 
@@ -1213,9 +1197,7 @@ Users have the ability to like posts.
 
 **Response**
 
-If the user has a usertoken, and the request is successful, then they will receive both a 201 HTTP status code and an object containing the updated post data. 
-
-    + If the liked post was not made by the user, then a notification will be sent to the original poster. 
+If the user has a usertoken, and the request is successful, then they will receive both a 201 HTTP status code and an object containing the updated post data. If the liked post was not made by the user, then a notification will be sent to the original poster. 
 
 **Response Example**
 
@@ -1241,9 +1223,7 @@ Users can undo likes they've made on another user's posts.
 
 **Response**
 
-If the user has a usertoken, and the request is successful, then they will receive a 200 HTTP status code.
-
-    + In addition, if a notification was sent when the post was liked, then it will be deleted alongside the like.
+If the user has a usertoken, and the request is successful, then they will receive a 200 HTTP status code. In addition, if a notification was sent when the post was liked, then it will be deleted alongside the like.
 
 #### POST /api/post/{postid}/share
 
@@ -1261,7 +1241,7 @@ Users can share posts from other users.
 
 If the user has a usertoken, then they will receive a 201 HTTP status code and an object containing data for the post that was shared.
 
-    + Because the API treats shared posts as separate from original posts, the returned object will be a newly-created post.
+Because the API treats shared posts as separate from original posts, the returned object will be a newly-created post.
 
 **Response Example**
 
@@ -1292,11 +1272,9 @@ Users can delete the posts they've created.
 
 **Response**
 
-If the user has a usertoken, and the request is successful, then they will receive a 200 HTTP status code.
+If the user has a usertoken, and the request is successful, then they will receive a 200 HTTP status code. In addition, all comments and likes associated with the post will be deleted.
 
-    + In addition, all comments and likes associated with the post will be deleted.
-
-    + Because this endpoint does not redirect elsewhere after a successful request, any redirects must be handled in the client.
+Because this endpoint does not redirect elsewhere after a successful request, any redirects must be handled in the client.
 
 ## Comments
 
@@ -1329,45 +1307,45 @@ View the comments for a post.
 
 If the user has a usertoken, then they will receive the comments posted by users who have not blocked or been blocked by them.
 
-Because guests cannot block or be blocked by other users, they will receive every comment associated with the post.
+If the user has a guesttoken, then they will receive the full array of comments for the post.
 
 **Response Example**
 
-{
-    "comments": [
-        {
-            "id": 100,
-            "commenting_user": {
-                "id": 2,
-                "first_name": "Catherine",
-                "last_name": "Bush",
-                "profile_picture": "https://examplestorage.com/examplestring1/image/upload/examplestring2/image.jpg"
+    {
+        "comments": [
+            {
+                "id": 100,
+                "commenting_user": {
+                    "id": 2,
+                    "first_name": "Catherine",
+                    "last_name": "Bush",
+                    "profile_picture": "https://examplestorage.com/examplestring1/image/upload/examplestring2/image.jpg"
+                },
+                "commenting_group": null,
+                "text": "Steppenwolf is pretty beloved, if you haven't read that one yet.",
+                "posted": "2026-03-04",
+                "reply_to": null,
+                "edited": null,
+                "likes": [],
+                "replies": []
             },
-            "commenting_group": null,
-            "text": "Steppenwolf is pretty beloved, if you haven't read that one yet.",
-            "posted": "2026-03-04",
-            "reply_to": null,
-            "edited": null,
-            "likes": [],
-            "replies": []
-        },
-        {
-            "id": 101,
-            "commenting_user": {
-                "id": 1,
-                "first_name": "Andrew",
-                "last_name": "Taylor",
-                "profile_picture": null
-            },
-            "commenting_group": null,
-            "text": "I'm not sure if I've ever read Siddhartha. Does it have anything to do with Siddhartha Gautama?",
-            "posted": "2026-03-05",
-            "edited": null,
-            "likes": [],
-            "replies": []
-        }
-    ]
-}
+            {
+                "id": 101,
+                "commenting_user": {
+                    "id": 1,
+                    "first_name": "Andrew",
+                    "last_name": "Taylor",
+                    "profile_picture": null
+                },
+                "commenting_group": null,
+                "text": "I'm not sure if I've ever read Siddhartha. Does it have anything to do with Siddhartha Gautama?",
+                "posted": "2026-03-05",
+                "edited": null,
+                "likes": [],
+                "replies": []
+            }
+        ]
+    }
 
 #### POST /api/post/{postid}/comment
 
@@ -1449,9 +1427,7 @@ Users can like other user's comments.
 
 **Response**
 
-If the user has a usertoken, and the request is successful, then they will receive a 201 HTTP status code and an object containing the ids of the user and the liked comment.
-
-    + If the comment was not posted by the logged-in user, then a notification will be sent to the original poster.
+If the user has a usertoken, and the request is successful, then they will receive a 201 HTTP status code and an object containing the ids of the user and the liked comment. If the comment was not posted by the logged-in user, then a notification will be sent to the original poster.
 
 **Response Example**
 
@@ -1477,9 +1453,7 @@ Users can undo a like made on another user's comment.
 
 **Response**
 
-If the user has a usertoken, and the request is successful, they will receive a 200 HTTP status code.
-
-    + If a notification was sent when the comment was liked, then it will be deleted as well.
+If the user has a usertoken, and the request is successful, they will receive a 200 HTTP status code. If a notification was sent when the comment was liked, then it will be deleted as well.
 
 #### DELETE /api/comment/{commentid}
 
@@ -1495,11 +1469,9 @@ Users can delete comments that they've posted.
 
 **Response**
 
-If the user has a usertoken, and the request is successful, then they will receive a 200 HTTP status code.
+If the user has a usertoken, and the request is successful, then they will receive a 200 HTTP status code. All associated likes and replies will be deleted in addition to the comment.
 
-    + All associated likes and replies will be deleted in addition to the comment.
-
-        + If a notification was created when the comment was posted, then it will be deleted as well.
+If a notification was created when the comment was posted, then it will be deleted as well.
 
 ## Chats
 
@@ -1637,7 +1609,7 @@ Users can read all unread messages from a chat.
 
 If the user has a usertoken, and the request is successful, then they will receive a 200 HTTP status code.
 
-    + Because this endpoint does not require a request body, the server will check to see if there are any unread messages from the other user. If there are, then the "checked" property of each message will be set to true.
+Because this endpoint does not require a request body, the server will check to see if there are any unread messages from the other user. If there are, then the "checked" property of each message will be set to true.
 
 #### POST /api/chat/{userid}/message
 
@@ -1653,9 +1625,7 @@ Users can send messages to other users.
 
 **Response**
 
-If the user has a usertoken, and the request is successful, then they will receive a 201 HTTP status code and an object containing the data for the new message.
-
-    + If the user receiving the message does not have an active chat with the logged-in user, then a new one will be created.
+If the user has a usertoken, and the request is successful, then they will receive a 201 HTTP status code and an object containing the data for the new message. If the user receiving the message does not have an active chat with the logged-in user, then a new one will be created.
 
 **Response Example**
 
@@ -1687,4 +1657,4 @@ Users can delete their chats.
 
 If the user has a usertoken, and the request is successful, then they will receive a 200 HTTP status code.
 
-    + Because the API creates separate chats for each user, no messages will be deleted if the second chat exists. If both chats have been deleted, then all messages associated with them will be deleted as well.
+Because the API creates separate chats for each user, no messages will be deleted if the second chat exists. If both chats have been deleted, then all messages associated with them will be deleted as well.
