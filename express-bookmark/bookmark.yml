@@ -414,7 +414,7 @@ paths:
               examples:
                 example1:
                   value:
-                    notification:
+                    notifications:
                     - id: 10
                       alerting_user:
                         first_name: Andrew
