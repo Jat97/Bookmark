@@ -1,10 +1,8 @@
 openapi: 3.1.0
 info: 
   title: Bookmark
-  description: An API for users who love literature.
+  description: An API for users who love literature. For more information on how this API works, please see https://github.com/Jat97/Bookmark.
   version: 0.0.0
-
-  description: For further information on this API, see https://github.com/Jat97/Bookmark.
 
 servers:
   - url: "http://api.bookmark.com"
@@ -130,6 +128,8 @@ paths:
                       profile_picture: null
         '401':
           $ref: '#/components/responses/NotAuthorized'
+        '403':
+          $ref: '#/components/responses/UserForbidden'
         '500':
           $ref: '#/components/responses/ServerError'
 
@@ -451,6 +451,8 @@ paths:
           $ref: '#/components/responses/NotAuthorized'
         '403':
           $ref: '#/components/responses/UserForbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
   
     patch: 
       summary: Check the user's notifications
