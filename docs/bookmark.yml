@@ -1810,6 +1810,7 @@ components:
           type: boolean
     
     LogIn:
+      type: object
       properties:
         email:
           type: string
@@ -1817,6 +1818,7 @@ components:
           type: string
       
     SignUp:
+      type: object
       properties:
         first_name: 
           type: string
@@ -1852,7 +1854,7 @@ components:
 
     UserSnippet:
       type: object
-      properites:
+      properties:
         id:
           type: integer
           format: int64
