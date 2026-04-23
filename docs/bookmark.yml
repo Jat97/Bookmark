@@ -2352,8 +2352,6 @@ components:
       name: guesttoken
 
   responses:
-    resourceCreated:
-      description: The resource was successfully created.
     NotAuthorized: 
       description: Token either missing or expired.
     UserForbidden:
