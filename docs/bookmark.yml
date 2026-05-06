@@ -73,6 +73,8 @@ paths:
                       hidden: true
         '401':
           $ref: '#/components/responses/NotAuthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
   
   /user:
     get:
