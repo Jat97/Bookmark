@@ -7,6 +7,7 @@ Bookmark is an app where users can discuss literature with others who share thei
 ## Table of Contents
 
 + [Authentication & Authorization](#authentication--authorization)
++ [Error Codes](#error-codes)
 + [Users](#users)
 + [Friends](#friends)
 + [Blocked](#blocked)
@@ -300,7 +301,7 @@ None
 
 **Request Example**
 
-> curl -X PATCH "http://api.bookmark.com/api/user/picture" -H "Cookie: usertoken=your_token" -F "profilepicture=@/express-bookmark/public/profilepics""
+> curl -X PATCH "http://api.bookmark.com/api/user/picture" -H "Cookie: usertoken=your_token" -F "profilepicture=@/sample_destination/public/profilepics"
 
 The file uploaded to profilepics must be an image. 
 
@@ -308,7 +309,7 @@ There are no file size restrictions.
 
 **Response**
 
-If the user has a usertoken, and the request is successful, then they will receive a 200 HTTP status code and, an object containing the data for their profile picture.
+If the user has a usertoken, and the request is successful, then they will receive a 200 HTTP status code and an object containing the data for their profile picture.
 
 When uploading an image, the API will return a URL that will then be saved to the user's "profile_picture" property.
 
