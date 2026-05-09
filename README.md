@@ -7,7 +7,7 @@ Bookmark is an app where users can discuss literature with others who share thei
 ## Table of Contents
 
 + [Authentication & Authorization](#authentication--authorization)
-+ [Error Codes](#error-codes)
++ [Error Codes](#error--codes)
 + [Users](#users)
 + [Friends](#friends)
 + [Blocked](#blocked)
